@@ -6,7 +6,19 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi[standard]>=0.116.1",
-    "ruff>=0.13.0",
+    "httpx>=0.28.1",
+    "logfire[asyncpg,fastapi]>=4.6.0",
+    "opentelemetry-instrumentation-asyncpg>=0.57b0",
+    "python-dotenv>=1.1.1",
     "sqlmodel>=0.0.24",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "rich>=14.1.0",
+    "ruff>=0.13.0",
+]
+test = []
 

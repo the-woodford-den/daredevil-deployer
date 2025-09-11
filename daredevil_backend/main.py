@@ -1,15 +1,20 @@
-from typing import Union
+import asyncio
 
+import logfire
+from dotenv import dotenv_values
 from fastapi import FastAPI
 
-app = FastAPI()
+from daredevil_backend.routes import github as git_routes
+
+config = dotenv_values(".env")
 
 
-@app.get("/")
-async def read_root():
-    return {"Hello": "World"}
+def create_app() -> FastAPI:
+    app = FastAPI()
+    app.include_router(git_routes.api)
+    logfire.configure(token=config.get("LOGFIRE_TOKEN"))
+    logfire.instrument_fastapi(app, capture_headers=True)
+    return app
 
 
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+app = create_app()
