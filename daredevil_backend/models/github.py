@@ -1,6 +1,10 @@
-from typing import Optional
+from typing import List, Optional
 
 from .base import IDModel, TSModel
+
+
+class GithubRepoRead(IDModel, TSModel):
+    name: str
 
 
 class GithubUserRead(IDModel, TSModel):
@@ -20,3 +24,4 @@ class GithubUserRead(IDModel, TSModel):
 
 class GithubBase(IDModel, TSModel):
     user: GithubUserRead
+    repos: List[GithubRepoRead]
