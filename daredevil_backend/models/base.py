@@ -9,10 +9,10 @@ class IDModel(SQLModel):
 
 
 class TSModel(SQLModel):
-    created_at: datetime = Field(
+    dd_created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-    updated_at: datetime = Field(
+    dd_updated_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc), nullable=False
     )

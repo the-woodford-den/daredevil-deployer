@@ -3,24 +3,23 @@ from pathlib import Path
 
 import jwt
 import logfire
-from dotenv import dotenv_values
 
-config = dotenv_values(".env")
+from ..main import get_settings
 
-logfire.configure(service_name="auth library")
+logfire.configure(service_name="Github-JWT")
 
 
-class UserSession:
+class GithubJWT:
 
-    def __init__(self, gh_username):
+    def __init__(self):
         with logfire.span("creating auth jwt"):
             try:
-                self.gh_username = gh_username
-                self.gha_client_id = config.get("GHA_CLIENT_ID")
+                settings = get_settings()
+                self.gh_username = settings.gh_username
+                self.gha_client_id = settings.gha_client_id
 
-                gha_pk_file = config.get("GHA_PK_NAME") or None
-                if gha_pk_file is not None:
-                    gha_pk_file += ".pem"
+                if settings.gha_pk_name is not None:
+                    gha_pk_file = settings.gha_pk_name + ".pem"
                     self.gha_pk_path = Path(Path.cwd(), gha_pk_file)
                 else:
                     self.gha_pk_path = Path(

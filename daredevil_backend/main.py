@@ -1,18 +1,25 @@
+from functools import lru_cache
+
 import logfire
-from dotenv import dotenv_values
 from fastapi import FastAPI
 
+from .config.settings import Settings
 from .routes import github as git_routes
 from .routes import user as user_routes
 
-config = dotenv_values(".env")
-logfire_token = config.get("LOGFIRE_TOKEN")
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
 
 
 def create_app() -> FastAPI:
     app = FastAPI()
     app.include_router(git_routes.api)
     app.include_router(user_routes.api)
+    settings = get_settings()
+    print(settings.gh_username)
+    logfire_token = settings.logfire_token
 
     logfire.configure(token=logfire_token)
     logfire.instrument_fastapi(app, capture_headers=True)
