@@ -1,3 +1,6 @@
+import asyncio
+import time
+
 import logfire
 from fastapi import APIRouter
 from httpx import AsyncClient
@@ -20,50 +23,72 @@ async def create_token_code(*, client_id: str):
     with logfire.span("requesting github device-flow user token ..."):
         try:
             async with AsyncClient() as viper:
-                response = await viper.post(
+                auth_req_response = await viper.post(
                     url=endpoint, headers=headers, data={"client_id": client_id}
                 )
 
-            print(response)
-            return response.json()
-        except Exception as e:
-            logfire.error("error message: {msg=}", msg=e)
-    # device_code, user_code, verification_uri, expires_in, interval
+                # device_code, user_code,
+                # verification_uri, expires_in, interval
+                auth_request = auth_req_response.json()
+                if "device_code" in auth_request:
+                    device_code = auth_request["device_code"]
+                else:
+                    raise Exception("no device code!")
+                interval = auth_request.get("interval", 5)
+                expires_in = auth_request.get("expires_in", 600)
 
-    # next hit https://github.com/login/device, with user_code.
+            print(auth_request)
+            logfire.info(f"github login info: {auth_request}")
+            endpoint = "https://github.com/login/oauth/access_token"
+            grant_type = "urn:ietf:params:oauth:grant-type:device_code"
 
-
-# with repository_id, client_id, device_code, grant_type = "urn:ietf:params:oauth:grant-type:device_code"
-# Step 4 OAuth 2.0 Device Authorization Grant
-# Need to Poll with Httpx
-@api.post("/github/token/login")
-async def create_app_token(*, client_id: str, device_code: str):
-    endpoint = f"https://github.com/login/device/code"
-    headers = {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-    }
-    grant_type = "urn:ietf:params:oauth:grant-type:device_code"
-
-    with logfire.span("requesting user access token with code ..."):
-        try:
+            logfire.info("polling user access token with code ...")
+            start_time = time.time()
             async with AsyncClient() as viper:
-                response = await viper.post(
-                    url=endpoint,
-                    headers=headers,
-                    data={
-                        "client_id": client_id,
-                        "device_code": device_code,
-                        "grant_type": grant_type,
-                    },
-                )
+                while time.time() - start_time < expires_in:
+                    auth_device_code_response = await viper.post(
+                        url=endpoint,
+                        headers=headers,
+                        data={
+                            "client_id": client_id,
+                            "device_code": device_code,
+                            "grant_type": grant_type,
+                        },
+                    )
 
-            print(response)
-            return response.json()
+                    response_data = auth_device_code_response.json()
+                    if "access_token" in response_data:
+                        user_access_token = response_data["access_token"]
+                        logfire.info(
+                            f"Github user access token obtained: {user_access_token}"
+                        )
+                        return user_access_token
+                    elif "error" in response_data:
+                        error = response_data.get("error")
+                        match error:
+                            case "authorization_pending":
+                                logfire.info("authorization is pending")
+                                await asyncio.sleep(interval)
+                            case "slow_down":
+                                logfire.info("authorization slow down")
+                                interval += 5
+                                await asyncio.sleep(interval)
+                            case _:
+                                if error in ["expired_token", "access_denied"]:
+                                    logfire.error(f"Github oauth error: {error}")
+                                    raise Exception(f"Github oauth failed: {error}")
+                    else:
+                        logfire.error(
+                            f"Unexpected github oauth error in response: {response_data}"
+                        )
+                        await asyncio.sleep(interval)
+                    continue
+
+            logfire.error("GitHub OAuth polling timed out")
+            raise Exception("GitHub OAuth polling timed out")
+
         except Exception as e:
-            logfire.error("error message: {msg=}", msg=e)
-        # access_token, expires_in, refresh_token, refresh_token_expires_in,
-        # scope, token_type
+            logfire.error(f"Authentication request failed with : {e}")
 
 
 # Example API request with user access token
