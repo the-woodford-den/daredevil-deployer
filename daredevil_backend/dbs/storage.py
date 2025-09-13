@@ -8,10 +8,11 @@ from ..main import get_settings
 from ..models import github, user
 
 settings = get_settings.cache_info
-logfire.configure(service_name="database")
 
-# _engine = create_async_engine(settings.DB_URL, echo=True, future=True)
-# _async_session_garage = sessionmaker(_engine, class_=AsyncSession)
-#
-# async with _engine.begin() as connection:
-#     await connection.run_sync(SQLModel.metadata.create_all)
+_engine = create_async_engine(settings.DB_URL, echo=True, future=True)  # ignore
+_async_session_depot = sessionmaker(_engine, class_=AsyncSession)  # ignore
+
+
+async def init_db():
+    async with _engine.begin() as connection:
+        await connection.run_sync(SQLModel.metadata.create_all)

@@ -18,15 +18,16 @@ def create_app() -> FastAPI:
     app.include_router(git_routes.api)
     app.include_router(user_routes.api)
     settings = get_settings()
-    print(settings.gh_username)
+    print(settings)
     logfire_token = settings.logfire_token
 
-    logfire.configure(token=logfire_token)
+    logfire.configure(
+        token=logfire_token, environment="dev", service_name="daredevil-backend"
+    )
     logfire.instrument_fastapi(app, capture_headers=True)
 
     # basicConfig(handlers=[logfire.LogfireLoggingHandler()])
     # logger = getLogger(__name__)
-    # logger.info("~Daredevil Backend~")
 
     return app
 

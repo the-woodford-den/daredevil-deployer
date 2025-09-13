@@ -1,6 +1,5 @@
 from typing import List, Optional
 
-from sqlalchemy import JSON
 from sqlmodel import Field, Relationship, SQLModel
 
 from .base import IDModel, TSModel
@@ -24,6 +23,7 @@ class RepoOwnerBase(SQLModel):
     events_url: str
     received_events_url: str
     type: str
+    user_view_type: str
     site_admin: bool
 
 
@@ -31,114 +31,129 @@ class RepoOwnerResponse(RepoOwnerBase):
     id: int
 
 
+class RepoOwner(RepoOwnerBase, IDModel, TSModel):  # , table=True):
+    user_id: int = Field(foreign_key="user.id")
+    user: "User" = Relationship(back_populates="github")
+
+
+class RepoPermissionBase(SQLModel):
+    admin: bool
+    push: bool
+    pull: bool
+    maintain: bool
+    triage: bool
+
+
+class RepoPermission(RepoPermissionBase, IDModel, TSModel):  # , table=True):
+    repository: "Repository" = Relationship(back_populates="permission")
+    repository_id: int = Field(foreign_key="repository.id")
+    user_id: int = Field(foreign_key="user.id")
+    user: "User" = Relationship(back_populates="repo_permissions")
+
+
 class RepositoryBase(SQLModel):
-    node_id: str
-    name: str
-    full_name: str
-    owner: JSON
-    private: bool
-    html_url: str
-    description: str
-    fork: bool
-    url: str
-    archive_url: str
-    assignees_url: str
-    blobs_url: str
-    branches_url: str
-    collaborators_url: str
-    comments_url: str
-    commits_url: str
-    compare_url: str
-    contents_url: str
-    contributors_url: str
-    deployments_url: str
-    downloads_url: str
-    events_url: str
-    forks_url: str
-    git_commits_url: str
-    git_refs_url: str
-    git_tags_url: str
-    git_url: str
-    issue_comment_url: str
-    issue_events_url: str
-    issues_url: str
-    keys_url: str
-    labels_url: str
-    languages_url: str
-    merges_url: str
-    milestones_url: str
-    notifications_url: str
-    pulls_url: str
-    releases_url: str
-    ssh_url: str
-    stargazers_url: str
-    statuses_url: str
-    subscribers_url: str
-    subscription_url: str
-    tags_url: str
-    teams_url: str
-    trees_url: str
-    clone_url: str
-    mirror_url: str
-    hooks_url: str
-    svn_url: str
-    homepage: str
+    node_id: Optional[str]
+    name: Optional[str]
+    full_name: Optional[str]
+    owner: Optional[RepoOwnerResponse]
+    private: Optional[bool]
+    html_url: Optional[str]
+    description: Optional[str] | None
+    fork: Optional[bool]
+    url: Optional[str]
+    archive_url: Optional[str]
+    assignees_url: Optional[str]
+    blobs_url: Optional[str]
+    branches_url: Optional[str]
+    collaborators_url: Optional[str]
+    comments_url: Optional[str]
+    commits_url: Optional[str]
+    compare_url: Optional[str]
+    contents_url: Optional[str]
+    contributors_url: Optional[str]
+    deployments_url: Optional[str]
+    downloads_url: Optional[str]
+    events_url: Optional[str]
+    forks_url: Optional[str]
+    git_commits_url: Optional[str]
+    git_refs_url: Optional[str]
+    git_tags_url: Optional[str]
+    git_url: Optional[str]
+    issue_comment_url: Optional[str]
+    issue_events_url: Optional[str]
+    issues_url: Optional[str]
+    keys_url: Optional[str]
+    labels_url: Optional[str]
+    languages_url: Optional[str]
+    merges_url: Optional[str]
+    milestones_url: Optional[str]
+    notifications_url: Optional[str]
+    pulls_url: Optional[str]
+    releases_url: Optional[str]
+    ssh_url: Optional[str]
+    stargazers_url: Optional[str]
+    statuses_url: Optional[str]
+    subscribers_url: Optional[str]
+    subscription_url: Optional[str]
+    tags_url: Optional[str]
+    teams_url: Optional[str]
+    trees_url: Optional[str]
+    clone_url: Optional[str]
+    mirror_url: Optional[str] | None
+    hooks_url: Optional[str]
+    svn_url: Optional[str]
+    homepage: Optional[str] | None
     language: Optional[str]
-    forks_count: int
-    stargazers_count: int
-    watchers_count: int
-    size: int
-    default_branch: str
-    open_issues_count: int
-    is_template: bool
-    topics: List[str]
-    has_issues: bool
-    has_projects: bool
-    has_wiki: bool
-    has_pages: bool
-    has_downloads: bool
-    archived: bool
-    disabled: bool
-    visibility: str
-    pushed_at: str
-    created_at: str
-    updated_at: str
-    permissions: JSON
-    allow_rebase_merge: bool
-    template_repository: Optional[str]
-    temp_clone_token: str
-    allow_squash_merge: bool
-    allow_auto_merge: bool
-    delete_branch_on_merge: bool
-    allow_merge_commit: bool
-    subscribers_count: int
-    network_count: int
-    forks: int
-    open_issues: int
-    watchers: int
+    forks_count: Optional[int]
+    stargazers_count: Optional[int]
+    watchers_count: Optional[int]
+    size: Optional[int]
+    default_branch: Optional[str]
+    open_issues_count: Optional[int]
+    is_template: Optional[bool]
+    topics: List[Optional[str]]
+    has_issues: Optional[bool]
+    has_projects: Optional[bool]
+    has_wiki: Optional[bool]
+    has_pages: Optional[bool]
+    has_downloads: Optional[bool]
+    archived: Optional[bool]
+    disabled: Optional[bool]
+    visibility: Optional[str]
+    pushed_at: Optional[str]
+    created_at: Optional[str]
+    updated_at: Optional[str]
+    permissions: Optional[RepoPermissionBase]
+    allow_rebase_merge: Optional[bool] | None = False
+    template_repository: Optional[str] | None = None
+    temp_clone_token: Optional[str] | None = None
+    allow_squash_merge: Optional[bool] | None = False
+    allow_auto_merge: Optional[bool] | None = False
+    delete_branch_on_merge: Optional[bool] | None = False
+    allow_merge_commit: Optional[bool] | None = False
+    subscribers_count: Optional[int] | None = 0
+    network_count: Optional[int] | None = 0
+    forks: Optional[int]
+    open_issues: Optional[int]
+    watchers: Optional[int]
+    license: Optional["RepoLicenseResponse"]
 
 
 class RepositoryResponse(RepositoryBase):
     id: int
 
 
-class RepoOwner(RepoOwnerBase, IDModel, TSModel, table=True):
-    user_id: int = Field(foreign_key="user.id")
-    user: "User" = Relationship(back_populates="github")
-
-
-class Repository(RepositoryBase, IDModel, TSModel, table=True):
+class Repository(RepositoryBase, IDModel, TSModel):  # , table=True):
     user_id: int = Field(foreign_key="user.id")
     user: "User" = Relationship(back_populates="repositories")
     permission: "RepoPermission" = Relationship(back_populates="repository")
     permission_id: int = Field(foreign_key="repo_permission.id")
 
 
-class RepoPermission(IDModel, TSModel, SQLModel, table=True):
-    admin: bool
-    push: bool
-    pull: bool
-    repository: Repository = Relationship(back_populates="permission")
-    repository_id: int = Field(foreign_key="repository.id")
-    user_id: int = Field(foreign_key="user.id")
-    user: "User" = Relationship(back_populates="repo_permissions")
+class RepoLicenseResponse(SQLModel):
+    key: Optional[str] | None = None
+    name: Optional[str] | None = None
+    url: Optional[str] | None = None
+    spdx_id: Optional[str] | None = None
+    node_id: Optional[str] | None = None
+    html_url: Optional[str] | None = None

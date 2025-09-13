@@ -8,11 +8,9 @@ from rich import inspect, print
 
 api = APIRouter(prefix="/user")
 
-logfire.configure(service_name="daredevil")
-
 
 # Example API request with user access token
-@api.get("/github/user")
+@api.get("/")
 async def get_github_user(*, access_token: str):
     endpoint = f"https://api.github.com/user"
     headers = {

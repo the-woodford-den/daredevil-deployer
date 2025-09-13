@@ -1,46 +1,46 @@
 import asyncio
 import time
-from typing import List
+from typing import List, Optional
 
 import logfire
 from fastapi import APIRouter, HTTPException
 from httpx import AsyncClient
 from rich import inspect, print
 
-from ..models.github import GithubRepoRead
+from ..models.github import Repository, RepositoryResponse
 
 api = APIRouter(prefix="/github")
-
-logfire.configure(service_name="daredevil")
 
 
 # OAuth Device Authorization
 @api.post("/create-token")
 async def create_token(*, client_id: str) -> str:
-    endpoint = f"https://github.com/login/device/code"
+    endpoint = "https://github.com/login/device/code"
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "daredevil-token-depot",
     }
 
     with logfire.span("requesting github device-flow user token ..."):
         try:
             async with AsyncClient() as viper:
-                auth_req_response = await viper.post(
+                response = await viper.post(
                     url=endpoint, headers=headers, data={"client_id": client_id}
                 )
 
-                # device_code, user_code,
-                # verification_uri, expires_in, interval
-                auth_request = auth_req_response.json()
+                print(response)
+                auth_request = response.json()
+                print(auth_request)
+
                 if "device_code" in auth_request:
                     device_code = auth_request["device_code"]
                 else:
-                    raise Exception("no device code!")
+                    raise Exception(f"no device code! {auth_request}")
+
                 interval = auth_request.get("interval", 5)
                 expires_in = auth_request.get("expires_in", 600)
 
-            print(auth_request)
             logfire.info(f"github login info: {auth_request}")
             endpoint = "https://github.com/login/oauth/access_token"
             grant_type = "urn:ietf:params:oauth:grant-type:device_code"
@@ -49,7 +49,7 @@ async def create_token(*, client_id: str) -> str:
             start_time = time.time()
             async with AsyncClient() as viper:
                 while time.time() - start_time < expires_in:
-                    auth_device_code_response = await viper.post(
+                    response = await viper.post(
                         url=endpoint,
                         headers=headers,
                         data={
@@ -59,7 +59,7 @@ async def create_token(*, client_id: str) -> str:
                         },
                     )
 
-                    response_data = auth_device_code_response.json()
+                    response_data = response.json()
                     if "access_token" in response_data:
                         user_access_token = response_data["access_token"]
                         logfire.info(
@@ -96,7 +96,7 @@ async def create_token(*, client_id: str) -> str:
 
 
 @api.get("/repos")
-async def get_repos(*, user_token: str) -> List[GithubRepoRead]:
+async def get_repos(*, user_token: str) -> List[RepositoryResponse]:
     endpoint = f"https://api.github.com/user/repos"
     headers = {
         "Accept": "application/vnd.github+json",
@@ -111,9 +111,14 @@ async def get_repos(*, user_token: str) -> List[GithubRepoRead]:
                     headers=headers,
                     url=endpoint,
                 )
-                gh_repo_list = response.json()
+                repo_list = response.json()
+                repo_response = []
+                for repo in repo_list:
+                    repo_obj = RepositoryResponse.model_validate(repo)
+                    inspect(repo_obj)
+                    repo_response.append(repo_obj)
 
-            return gh_repo_list
+            return repo_list
 
         except HTTPException as e:
             logfire.error("Error Message {msg=}", msg=e)
