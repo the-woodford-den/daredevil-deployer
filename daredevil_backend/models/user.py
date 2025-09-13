@@ -1,12 +1,12 @@
-from authlib.jose import JsonWebToken
+from typing import List, Optional
+
+from sqlmodel import Field, Relationship
 
 from .base import IDModel, TSModel
 
 
-class User(IDModel, TSModel):
-    gh_username: str | None
-    gha_client_id: str | None
-    gha_jwt: JsonWebToken | None
-
-    def __repr__(self):
-        return f"<User github-user={self.gh_username}>"
+class User(IDModel, TSModel, table=True):
+    repositories: Optional[List["Repository"]] = Relationship(back_populates="user")
+    github_id: int = Field(foreign_key="repo_owner.id")
+    github: "RepoOwner" = Relationship(back_populates="user")
+    repo_permissions: List["RepoPermission"] = Relationship(back_populates="user")

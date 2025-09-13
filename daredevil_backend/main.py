@@ -3,7 +3,7 @@ from functools import lru_cache
 import logfire
 from fastapi import FastAPI
 
-from .config.settings import Settings
+from .configs.settings import Settings
 from .routes import github as git_routes
 from .routes import user as user_routes
 

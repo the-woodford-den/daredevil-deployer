@@ -1,5 +1,6 @@
 import asyncio
 import time
+from typing import List
 
 import logfire
 from fastapi import APIRouter, HTTPException
@@ -15,7 +16,7 @@ logfire.configure(service_name="daredevil")
 
 # OAuth Device Authorization
 @api.post("/create-token")
-async def create_token(*, client_id: str):
+async def create_token(*, client_id: str) -> str:
     endpoint = f"https://github.com/login/device/code"
     headers = {
         "Accept": "application/vnd.github+json",
@@ -95,7 +96,7 @@ async def create_token(*, client_id: str):
 
 
 @api.get("/repos")
-async def get_repos(*, user_token: str) -> GithubRepoRead:
+async def get_repos(*, user_token: str) -> List[GithubRepoRead]:
     endpoint = f"https://api.github.com/user/repos"
     headers = {
         "Accept": "application/vnd.github+json",
@@ -110,9 +111,9 @@ async def get_repos(*, user_token: str) -> GithubRepoRead:
                     headers=headers,
                     url=endpoint,
                 )
-                gh_repo_obj = GithubRepoRead.model_validate(response)
+                gh_repo_list = response.json()
 
-                return gh_repo_obj
+            return gh_repo_list
 
         except HTTPException as e:
             logfire.error("Error Message {msg=}", msg=e)

@@ -1,28 +1,14 @@
 from typing import List, Optional
 
-from sqlmodel import SQLModel
+from sqlalchemy import JSON
+from sqlmodel import Field, Relationship, SQLModel
 
 from .base import IDModel, TSModel
+from .user import User
 
 
-class GithubPermissions(IDModel, TSModel, SQLModel):
-    admin: bool
-    push: bool
-    pull: bool
-
-
-class GithubLicense(IDModel, TSModel, SQLModel):
-    key: str
-    name: str
-    url: str
-    spdx_id: str
-    node_id: str
-    html_url: str
-
-
-class GithubUserRead(TSModel, SQLModel):
+class RepoOwnerBase(SQLModel):
     login: str
-    id: int
     node_id: str
     avatar_url: str
     gravatar_id: str
@@ -41,12 +27,15 @@ class GithubUserRead(TSModel, SQLModel):
     site_admin: bool
 
 
-class GithubRepoRead(TSModel, SQLModel):
+class RepoOwnerResponse(RepoOwnerBase):
     id: int
+
+
+class RepositoryBase(SQLModel):
     node_id: str
     name: str
     full_name: str
-    owner: GithubUserRead
+    owner: JSON
     private: bool
     html_url: str
     description: str
@@ -114,7 +103,7 @@ class GithubRepoRead(TSModel, SQLModel):
     pushed_at: str
     created_at: str
     updated_at: str
-    permissions: GithubPermissions
+    permissions: JSON
     allow_rebase_merge: bool
     template_repository: Optional[str]
     temp_clone_token: str
@@ -127,3 +116,29 @@ class GithubRepoRead(TSModel, SQLModel):
     forks: int
     open_issues: int
     watchers: int
+
+
+class RepositoryResponse(RepositoryBase):
+    id: int
+
+
+class RepoOwner(RepoOwnerBase, IDModel, TSModel, table=True):
+    user_id: int = Field(foreign_key="user.id")
+    user: "User" = Relationship(back_populates="github")
+
+
+class Repository(RepositoryBase, IDModel, TSModel, table=True):
+    user_id: int = Field(foreign_key="user.id")
+    user: "User" = Relationship(back_populates="repositories")
+    permission: "RepoPermission" = Relationship(back_populates="repository")
+    permission_id: int = Field(foreign_key="repo_permission.id")
+
+
+class RepoPermission(IDModel, TSModel, SQLModel, table=True):
+    admin: bool
+    push: bool
+    pull: bool
+    repository: Repository = Relationship(back_populates="permission")
+    repository_id: int = Field(foreign_key="repository.id")
+    user_id: int = Field(foreign_key="user.id")
+    user: "User" = Relationship(back_populates="repo_permissions")
