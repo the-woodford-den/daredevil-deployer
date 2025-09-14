@@ -1,64 +1,78 @@
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
+from uuid import UUID
 
 from sqlmodel import Field, Relationship, SQLModel
 
 from .base import IDModel, TSModel
-from .user import User
+
+if TYPE_CHECKING:
+    from .user import User
 
 
-class UserBase(SQLModel):
-    login: str
+class AppMergeQueuesResponse(SQLModel):
+    # metadata: str
+    packages: str
+    pages: str
+    profile: str
+    pull_requests: str
+    repository_advisories: str
+    repository_custom_properties: str
+    repository_hooks: str
+    repository_projects: str
+    secrets: str
+    secret_scanning_alerts: str
+    secret_scanning_bypass_requests: str
+    security_events: str
+    starring: str
+    statuses: str
+    user_events: str
+    vulnerability_alerts: str
+    watching: str
+    workflows: str
+
+
+class AppPermissionsResponse(SQLModel):
+    actions: str
+    actions_variables: str
+    administration: str
+    attestations: str
+    checks: str
+    contents: str
+    dependabot_secrets: str
+    deployments: str
+    discussions: str
+    emails: str
+    environments: str
+    followers: str
+    issues: str
+
+
+class AppBase(SQLModel):
+    client_id: str
+    slug: str
     node_id: str
-    avatar_url: str
-    gravatar_id: str
-    url: str
-    html_url: str
-    followers_url: str
-    following_url: str
-    gists_url: str
-    starred_url: str
-    subscriptions_url: str
-    organizations_url: str
-    repos_url: str
-    events_url: str
-    received_events_url: str
-    type: str
-    site_admin: bool
     name: str
-    company: str
-    blog: str
-    location: str
-    email: str
-    hireable: bool
-    bio: str
-    twitter_username: str
-    public_repos: int
-    public_gists: int
-    followers: int
-    following: int
+    description: str
+    external_url: str
+    html_url: str
     created_at: str
     updated_at: str
-    private_gists: int
-    total_private_repos: int
-    owned_private_repos: int
-    disk_usage: int
-    collaborators: int
-    two_factor_authentication: bool
-    plan: "UserPlanResponse"
+    installations_count: int | None = 0
 
 
-class UserPlanResponse(SQLModel):
-    name: str
-    space: int
-    private_repos: int
-    collaborators: int
-
-
-class UserResponse(UserBase):
+class AppResponse(AppBase):
     id: int
+    events: List[str] = []
+    permissions: AppPermissionsResponse
+    merge_queues: AppMergeQueuesResponse
 
 
-class RepoOwnerBase(SQLModel):
+class App(AppBase, IDModel, TSModel, table=True):
+    github_app_id: int
+    user: "User" = Relationship(back_populates="app")
+
+
+class AppOwnerBase(SQLModel):
     login: str
     node_id: str
     avatar_url: str
@@ -79,16 +93,15 @@ class RepoOwnerBase(SQLModel):
     site_admin: bool
 
 
-class RepoOwnerResponse(RepoOwnerBase):
+class AppOwnerResponse(AppOwnerBase):
     id: int
 
 
-class RepoOwner(RepoOwnerBase, IDModel, TSModel):  # , table=True):
-    user_id: int = Field(foreign_key="user.id")
-    user: "User" = Relationship(back_populates="github")
+class AppOwner(AppOwnerBase):
+    github_id: int
 
 
-class RepoPermissionBase(SQLModel):
+class RepoPermissionsBase(SQLModel):
     admin: bool
     push: bool
     pull: bool
@@ -96,18 +109,10 @@ class RepoPermissionBase(SQLModel):
     triage: bool
 
 
-class RepoPermission(RepoPermissionBase, IDModel, TSModel):  # , table=True):
-    repository: "Repository" = Relationship(back_populates="permission")
-    repository_id: int = Field(foreign_key="repository.id")
-    user_id: int = Field(foreign_key="user.id")
-    user: "User" = Relationship(back_populates="repo_permissions")
-
-
 class RepositoryBase(SQLModel):
     node_id: Optional[str]
     name: Optional[str]
     full_name: Optional[str]
-    owner: Optional[RepoOwnerResponse]
     private: Optional[bool]
     html_url: Optional[str]
     description: Optional[str] | None
@@ -163,7 +168,6 @@ class RepositoryBase(SQLModel):
     default_branch: Optional[str]
     open_issues_count: Optional[int]
     is_template: Optional[bool]
-    topics: List[Optional[str]]
     has_issues: Optional[bool]
     has_projects: Optional[bool]
     has_wiki: Optional[bool]
@@ -175,7 +179,6 @@ class RepositoryBase(SQLModel):
     pushed_at: Optional[str]
     created_at: Optional[str]
     updated_at: Optional[str]
-    permissions: Optional[RepoPermissionBase]
     allow_rebase_merge: Optional[bool] | None = False
     template_repository: Optional[str] | None = None
     temp_clone_token: Optional[str] | None = None
@@ -188,18 +191,19 @@ class RepositoryBase(SQLModel):
     forks: Optional[int]
     open_issues: Optional[int]
     watchers: Optional[int]
-    license: Optional["RepoLicenseResponse"]
 
 
 class RepositoryResponse(RepositoryBase):
+    topics: List[Optional[str]]
+    owner: Optional[AppOwnerResponse]
+    license: Optional["RepoLicenseResponse"]
+    permissions: Optional[RepoPermissionsBase]
     id: int
 
 
-class Repository(RepositoryBase, IDModel, TSModel):  # , table=True):
-    user_id: int = Field(foreign_key="user.id")
-    user: "User" = Relationship(back_populates="repositories")
-    permission: "RepoPermission" = Relationship(back_populates="repository")
-    permission_id: int = Field(foreign_key="repo_permission.id")
+# class Repository(RepositoryBase, IDModel, TSModel, table=True):
+#     user_id: int = Field(foreign_key="user.id")
+#     user: "User" = Relationship(back_populates="repositories")
 
 
 class RepoLicenseResponse(SQLModel):

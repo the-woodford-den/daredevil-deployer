@@ -13,6 +13,12 @@ class Settings(BaseSettings):
     gha_id: str | None = None
     gha_private_key: str | None = None
     logfire_token: str | None = None
+    db_host: str
+    db_name: str
+    db_port: str
+    db_user: str
+    db_url: str
+    gha_client_id: str
 
     def __getattr__(self, name: str):
         return None

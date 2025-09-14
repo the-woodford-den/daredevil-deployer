@@ -1,12 +1,34 @@
-from typing import List, Optional
+from typing import TYPE_CHECKING
+from uuid import UUID
 
 from sqlmodel import Field, Relationship
 
 from .base import IDModel, TSModel
 
+if TYPE_CHECKING:
+    from .github import App  # AppOwner, Repository
+
 
 class User(IDModel, TSModel, table=True):
-    repositories: Optional[List["Repository"]] = Relationship(back_populates="user")
-    github_id: int = Field(foreign_key="repo_owner.id")
-    github: "RepoOwner" = Relationship(back_populates="user")
-    repo_permissions: List["RepoPermission"] = Relationship(back_populates="user")
+    github_owner_id: int
+    # repositories: Optional[List["Repository"]] = Relationship(back_populates="user")
+    app_id: UUID | None = Field(default=None, foreign_key="app.id")
+    app: "App" = Relationship(back_populates="user")
+    login: str
+    node_id: str
+    avatar_url: str
+    gravatar_id: str
+    url: str
+    html_url: str
+    followers_url: str
+    following_url: str
+    gists_url: str
+    starred_url: str
+    subscriptions_url: str
+    organizations_url: str
+    repos_url: str
+    events_url: str
+    received_events_url: str
+    type: str
+    user_view_type: str
+    site_admin: bool

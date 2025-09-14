@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException
 from httpx import AsyncClient
 from rich import inspect, print
 
-from ..models.github import Repository, RepositoryResponse
+from ..models.github import RepositoryResponse
 
 api = APIRouter(prefix="/github")
 

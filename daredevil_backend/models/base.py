@@ -1,7 +1,7 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, text
 
 
 class IDModel(SQLModel):
@@ -9,10 +9,16 @@ class IDModel(SQLModel):
 
 
 class TSModel(SQLModel):
-    dd_created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+    created_at: datetime = Field(
+        default_factory=datetime.now,
         nullable=False,
+        sa_column_kwargs={"server_default": text("current_timestamp(0)")},
     )
-    dd_updated_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc), nullable=False
+    updated_at: datetime = Field(
+        default_factory=datetime.now,
+        nullable=False,
+        sa_column_kwargs={
+            "server_default": text("current_timestamp(0)"),
+            "onupdate": text("current_timestamp(0)"),
+        },
     )
