@@ -6,25 +6,30 @@ from fastapi import APIRouter
 from httpx import AsyncClient
 from rich import inspect, print
 
+from ..configs.auth import GithubJWT
+
 api = APIRouter(prefix="/user")
 
 
-# Example API request with user access token
-@api.get("/")
-async def get_github_user(*, access_token: str):
-    endpoint = f"https://api.github.com/user"
+#
+@api.get("/get-github-app")
+async def get_github_app():
+    session = GithubJWT()
+    jwt = session.generate()
+
+    endpoint = f"https://api.github.com/app"
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
-        "Authorization": f"Bearer {access_token}",
+        "Authorization": f"Bearer {jwt}",
     }
 
-    with logfire.span("accessing github api for user with token ..."):
+    with logfire.span("asking github api for user access..."):
         try:
             async with AsyncClient() as viper:
-                response = await viper.post(url=endpoint, headers=headers)
+                response = await viper.get(url=endpoint, headers=headers)
+                auth_response = response.json()
 
-            print(response)
-            return response.json()
+            return auth_response
         except Exception as e:
             logfire.error("error message: {msg=}", msg=e)
