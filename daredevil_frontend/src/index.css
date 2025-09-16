@@ -190,6 +190,15 @@ a:-webkit-any-link {
     --kendo-color-series-f-subtler: #802C49;
   }
 
+  .b-g-font {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100;
+  }
+
   .k-appbar {
     color: #ffffff;
     background-color: #3d3d3d;
@@ -202,5 +211,12 @@ a:-webkit-any-link {
   .k-card {
     color: #ffffff;
     background-color: #3d3d3d;
+  }
+
+  .t-font {
+    font-family: "Texturina", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
   }
 }

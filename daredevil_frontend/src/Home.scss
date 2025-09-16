@@ -1,10 +1,10 @@
 .react-logo {
-  width: 889px;
+  width: 55.5625rem;
   position: absolute;
-  right: 0px;
-  top: -205px;
+  right: 0;
+  top: -12.8521rem;
   z-index: -1;
-  height: 788px;
+  height: 49.25rem;
 }
 
 .section-container {
@@ -15,7 +15,7 @@
 .center-section,
 .cards {
   margin: 0 auto;
-  max-width: 1154px;
+  max-width: 72.125rem;
 }
 
 .center-section .section-title {
@@ -25,11 +25,11 @@
 .section-container.get-started {
   margin: 0 auto;
   text-align: left;
-  padding: 24px 24px 24px 48px;
+  padding: 1.5rem 1.5rem 1.5rem 3rem;
 }
 
 .section-container.get-started code {
-  padding: 0 4px;
+  padding: 0 0.25rem;
 }
 
 .welcome-title,
@@ -39,19 +39,19 @@
 }
 
 .welcome-title {
-  font-size: 84px;
-  line-height: 100px;
+  font-size: 5.25rem;
+  line-height: 6.25rem;
 }
 
 .welcome-subtitle {
-  font-size: 42px;
-  line-height: 50px
+  font-size: 2.625rem;
+  line-height: 3.125rem;
 }
 
 .section-title {
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: 400;
-  line-height: 42px;
+  line-height: 2.625rem;
   margin: 0;
 }
 
@@ -69,13 +69,13 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--kendo-spacing-0, 0px);
+  gap: var(--kendo-spacing-0, 0rem);
   align-items: center;
   margin: var(--kendo-spacing-6);
-  padding: var(--kendo-spacing-0, 0px);
-  height: 310px;
-  width: 240px;
-  box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.04), 0px 4px 16px 0px rgba(0, 0, 0, 0.12);
+  padding: var(--kendo-spacing-0, 0rem);
+  height: 19.375rem;
+  width: 15rem;
+  box-shadow: 0rem .125rem .1875rem 0rem rgba(0, 0, 0, 0.04), 0rem .25rem 1rem 0rem rgba(0, 0, 0, 0.12);
 }
 
 .k-card-header {
@@ -87,35 +87,38 @@
 }
 
 .card-list {
-  padding: var(--kendo-spacing-0, 0px);
+  padding: var(--kendo-spacing-0, 0rem);
   margin: 0;
   list-style-type: disc;
   text-align: left;
 }
 
 footer {
-  padding: var(--kendo-spacing-4, 16px) 0px;
-  border: 1px solid;
+  padding: var(--kendo-spacing-4, 1rem) 0rem;
+  border: .0625rem solid;
   border-color: var(--kendo-color-border, rgba(0, 0, 0, 0.08));
   color: var(--light-theme-text-colors-kendo-subtle-text, #666666);
-  font-size: 14px;
+  font-size: .875rem;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 56.25rem) {
   .section-container .welcome-title {
-    font-size: 64px;
-    line-height: 84px;
+    text-align: center;
+    font-size: 4rem;
+    line-height: 5rem;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 30rem) {
   .section-container .welcome-title {
-    font-size: 42px;
-    line-height: 48px;
+    text-align: center;
+    font-size: 3.625rem;
+    line-height: 4rem;
   }
 
   .section-container .welcome-subtitle {
-    font-size: 24px;
-    line-height: 32px;
+    text-align: center;
+    font-size: 1.5rem;
+    line-height: 2rem;
   }
 }

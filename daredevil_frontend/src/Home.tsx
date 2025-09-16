@@ -16,6 +16,7 @@ import {
   CardHeader,
   CardTitle
 } from "@progress/kendo-react-layout";
+import { Typography } from '@progress/kendo-react-common';
 
 export default function Home() {
   return (
@@ -135,8 +136,12 @@ export default function Home() {
       </section>
 
       <footer className="footer">
-        <div>Operational ⊛ 2025 Woodford's Den Software. All rights reserved.</div>
-      </footer>
+        <div>
+          <Typography.p textAlign={'center'}>
+            Operational ~ 2025 Woodford's Den ~ Licenses: <a href="/assets/Bricolage/Grotesque/2025-9-15/license.md">Bricolage Grotesque</a> & <a href="/assets/Texturina/2025-9-15/license.md">Texturina</a>
+          </Typography.p>
+        </div>
+      </footer >
     </>
   )
 }

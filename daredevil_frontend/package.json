@@ -13,6 +13,7 @@
     "@dotenvx/dotenvx": "^1.49.0",
     "@progress/kendo-licensing": "^1.7.1",
     "@progress/kendo-react-buttons": "^12.0.1",
+    "@progress/kendo-react-common": "^12.0.1",
     "@progress/kendo-react-data-tools": "^12.0.1",
     "@progress/kendo-react-dateinputs": "^12.0.1",
     "@progress/kendo-react-dialogs": "^12.0.1",
