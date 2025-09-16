@@ -3,6 +3,8 @@ import reactUrl from "./assets/react.svg"
 import rubyUrl from "./assets/ruby.svg"
 import docsUrl from "./assets/documentation.svg";
 import designUrl from "./assets/design.svg";
+import bricolageLicense from "./assets/Bricolage/Grotesque/2025-9-15/license.md?url";
+import texturinaLicense from "./assets/Texturina/2025-9-15/license.md?url";
 
 import { Link } from "react-router-dom";
 import { Button } from "@progress/kendo-react-buttons";
@@ -138,7 +140,11 @@ export default function Home() {
       <footer className="footer">
         <div>
           <Typography.p textAlign={'center'}>
-            Operational ~ 2025 Woodford's Den ~ Licenses: <a href="/assets/Bricolage/Grotesque/2025-9-15/license.md">Bricolage Grotesque</a> & <a href="/assets/Texturina/2025-9-15/license.md">Texturina</a>
+            Operational ~ 2025 Woodford's Den ~ <span>
+              Licenses: </span>
+            <a href={bricolageLicense} target="_blank" rel="noopener noreferrer">Bricolage Grotesque</a>
+            <span> & </span>
+            <a href={texturinaLicense} target="_blank" rel="noopener noreferrer">Texturina</a>
           </Typography.p>
         </div>
       </footer >
