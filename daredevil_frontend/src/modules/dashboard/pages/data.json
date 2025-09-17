@@ -1,12 +1,23 @@
 [
   {
-  "details": [
+  	"details": [
 			{
-				"githubUsername": "woodFordr",
-				"githubID": 31,
-				"githubApp": "daredevil-deployer",
-				"githubAppID": "440k"
-			}
+    		"full_name": "woodFordR/blog",
+    		"private": false,
+    		"description": "An incredible jekyll blog.",
+    		"url": "https://api.github.com/repos/woodFordR/blog",
+    		"language": "SCSS",
+    		"default_branch": "main",
+    		"visibility": "public",
+    		"pushed_at": "2024-04-19T09:31:35Z",
+    		"permissions": {
+      		"admin": true,
+      		"push": true,
+      		"pull": true,
+      		"maintain": true,
+      		"triage": true
+    		}
+  		}
 		]
 	}
 ]
