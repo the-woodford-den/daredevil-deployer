@@ -93,14 +93,6 @@
   text-align: left;
 }
 
-footer {
-  padding: var(--kendo-spacing-4, 1rem) 0rem;
-  border: .0625rem solid;
-  border-color: var(--kendo-color-border, rgba(0, 0, 0, 0.08));
-  color: var(--light-theme-text-colors-kendo-subtle-text, #666666);
-  font-size: .875rem;
-}
-
 @media (max-width: 56.25rem) {
   .section-container .welcome-title {
     text-align: center;

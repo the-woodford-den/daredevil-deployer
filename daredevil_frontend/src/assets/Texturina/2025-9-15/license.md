@@ -4,7 +4,6 @@ Copyright (c) 2020 The Texturina Project Authors (https://github.com/Omnibus-Typ
 This Font Software is licensed under the SIL Open Font License, Version 1.1.  
 This license is copied below, and is also available with a FAQ at:  
 https\://openfontlicense.org  
-&nbsp;
 
 \----------------------------------------------------------------------
 
@@ -12,7 +11,6 @@ https\://openfontlicense.org
 
 \----------------------------------------------------------------------
 
-&nbsp;
 
 PREAMBLE
 -----------

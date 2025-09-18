@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import { Button } from "@progress/kendo-react-buttons";
+import { type DetailExpandDescriptor, type GroupExpandDescriptor } from "@progress/kendo-react-data-tools";
 import {
   Grid,
   GridColumn,
@@ -8,11 +10,8 @@ import {
   type GridDetailExpandChangeEvent,
   type GridGroupExpandChangeEvent,
 } from "@progress/kendo-react-grid";
-import { type DetailExpandDescriptor, type GroupExpandDescriptor } from "@progress/kendo-react-data-tools";
 
-import data from "./data.json";
-import { Button } from "@progress/kendo-react-buttons";
-import { AppBar, AppBarSection } from "@progress/kendo-react-layout";
+import data from "../../assets/data.json";
 
 const DetailComponent = (props: GridDetailRowProps) => {
   const dataItem = props.dataItem;
@@ -29,7 +28,7 @@ const DetailComponent = (props: GridDetailRowProps) => {
   );
 };
 
-export default function GridVite() {
+function Repositories() {
   const [groupExpand, setGroupExpand] = React.useState<GroupExpandDescriptor[]>([]);
   const [detailExpand, setDetailExpand] = React.useState<DetailExpandDescriptor>({});
 
@@ -43,13 +42,6 @@ export default function GridVite() {
 
   return (
     <>
-      <AppBar position="top">
-        <AppBarSection>
-          <Button themeColor="primary" fillMode="flat" className="k-mr-1">
-            <a href="/">Home</a>
-          </Button>
-        </AppBarSection>
-      </AppBar>
       <div className="k-mt-4">
         <Grid
           id="test"
@@ -86,3 +78,5 @@ export default function GridVite() {
     </>
   );
 }
+
+export default Repositories;

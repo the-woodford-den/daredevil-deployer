@@ -1,41 +1,21 @@
 import './Home.scss';
-import reactUrl from "./assets/react.svg"
-import rubyUrl from "./assets/ruby.svg"
-import docsUrl from "./assets/documentation.svg";
-import designUrl from "./assets/design.svg";
-import bricolageLicense from "./assets/Bricolage/Grotesque/2025-9-15/license.md?url";
-import texturinaLicense from "./assets/Texturina/2025-9-15/license.md?url";
+import reactUrl from "../../assets/react.svg"
+import rubyUrl from "../../assets/ruby.svg"
+import docsUrl from "../../assets/documentation.svg";
+import designUrl from "../../assets/design.svg";
 
-import { Link } from "react-router-dom";
 import { Button } from "@progress/kendo-react-buttons";
 import {
-  AppBar,
-  AppBarSection,
-  AppBarSpacer,
   Card,
   CardActions,
   CardBody,
   CardHeader,
   CardTitle
 } from "@progress/kendo-react-layout";
-import { Typography } from '@progress/kendo-react-common';
 
 export default function Home() {
   return (
     <>
-      <AppBar position="top">
-        <AppBarSection>Daredevil 🩸 Deployer</AppBarSection>
-        <AppBarSpacer />
-        <AppBarSection>
-          <Link to="/">
-            <Button themeColor="primary" fillMode="flat" className="k-mr-1">Home</Button>
-          </Link>
-          <Link to="/dashboard/">
-            <Button themeColor="primary" fillMode="flat">Dashboard</Button>
-          </Link>
-        </AppBarSection>
-      </AppBar>
-
       <section className="section-container">
         <img src={rubyUrl} alt="React Logo" className="ruby-logo" />
         <div className="k-d-flex k-flex-col k-my-12">
@@ -136,18 +116,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <footer className="footer">
-        <div>
-          <Typography.p textAlign={'center'}>
-            Operational ~ 2025 Woodford's Den ~ <span>
-              Licenses: </span>
-            <a href={bricolageLicense} target="_blank" rel="noopener noreferrer">Bricolage Grotesque</a>
-            <span> & </span>
-            <a href={texturinaLicense} target="_blank" rel="noopener noreferrer">Texturina</a>
-          </Typography.p>
-        </div>
-      </footer >
     </>
   )
 }
