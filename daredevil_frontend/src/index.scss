@@ -1,10 +1,11 @@
 // Use the entire theme
 @use "@progress/kendo-theme-default/scss/all.scss" as * with ($kendo-colors: (app-surface: #213547,
     on-app-surface: #3FAE6A,
-    primary: #213547,
+    primary: #3d3d3d,
     primary-on-surface: #3FAE6A,
     secondary: #3FAE6A,
-    secondary-on-surface: #213547,
+    secondary-on-surface: #000000,
+    surface-alt: #3d3d3d,
     border: #3FAE6A));
 
 :root {

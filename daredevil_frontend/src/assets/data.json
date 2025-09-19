@@ -9,14 +9,7 @@
     		"language": "SCSS",
     		"default_branch": "main",
     		"visibility": "public",
-    		"pushed_at": "2024-04-19T09:31:35Z",
-    		"permissions": {
-      		"admin": true,
-      		"push": true,
-      		"pull": true,
-      		"maintain": true,
-      		"triage": true
-    		}
+    		"pushed_at": "2024-04-19T09:31:35Z"
   		}
 		]
 	}

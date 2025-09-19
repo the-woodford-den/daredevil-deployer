@@ -94,12 +94,12 @@
 }
 
 .section-container.get-started {
-  background-color: #3d3d3d;
+  background: k-color(surface-alt);
 }
 
 .k-card {
-  color: #ffffff;
-  background-color: #3d3d3d;
+  color: k-color(on-app-surface);
+  background: k-color(surface-alt);
 }
 
 @media (max-width: 56.25rem) {

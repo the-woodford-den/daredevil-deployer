@@ -18,12 +18,33 @@ const DetailComponent = (props: GridDetailRowProps) => {
 
   return (
     <div>
-      <section style={{ width: "12rem", float: "left" }}>
+      <section>
         <p>
-          <strong>{dataItem}</strong>
+          <strong>{dataItem.full_name}</strong>
+        </p>
+        <p>
+          <strong>{dataItem.private}</strong>
+        </p>
+        <p>
+          <strong>{dataItem.description}</strong>
+        </p>
+        <p>
+          <strong>{dataItem.url}</strong>
+        </p>
+        <p>
+          <strong>{dataItem.language}</strong>
+        </p>
+        <p>
+          <strong>{dataItem.default_branch}</strong>
+        </p>
+        <p>
+          <strong>{dataItem.visibility}</strong>
+        </p>
+        <p>
+          <strong>{dataItem.pushed_at}</strong>
         </p>
       </section>
-      <Grid style={{ width: "30rem" }} data={dataItem.detail} />
+      <Grid data={dataItem.details} />
     </div>
   );
 };
@@ -45,12 +66,11 @@ function Repositories() {
       <div className="k-mt-4">
         <Grid
           id="test"
-          style={{ height: "40rem" }}
           sortable={true}
           defaultSort={[{ field: "orderDate", dir: "desc" }]}
           filterable={true}
           groupable={true}
-          defaultGroup={[{ field: "githubUsername" }]}
+          defaultGroup={[{ field: "full_name" }]}
           reorderable={true}
           pageable={{ buttonCount: 4, pageSizes: true }}
           defaultTake={20}
@@ -69,10 +89,14 @@ function Repositories() {
             &nbsp;
             <Button themeColor="primary" fillMode="flat" className="k-mr-1">DEPLOY</Button>
           </GridToolbar>
-          <GridColumn field="githubUsername" width="18rem" />
-          <GridColumn field="githubID" width="18rem" />
-          <GridColumn field="githubAppName" width="18rem" />
-          <GridColumn field="githubAppID" width="18rem" />
+          <GridColumn field="full_name" width="6rem" />
+          <GridColumn field="private" width="6rem" />
+          <GridColumn field="description" width="6rem" />
+          <GridColumn field="url" width="6rem" />
+          <GridColumn field="language" width="6rem" />
+          <GridColumn field="default_branch" width="6rem" />
+          <GridColumn field="visibility" width="6rem" />
+          <GridColumn field="pushed_at" width="6rem" />
         </Grid>
       </div>
     </>
