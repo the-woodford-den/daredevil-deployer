@@ -93,6 +93,15 @@
   text-align: left;
 }
 
+.section-container.get-started {
+  background-color: #3d3d3d;
+}
+
+.k-card {
+  color: #ffffff;
+  background-color: #3d3d3d;
+}
+
 @media (max-width: 56.25rem) {
   .section-container .welcome-title {
     text-align: center;

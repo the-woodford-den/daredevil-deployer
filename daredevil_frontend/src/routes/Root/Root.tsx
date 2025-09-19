@@ -12,7 +12,7 @@ import texturinaLicense from "../../assets/Texturina/2025-9-15/license.md?url";
 function Root() {
   return (
     <>
-      <AppBar position="top">
+      <AppBar themeColor="primary" position="top">
         <AppBarSection>Daredevil 🩸 Deployer</AppBarSection>
         <AppBarSpacer />
         <AppBarSection>
@@ -25,7 +25,7 @@ function Root() {
         </AppBarSection>
       </AppBar>
       <Outlet />
-      <footer className="footer">
+      <footer>
         <div>
           <Typography.p textAlign={'center'}>
             Operational ~ 2025 Woodford's Den ~ <span>
@@ -35,7 +35,7 @@ function Root() {
             <a href={texturinaLicense} target="_blank" rel="noopener noreferrer">Texturina</a>
           </Typography.p>
         </div>
-      </footer >
+      </footer>
     </>
   );
 }
