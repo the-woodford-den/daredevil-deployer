@@ -23,7 +23,7 @@ export default function Home() {
           <h3 className="welcome-subtitle">Deploying Apps</h3>
 
           <div className="k-mt-3">
-            <Button themeColor="primary" className="k-mr-2">
+            <Button themeColor="secondary" fillMode="solid">
               <a href="https://www.notion.com/" target="_blank">Notion Docs</a>
             </Button>
             <Button themeColor="secondary" fillMode="solid">

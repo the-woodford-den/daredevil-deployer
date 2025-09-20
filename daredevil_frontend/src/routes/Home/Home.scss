@@ -8,7 +8,7 @@
 }
 
 .section-container {
-  padding: var(--kendo-spacing-8);
+  padding: k-spacing(8);
   margin: 0 auto;
 }
 
@@ -19,7 +19,7 @@
 }
 
 .center-section .section-title {
-  margin: var(--kendo-spacing-2);
+  margin: k-spacing(2);
 }
 
 .section-container.get-started {
@@ -57,7 +57,7 @@
 
 .cards .section-title {
   text-align: left;
-  margin-left: var(--kendo-spacing-6);
+  margin-left: k-spacing(6);
 }
 
 .cards-container {
@@ -69,10 +69,10 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--kendo-spacing-0, 0rem);
+  gap: k-spacing(0);
   align-items: center;
-  margin: var(--kendo-spacing-6);
-  padding: var(--kendo-spacing-0, 0rem);
+  margin: k-spacing(6);
+  padding: k-spacing(6);
   height: 19.375rem;
   width: 15rem;
   box-shadow: 0rem .125rem .1875rem 0rem rgba(0, 0, 0, 0.04), 0rem .25rem 1rem 0rem rgba(0, 0, 0, 0.12);
@@ -87,7 +87,7 @@
 }
 
 .card-list {
-  padding: var(--kendo-spacing-0, 0rem);
+  padding: k-spacing(0);
   margin: 0;
   list-style-type: disc;
   text-align: left;
