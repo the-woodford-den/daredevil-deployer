@@ -1,7 +1,10 @@
+@use "@progress/kendo-theme-default/scss/all.scss" as *;
+
 footer {
-  padding: k-spacing(4) 0rem;
+  bottom: 0;
+  padding: k-spacing(4) k-spacing(2);
+  width: 100%;
   border: .0625rem solid;
   border-color: k-color(border);
-  color: k-color(surface-alt);
   font-size: .875rem;
 }

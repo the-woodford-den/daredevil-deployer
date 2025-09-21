@@ -8,14 +8,15 @@ import {
 import { Typography } from '@progress/kendo-react-common';
 import bricolageLicense from "../../assets/Bricolage/Grotesque/2025-9-15/license.md?url";
 import texturinaLicense from "../../assets/Texturina/2025-9-15/license.md?url";
+import './Root.scss';
 
 function Root() {
   return (
     <>
       <AppBar themeColor="primary" position="top">
-        <AppBarSection>Daredevil 🩸 Deployer</AppBarSection>
+        <AppBarSection className="k-ml-8">Daredevil 🩸 Deployer</AppBarSection>
         <AppBarSpacer />
-        <AppBarSection>
+        <AppBarSection className="k-mr-8">
           <Link to="/">
             <Button themeColor="primary" fillMode="flat" className="k-mr-1">Home</Button>
           </Link>
@@ -26,15 +27,13 @@ function Root() {
       </AppBar>
       <Outlet />
       <footer>
-        <div>
-          <Typography.p textAlign={'center'}>
-            Operational ~ 2025 Woodford's Den ~ <span>
-              Licenses: </span>
-            <a href={bricolageLicense} target="_blank" rel="noopener noreferrer">Bricolage Grotesque</a>
-            <span> & </span>
-            <a href={texturinaLicense} target="_blank" rel="noopener noreferrer">Texturina</a>
-          </Typography.p>
-        </div>
+        <Typography.p textAlign={'center'}>
+          Operational ~ 2025 Woodford's Den ~ <span>
+            Licenses: </span>
+          <a href={bricolageLicense} target="_blank" rel="noopener noreferrer">Bricolage Grotesque</a>
+          <span> & </span>
+          <a href={texturinaLicense} target="_blank" rel="noopener noreferrer">Texturina</a>
+        </Typography.p>
       </footer>
     </>
   );

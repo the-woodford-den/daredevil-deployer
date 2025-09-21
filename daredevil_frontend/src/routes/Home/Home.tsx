@@ -1,3 +1,4 @@
+import { useState, type ReactNode } from 'react';
 import './Home.scss';
 import reactUrl from "../../assets/react.svg"
 import rubyUrl from "../../assets/ruby.svg"
@@ -6,6 +7,7 @@ import designUrl from "../../assets/design.svg";
 
 import { Button } from "@progress/kendo-react-buttons";
 import {
+  Breadcrumb,
   Card,
   CardActions,
   CardBody,
@@ -14,26 +16,60 @@ import {
   GridLayout,
   GridLayoutItem
 } from "@progress/kendo-react-layout";
+import { connectorIcon } from '@progress/kendo-svg-icons';
+import { SvgIcon } from '@progress/kendo-react-common';
+
+interface DataModel {
+  id: string;
+  text?: string;
+  icon?: ReactNode;
+  iconClass?: string;
+}
+
+const items: DataModel[] = [
+  {
+    id: 'notion',
+    text: 'Notion Docs',
+    iconClass: 'k-i-home'
+  },
+  {
+    id: 'firecracker',
+    text: 'Firecracker'
+  },
+  {
+    id: 'fastapi',
+    text: 'Fast API'
+  }
+];
+
+const CustomConnectorDelimiter = () => {
+  return <SvgIcon icon={connectorIcon} />;
+};
 
 export default function Home() {
+  const [data] = useState<DataModel[]>(items);
   return (
     <>
       <GridLayout
         align={{ horizontal: 'center', vertical: 'middle' }}
         cols={[{ width: '33.33%' }, { width: '33.34%' }, { width: '33.33%' }]}
+        gap={{ rows: 5, cols: 5 }}
       >
         <GridLayoutItem colSpan={2}>
           <section className="section-container">
             <img src={rubyUrl} alt="React Logo" className="ruby-logo" />
             <div className="k-d-flex k-flex-col k-my-12">
-              <h1 className="welcome-title">Welcome to Daredevil Deployer</h1>
-              <h3 className="welcome-subtitle">Deploying Apps</h3>
+              <h3 className="welcome-title">Daredevil Deployer</h3>
+              <h4 className="welcome-subtitle">Deploying Apps</h4>
             </div>
           </section>
         </GridLayoutItem>
-        <GridLayoutItem>
+        <GridLayoutItem className="home-welcome-buttons">
+          <div className="k-mt-9">
+            <Breadcrumb data={data} breadcrumbDelimiter={CustomConnectorDelimiter} />
+          </div>
           <div className="k-mt-3">
-            <Button themeColor="secondary" fillMode="solid">
+            <Button className="k-mr-10" themeColor="secondary" fillMode="solid">
               <a href="https://www.notion.com/" target="_blank">Notion Docs</a>
             </Button>
             <Button themeColor="secondary" fillMode="solid">
@@ -48,6 +84,8 @@ export default function Home() {
               <div className="k-ml-2"><code>using the github api</code></div>
             </div>
           </section>
+        </GridLayoutItem>
+        <GridLayoutItem colSpan={3}>
         </GridLayoutItem>
       </GridLayout>
       <GridLayout
