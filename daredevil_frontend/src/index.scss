@@ -9,32 +9,37 @@
     border: #3FAE6A));
 
 :root {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  background-color: k-color(app-surface);
+  color: k-color(on-app-surface);
   font-family: "Bricolage Grotesque", sans-serif, "Texturina", serif;
-  line-height: 1.5;
-  font-weight: 400;
   font-optical-sizing: auto;
-  font-weight: 400;
   font-style: normal;
-
+  font-synthesis: none;
   font-variation-settings:
     "wdth" 100;
-  color: k-color(on-app-surface);
-  background-color: k-color(app-surface);
-
-
-  font-synthesis: none;
+  font-weight: 400;
+  font-weight: 400;
+  line-height: 1.5;
   text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-html,
-body {
+html {
+  height: 100%;
   margin: 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  padding: 0;
 }
 
 body {
+  height: 100%;
+  justify-content: center;
+  margin: auto;
   min-width: 20rem;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 a:-webkit-any-link {
@@ -45,28 +50,23 @@ a:-webkit-any-link {
 .b-g-font {
   font-family: "Bricolage Grotesque", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 400;
   font-style: normal;
   font-variation-settings:
     "wdth" 100;
+  font-weight: 400;
 }
-
 
 .t-font {
   font-family: "Texturina", serif;
   font-optical-sizing: auto;
-  font-weight: 400;
   font-style: normal;
+  font-weight: 400;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
-  }
-
-  .section-container.get-started {
-    background-color: #FAFAFA;
   }
 }
 

@@ -1,10 +1,24 @@
 @use "@progress/kendo-theme-default/scss/all.scss" as *;
 
+.root-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
+}
+
 footer {
   bottom: 0;
+  margin-top: 2rem;
   padding: k-spacing(4) k-spacing(2);
   width: 100%;
-  border: .0625rem solid;
+  border-top: .625rem solid;
   border-color: k-color(border);
   font-size: .875rem;
+}
+
+main {
+  overflow: scroll !important;
+  flex: 1;
 }

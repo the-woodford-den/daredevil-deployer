@@ -12,7 +12,7 @@ import './Root.scss';
 
 function Root() {
   return (
-    <>
+    <div className="root-container">
       <AppBar themeColor="primary" position="top">
         <AppBarSection className="k-ml-8">Daredevil 🩸 Deployer</AppBarSection>
         <AppBarSpacer />
@@ -25,7 +25,9 @@ function Root() {
           </Link>
         </AppBarSection>
       </AppBar>
-      <Outlet />
+      <main>
+        <Outlet />
+      </main>
       <footer>
         <Typography.p textAlign={'center'}>
           Operational ~ 2025 Woodford's Den ~ <span>
@@ -35,7 +37,7 @@ function Root() {
           <a href={texturinaLicense} target="_blank" rel="noopener noreferrer">Texturina</a>
         </Typography.p>
       </footer>
-    </>
+    </div>
   );
 }
 
