@@ -28,8 +28,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html,
 body {
   margin: 0;
+}
+
+body {
   min-width: 20rem;
 }
 

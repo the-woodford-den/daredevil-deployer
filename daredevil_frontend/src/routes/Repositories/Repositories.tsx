@@ -4,15 +4,16 @@ import {
   Grid,
   GridToolbar
 } from "@progress/kendo-react-grid";
+import { type Repository } from './Repositories.ts';
 import { Button } from "@progress/kendo-react-buttons";
+import data from "../../assets/data.json";
 
 
+const repos: Repository[] = data.map((x) => {
+  return x as Repository;
+})
 function Repositories() {
-  const [data] = useState([
-    { Column1: 'A1', Column2: 'A2' },
-    { Column1: 'B1', Column2: 'B2' },
-    { Column1: 'C1', Column2: 'C2' }
-  ]);
+  const [data] = useState(repos);
 
   const customClick = () => {
     alert('Custom handler in custom toolbar');
