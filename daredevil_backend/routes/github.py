@@ -14,7 +14,7 @@ api = APIRouter(prefix="/github")
 
 # OAuth Device Authorization
 @api.post("/create-token")
-async def create_token(*, client_id: str) -> str:
+async def create_token(*, client_id: str) -> dict:
     endpoint = "https://github.com/login/device/code"
     headers = {
         "Accept": "application/vnd.github+json",
@@ -61,7 +61,8 @@ async def create_token(*, client_id: str) -> str:
 
                     response_data = response.json()
                     if "access_token" in response_data:
-                        user_access_token = response_data["access_token"]
+                        user_access_token = {}
+                        user_access_token["user_token"] = response_data["access_token"]
                         logfire.info(
                             f"Github user access token obtained: {user_access_token}"
                         )
