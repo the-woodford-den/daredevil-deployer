@@ -1,24 +1,24 @@
 // Use the entire theme
-@use "@progress/kendo-theme-default/scss/all.scss" as * with ($kendo-colors: (app-surface: #3d3d3d,
-    on-app-surface: #3FAE6A,
+@use '@progress/kendo-theme-default/scss/all.scss' as * with ($kendo-colors: (app-surface: #3d3d3d,
+    on-app-surface: #3fae6a,
     primary: #3d3d3d,
-    primary-on-surface: #3FAE6A,
-    secondary: #3FAE6A,
+    primary-on-surface: #3fae6a,
+    secondary: #3fae6a,
     secondary-on-surface: #3d3d3d,
     surface-alt: #213547,
-    border: #3FAE6A));
+    border: #3fae6a,
+  ));
 
 :root {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   background-color: k-color(app-surface);
   color: k-color(on-app-surface);
-  font-family: "Bricolage Grotesque", sans-serif, "Texturina", serif;
+  font-family: 'Bricolage Grotesque', sans-serif, 'Texturina', serif;
   font-optical-sizing: auto;
   font-style: normal;
   font-synthesis: none;
-  font-variation-settings:
-    "wdth" 100;
+  font-variation-settings: 'wdth' 100;
   font-weight: 400;
   font-weight: 400;
   line-height: 1.5;
@@ -48,16 +48,15 @@ a:-webkit-any-link {
 }
 
 .b-g-font {
-  font-family: "Bricolage Grotesque", sans-serif;
+  font-family: 'Bricolage Grotesque', sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
+  font-variation-settings: 'wdth' 100;
   font-weight: 400;
 }
 
 .t-font {
-  font-family: "Texturina", serif;
+  font-family: 'Texturina', serif;
   font-optical-sizing: auto;
   font-style: normal;
   font-weight: 400;
@@ -72,7 +71,7 @@ a:-webkit-any-link {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    color: #3FAE6A;
+    color: #3fae6a;
     background-color: #213547;
 
     // --kendo-color-app-surface: #141414;

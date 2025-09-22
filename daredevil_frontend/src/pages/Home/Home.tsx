@@ -1,11 +1,11 @@
 import { useState, type ReactNode } from 'react';
-import './Home.scss';
-import reactUrl from "../../assets/react.svg"
-import rubyUrl from "../../assets/ruby.svg"
-import docsUrl from "../../assets/documentation.svg";
-import designUrl from "../../assets/design.svg";
+import './style.scss';
+import reactUrl from '~/react.svg';
+import rubyUrl from '~/ruby.svg';
+import docsUrl from '~/documentation.svg';
+import designUrl from '~/design.svg';
 
-import { Button } from "@progress/kendo-react-buttons";
+import { Button } from '@progress/kendo-react-buttons';
 import {
   Breadcrumb,
   Card,
@@ -14,8 +14,8 @@ import {
   CardHeader,
   CardTitle,
   GridLayout,
-  GridLayoutItem
-} from "@progress/kendo-react-layout";
+  GridLayoutItem,
+} from '@progress/kendo-react-layout';
 import { connectorIcon } from '@progress/kendo-svg-icons';
 import { SvgIcon } from '@progress/kendo-react-common';
 
@@ -30,23 +30,23 @@ const items: DataModel[] = [
   {
     id: 'notion',
     text: 'Notion Docs',
-    iconClass: 'k-i-home'
+    iconClass: 'k-i-home',
   },
   {
     id: 'firecracker',
-    text: 'Firecracker'
+    text: 'Firecracker',
   },
   {
     id: 'fastapi',
-    text: 'Fast API'
-  }
+    text: 'Fast API',
+  },
 ];
 
 const CustomConnectorDelimiter = () => {
   return <SvgIcon icon={connectorIcon} />;
 };
 
-export default function Home() {
+export function Home() {
   const [data] = useState<DataModel[]>(items);
   return (
     <>
@@ -70,10 +70,14 @@ export default function Home() {
           </div>
           <div className="k-mt-3">
             <Button className="k-mr-10" themeColor="secondary" fillMode="solid">
-              <a href="https://www.notion.com/" target="_blank">Notion Docs</a>
+              <a href="https://www.notion.com/" target="_blank">
+                Notion Docs
+              </a>
             </Button>
             <Button themeColor="secondary" fillMode="solid">
-              <a href="https://firecracker-microvm.github.io/" target="_blank">Firecracker</a>
+              <a href="https://firecracker-microvm.github.io/" target="_blank">
+                Firecracker
+              </a>
             </Button>
           </div>
         </GridLayoutItem>
@@ -81,16 +85,24 @@ export default function Home() {
           <section className="section-container get-started">
             <div className="center-section">
               <h5 className="section-title">Welcome Welcome Welcome</h5>
-              <div className="k-ml-2"><code>using the github api</code></div>
+              <div className="k-ml-2">
+                <code>using the github api</code>
+              </div>
             </div>
           </section>
         </GridLayoutItem>
-        <GridLayoutItem colSpan={3}>
-        </GridLayoutItem>
+        <GridLayoutItem colSpan={3}></GridLayoutItem>
       </GridLayout>
       <GridLayout
         align={{ horizontal: 'center', vertical: 'middle' }}
-        cols={[{ width: '16.67%' }, { width: '16.67%' }, { width: '16.66%' }, { width: '16.66%' }, { width: '16.67%' }, { width: '16.67%' }]}
+        cols={[
+          { width: '16.67%' },
+          { width: '16.67%' },
+          { width: '16.66%' },
+          { width: '16.66%' },
+          { width: '16.67%' },
+          { width: '16.67%' },
+        ]}
       >
         <GridLayoutItem colSpan={6}>
           <h5 className="section-title">Highlights</h5>
@@ -103,13 +115,13 @@ export default function Home() {
               <CardTitle>Documentation</CardTitle>
             </CardHeader>
             <CardBody>
-              <p>
-                In development ...
-              </p>
+              <p>In development ...</p>
             </CardBody>
             <CardActions>
               <Button themeColor="primary" fillMode="flat">
-                <a href="https://textual.textualize.io/" target="_blank">Textual</a>
+                <a href="https://textual.textualize.io/" target="_blank">
+                  Textual
+                </a>
               </Button>
             </CardActions>
           </Card>
@@ -121,13 +133,13 @@ export default function Home() {
               <CardTitle>Using React.js</CardTitle>
             </CardHeader>
             <CardBody>
-              <p>
-                Using nvim editor ...
-              </p>
+              <p>Using nvim editor ...</p>
             </CardBody>
             <CardActions>
               <Button themeColor="primary" fillMode="flat">
-                <a href="https://docs.anthropic.com/en/home" target="_blank">Claude Code</a>
+                <a href="https://docs.anthropic.com/en/home" target="_blank">
+                  Claude Code
+                </a>
               </Button>
             </CardActions>
           </Card>
@@ -140,12 +152,15 @@ export default function Home() {
             </CardHeader>
             <CardBody>
               <p>
-                Quickly apply harmonious and consistent styles to the components in your app with the Progress Design System.
+                Quickly apply harmonious and consistent styles to the components in your app with
+                the Progress Design System.
               </p>
             </CardBody>
             <CardActions>
               <Button themeColor="primary" fillMode="flat">
-                <a href="https://www.telerik.com/design-system/docs/" target="_blank">Design Style</a>
+                <a href="https://www.telerik.com/design-system/docs/" target="_blank">
+                  Design Style
+                </a>
               </Button>
             </CardActions>
           </Card>
@@ -166,12 +181,14 @@ export default function Home() {
             </CardBody>
             <CardActions>
               <Button themeColor="primary" fillMode="flat">
-                <a href="https://podman.io/" target="_blank">Podman Container Tools</a>
+                <a href="https://podman.io/" target="_blank">
+                  Podman Container Tools
+                </a>
               </Button>
             </CardActions>
           </Card>
         </GridLayoutItem>
       </GridLayout>
     </>
-  )
+  );
 }
