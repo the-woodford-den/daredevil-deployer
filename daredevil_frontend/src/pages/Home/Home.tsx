@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { type FC, useState, type ReactNode } from 'react';
 import './style.scss';
 import reactUrl from '~/react.svg';
 import rubyUrl from '~/ruby.svg';
@@ -42,7 +42,7 @@ const items: DataModel[] = [
   },
 ];
 
-const CustomConnectorDelimiter = () => {
+const CustomConnectorDelimiter: FC = () => {
   return <SvgIcon icon={connectorIcon} />;
 };
 
@@ -168,7 +168,7 @@ export function Home() {
         <GridLayoutItem>
           <Card>
             <CardHeader>
-              <img src={rubyUrl} alt="License Logo" width={64} height={64} />
+              <img src={rubyUrl} alt="ruby" width={64} height={64} />
               <CardTitle>Ruby on Rails</CardTitle>
             </CardHeader>
             <CardBody>
