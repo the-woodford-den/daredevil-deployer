@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Box, For, Stack, Text } from '@chakra-ui/react';
 import { type Repository } from './types';
 import data from '~/data.json';
-import './style.scss';
+import './style.css';
 
 const repos: Repository[] = (data as Repository[]).map((x: Repository) => {
   return x;

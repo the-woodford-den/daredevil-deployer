@@ -6,7 +6,7 @@ import { Root } from '@pages/Root';
 import { Repositories } from '@pages/Repositories';
 import { Home } from '@pages/Home';
 import { NotHere } from '@pages/NotHere';
-import './index.scss';
+import './index.css';
 
 const router = createBrowserRouter([
   {
