@@ -5,19 +5,6 @@ import rubyUrl from '~/ruby.svg';
 import docsUrl from '~/documentation.svg';
 import designUrl from '~/design.svg';
 
-import { Button } from '@progress/kendo-react-buttons';
-import {
-  Breadcrumb,
-  Card,
-  CardActions,
-  CardBody,
-  CardHeader,
-  CardTitle,
-  GridLayout,
-  GridLayoutItem,
-} from '@progress/kendo-react-layout';
-import { connectorIcon } from '@progress/kendo-svg-icons';
-import { SvgIcon } from '@progress/kendo-react-common';
 
 interface DataModel {
   id: string;

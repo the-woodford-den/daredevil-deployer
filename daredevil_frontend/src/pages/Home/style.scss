@@ -1,5 +1,3 @@
-@use "@progress/kendo-theme-default/scss/all.scss" as *;
-
 .react-logo {
   width: 55.5625rem;
   position: absolute;
@@ -21,7 +19,7 @@
 }
 
 .center-section .section-title {
-  margin: k-spacing(2);
+  margin: 2rem;
 }
 
 .section-container.get-started {
@@ -59,7 +57,7 @@
 
 .cards .section-title {
   text-align: left;
-  margin-left: k-spacing(6);
+  margin-left: 6rem;
 }
 
 .cards-container {
@@ -71,10 +69,10 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: k-spacing(0);
+  gap: 0;
   align-items: center;
-  margin: k-spacing(6);
-  padding: k-spacing(6);
+  margin: 6rem;
+  padding: 6rem;
   height: 19.375rem;
   width: 15rem;
   box-shadow: 0rem .125rem .1875rem 0rem rgba(0, 0, 0, 0.04), 0rem .25rem 1rem 0rem rgba(0, 0, 0, 0.12);
@@ -89,19 +87,19 @@
 }
 
 .card-list {
-  padding: k-spacing(0);
+  padding: 0;
   margin: 0;
   list-style-type: disc;
   text-align: left;
 }
 
 .section-container.get-started {
-  background: k-color(surface-alt);
+  background: $gray;
 }
 
 .k-card {
-  color: k-color(on-app-surface);
-  background: k-color(surface-alt);
+  color: $green;
+  background: $gray;
 }
 
 @media (max-width: 56.25rem) {
