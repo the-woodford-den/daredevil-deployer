@@ -1,9 +1,26 @@
 import { type FC, useState, type ReactNode } from 'react';
-import './style.scss';
+import './style.css';
 import reactUrl from '~/react.svg';
 import rubyUrl from '~/ruby.svg';
 import docsUrl from '~/documentation.svg';
 import designUrl from '~/design.svg';
+import { FaBeer, FaCity, FaDev, FaLemon } from 'react-icons/fa';
+import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
+import {
+  For,
+  Grid,
+  GridItem,
+  IconButton,
+  HStack,
+  Text,
+  VStack,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardBody,
+  Button,
+} from '@chakra-ui/react';
+
 
 
 interface DataModel {
@@ -17,58 +34,61 @@ const items: DataModel[] = [
   {
     id: 'notion',
     text: 'Notion Docs',
-    iconClass: 'k-i-home',
+    iconClass: 'metroid',
   },
   {
     id: 'firecracker',
     text: 'Firecracker',
+    iconClass: 'capybara',
   },
   {
     id: 'fastapi',
     text: 'Fast API',
+    iconClass: 'ram',
   },
 ];
 
-const CustomConnectorDelimiter: FC = () => {
-  return <SvgIcon icon={connectorIcon} />;
+const icons = {
+  capybara: <GiCapybara />,
+  metroid: <GiMetroid />,
+  ram: <GiRam />,
 };
+
 
 export function Home() {
   const [data] = useState<DataModel[]>(items);
   return (
     <>
-      <GridLayout
-        align={{ horizontal: 'center', vertical: 'middle' }}
-        cols={[{ width: '33.33%' }, { width: '33.34%' }, { width: '33.33%' }]}
-        gap={{ rows: 5, cols: 5 }}
+      <Grid
+        templateColumns="repeat(3, 1fr)"
+        gap="6"
       >
-        <GridLayoutItem colSpan={2}>
+        <GridItem colSpan={2}>
           <section className="section-container">
             <img src={rubyUrl} alt="React Logo" className="ruby-logo" />
-            <div className="k-d-flex k-flex-col k-my-12">
-              <h3 className="welcome-title">Daredevil Deployer</h3>
-              <h4 className="welcome-subtitle">Deploying Apps</h4>
-            </div>
+            <h3 className="welcome-title">Daredevil Deployer</h3>
+            <h4 className="welcome-subtitle">Deploying Apps</h4>
           </section>
-        </GridLayoutItem>
-        <GridLayoutItem className="home-welcome-buttons">
-          <div className="k-mt-9">
-            <Breadcrumb data={data} breadcrumbDelimiter={CustomConnectorDelimiter} />
-          </div>
-          <div className="k-mt-3">
-            <Button className="k-mr-10" themeColor="secondary" fillMode="solid">
-              <a href="https://www.notion.com/" target="_blank">
-                Notion Docs
-              </a>
-            </Button>
-            <Button themeColor="secondary" fillMode="solid">
-              <a href="https://firecracker-microvm.github.io/" target="_blank">
-                Firecracker
-              </a>
-            </Button>
-          </div>
-        </GridLayoutItem>
-        <GridLayoutItem colSpan={3}>
+        </GridItem>
+        <GridItem className="home-welcome-buttons">
+          <HStack gap="6" wrap="wrap">
+            <For each={data}>
+              {(item) => (
+                <VStack key={item.id}>
+                  <IconButton
+                    aria-label={item.id}
+                    variant="outline"
+                    size="lg"
+                  >
+                    {item.iconClass && icons[item.iconClass as keyof typeof icons]}
+                  </IconButton>
+                  <Text textStyle="sm">{item.text}</Text>
+                </VStack>
+              )}
+            </For>
+          </HStack>
+        </GridItem>
+        <GridItem colSpan={3}>
           <section className="section-container get-started">
             <div className="center-section">
               <h5 className="section-title">Welcome Welcome Welcome</h5>
@@ -77,105 +97,100 @@ export function Home() {
               </div>
             </div>
           </section>
-        </GridLayoutItem>
-        <GridLayoutItem colSpan={3}></GridLayoutItem>
-      </GridLayout>
-      <GridLayout
-        align={{ horizontal: 'center', vertical: 'middle' }}
-        cols={[
-          { width: '16.67%' },
-          { width: '16.67%' },
-          { width: '16.66%' },
-          { width: '16.66%' },
-          { width: '16.67%' },
-          { width: '16.67%' },
-        ]}
-      >
-        <GridLayoutItem colSpan={6}>
+        </GridItem>
+        <GridItem colSpan={3}></GridItem>
+      </Grid>
+      <Grid templateColumns="repeat(6, 1fr)">
+        <GridItem colSpan={6}>
           <h5 className="section-title">Highlights</h5>
-        </GridLayoutItem>
-        <GridLayoutItem></GridLayoutItem>
-        <GridLayoutItem>
-          <Card>
+        </GridItem>
+        <GridItem></GridLayoutItem>
+        <GridItem>
+          <Card.Root>
             <CardHeader>
               <img src={docsUrl} alt="Documentation Logo" width={64} height={64} />
               <CardTitle>Documentation</CardTitle>
             </CardHeader>
             <CardBody>
-              <p>In development ...</p>
+              <VStack key="fire">
+                <IconButton
+                  aria-label={item.id}
+                  variant="outline"
+                  size="lg"
+                >
+                  <FaBeer />
+                </IconButton>
+                <Text textStyle="sm">In development ...</Text>
+              </VStack>
             </CardBody>
-            <CardActions>
-              <Button themeColor="primary" fillMode="flat">
-                <a href="https://textual.textualize.io/" target="_blank">
-                  Textual
-                </a>
-              </Button>
-            </CardActions>
-          </Card>
-        </GridLayoutItem>
-        <GridLayoutItem>
-          <Card>
+          </Card.Root>
+        </GridItem>
+        <GridItem>
+          <Card.Root>
             <CardHeader>
               <img src={reactUrl} alt="Virtual Classroom Logo" width={64} height={64} />
               <CardTitle>Using React.js</CardTitle>
             </CardHeader>
             <CardBody>
-              <p>Using nvim editor ...</p>
+              <VStack key="nvim">
+                <IconButton
+                  aria-label="nvimedit"
+                  variant="outline"
+                  size="lg"
+                >
+                  <FaCity />
+                </IconButton>
+                <Text textStyle="sm">Using nvim editor ... Claude Code</Text>
+              </VStack>
             </CardBody>
-            <CardActions>
-              <Button themeColor="primary" fillMode="flat">
-                <a href="https://docs.anthropic.com/en/home" target="_blank">
-                  Claude Code
-                </a>
-              </Button>
-            </CardActions>
-          </Card>
-        </GridLayoutItem>
-        <GridLayoutItem>
-          <Card>
+          </Card.Root>
+        </GridItem>
+        <GridItem>
+          <Card.Root>
             <CardHeader>
               <img src={designUrl} alt="Design System Logo" width={64} height={64} />
               <CardTitle>Design System</CardTitle>
             </CardHeader>
             <CardBody>
-              <p>
-                Quickly apply harmonious and consistent styles to the components in your app with
-                the Progress Design System.
-              </p>
+              <VStack key="components">
+                <IconButton
+                  aria-label="harmonious"
+                  variant="outline"
+                  size="lg"
+                >
+                  <FaDev />
+                </IconButton>
+                <Text textStyle="sm">
+                  Quickly apply harmonious and consistent styles to the components in your app with
+                  the Progress Design System.
+                </Text>
+              </VStack>
             </CardBody>
-            <CardActions>
-              <Button themeColor="primary" fillMode="flat">
-                <a href="https://www.telerik.com/design-system/docs/" target="_blank">
-                  Design Style
-                </a>
-              </Button>
-            </CardActions>
-          </Card>
-        </GridLayoutItem>
-        <GridLayoutItem>
-          <Card>
+          </Card.Root>
+        </GridItem>
+        <GridItem>
+          <Card.Root>
             <CardHeader>
               <img src={rubyUrl} alt="ruby" width={64} height={64} />
               <CardTitle>Ruby on Rails</CardTitle>
             </CardHeader>
             <CardBody>
-              <ul className="card-list">
-                <li>Ruby</li>
-                <li>Python</li>
-                <li>Javascript</li>
-                <li>Bash</li>
-              </ul>
+              <VStack key="languages">
+                <IconButton
+                  aria-label="langs"
+                  variant="outline"
+                  size="lg"
+                >
+                  <FaLemon />
+                </IconButton>
+                <Text textStyle="sm">
+                  Ruby, Python, Javascript, Bash
+                </Text>
+              </VStack>
             </CardBody>
-            <CardActions>
-              <Button themeColor="primary" fillMode="flat">
-                <a href="https://podman.io/" target="_blank">
-                  Podman Container Tools
-                </a>
-              </Button>
-            </CardActions>
-          </Card>
-        </GridLayoutItem>
-      </GridLayout>
+          </Card.Root>
+        </GridItem>
+      </Grid>
     </>
   );
 }

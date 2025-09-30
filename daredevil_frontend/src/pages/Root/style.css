@@ -12,7 +12,7 @@ footer {
   padding: 4rem 2rem;
   width: 100%;
   border-top: .625rem solid;
-  border-color: $green;
+  border-color: var(--green);
   font-size: .875rem;
 }
 
