@@ -1,4 +1,4 @@
-import { type FC, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import './style.css';
 import reactUrl from '~/react.svg';
 import rubyUrl from '~/ruby.svg';
@@ -15,10 +15,7 @@ import {
   Text,
   VStack,
   Card,
-  CardHeader,
-  CardTitle,
-  CardBody,
-  Button,
+  Avatar,
 } from '@chakra-ui/react';
 
 
@@ -65,7 +62,7 @@ export function Home() {
       >
         <GridItem colSpan={2}>
           <section className="section-container">
-            <img src={rubyUrl} alt="React Logo" className="ruby-logo" />
+            <img src={rubyUrl} alt="Ruby Logo" className="ruby-logo" />
             <h3 className="welcome-title">Daredevil Deployer</h3>
             <h4 className="welcome-subtitle">Deploying Apps</h4>
           </section>
@@ -104,17 +101,22 @@ export function Home() {
         <GridItem colSpan={6}>
           <h5 className="section-title">Highlights</h5>
         </GridItem>
-        <GridItem></GridLayoutItem>
+        <GridItem></GridItem>
         <GridItem>
           <Card.Root>
-            <CardHeader>
-              <img src={docsUrl} alt="Documentation Logo" width={64} height={64} />
-              <CardTitle>Documentation</CardTitle>
-            </CardHeader>
-            <CardBody>
+            <Card.Title>
+              <Avatar.Root size="lg">
+                <Avatar.Image src={docsUrl} />
+                <Avatar.Fallback name="Doc Logo" />
+              </Avatar.Root>
+              <Text fontWeight="semibold" textStyle="lg">
+                Documentation
+              </Text>
+            </Card.Title>
+            <Card.Body>
               <VStack key="fire">
                 <IconButton
-                  aria-label={item.id}
+                  aria-label="devfire"
                   variant="outline"
                   size="lg"
                 >
@@ -122,16 +124,21 @@ export function Home() {
                 </IconButton>
                 <Text textStyle="sm">In development ...</Text>
               </VStack>
-            </CardBody>
+            </Card.Body>
           </Card.Root>
         </GridItem>
         <GridItem>
           <Card.Root>
-            <CardHeader>
-              <img src={reactUrl} alt="Virtual Classroom Logo" width={64} height={64} />
-              <CardTitle>Using React.js</CardTitle>
-            </CardHeader>
-            <CardBody>
+            <Card.Title>
+              <Avatar.Root size="lg">
+                <Avatar.Image src={reactUrl} />
+                <Avatar.Fallback name="React Logo" />
+              </Avatar.Root>
+              <Text fontWeight="semibold" textStyle="lg">
+                Using React.js
+              </Text>
+            </Card.Title>
+            <Card.Body>
               <VStack key="nvim">
                 <IconButton
                   aria-label="nvimedit"
@@ -142,16 +149,21 @@ export function Home() {
                 </IconButton>
                 <Text textStyle="sm">Using nvim editor ... Claude Code</Text>
               </VStack>
-            </CardBody>
+            </Card.Body>
           </Card.Root>
         </GridItem>
         <GridItem>
           <Card.Root>
-            <CardHeader>
-              <img src={designUrl} alt="Design System Logo" width={64} height={64} />
-              <CardTitle>Design System</CardTitle>
-            </CardHeader>
-            <CardBody>
+            <Card.Title>
+              <Avatar.Root size="lg">
+                <Avatar.Image src={designUrl} />
+                <Avatar.Fallback name="Design System Logo" />
+              </Avatar.Root>
+              <Text fontWeight="semibold" textStyle="lg">
+                Design System
+              </Text>
+            </Card.Title>
+            <Card.Body>
               <VStack key="components">
                 <IconButton
                   aria-label="harmonious"
@@ -165,16 +177,21 @@ export function Home() {
                   the Progress Design System.
                 </Text>
               </VStack>
-            </CardBody>
+            </Card.Body>
           </Card.Root>
         </GridItem>
         <GridItem>
           <Card.Root>
-            <CardHeader>
-              <img src={rubyUrl} alt="ruby" width={64} height={64} />
-              <CardTitle>Ruby on Rails</CardTitle>
-            </CardHeader>
-            <CardBody>
+            <Card.Title>
+              <Avatar.Root size="lg">
+                <Avatar.Image src={rubyUrl} />
+                <Avatar.Fallback name="Ruby" />
+              </Avatar.Root>
+              <Text fontWeight="semibold" textStyle="lg">
+                Ruby on Rails
+              </Text>
+            </Card.Title>
+            <Card.Body>
               <VStack key="languages">
                 <IconButton
                   aria-label="langs"
@@ -187,7 +204,7 @@ export function Home() {
                   Ruby, Python, Javascript, Bash
                 </Text>
               </VStack>
-            </CardBody>
+            </Card.Body>
           </Card.Root>
         </GridItem>
       </Grid>

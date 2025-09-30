@@ -1,35 +1,31 @@
-import { Link, Outlet } from 'react-router-dom';
-import { Button } from '@progress/kendo-react-buttons';
-import { AppBar, AppBarSection, AppBarSpacer } from '@progress/kendo-react-layout';
-import { Typography } from '@progress/kendo-react-common';
+import { Outlet } from 'react-router-dom';
 import bricolageLicense from '~/Bricolage/Grotesque/2025-9-15/license.md?url';
 import texturinaLicense from '~/Texturina/2025-9-15/license.md?url';
-import './style.scss';
+import { Breadcrumb, Container, Heading } from '@chakra-ui/react';
+import './style.css';
 
 export function Root() {
   return (
     <div className="root-container">
-      <AppBar themeColor="primary" position="top">
-        <AppBarSection className="k-ml-8">Daredevil 🩸 Deployer</AppBarSection>
-        <AppBarSpacer />
-        <AppBarSection className="k-mr-8">
-          <Link to="/">
-            <Button themeColor="primary" fillMode="flat" className="k-mr-1">
-              Home
-            </Button>
-          </Link>
-          <Link to="/repositories">
-            <Button themeColor="primary" fillMode="flat" className="k-mr-1">
-              My Repos
-            </Button>
-          </Link>
-        </AppBarSection>
-      </AppBar>
+      <Container centerContent={true} className="header-container">
+        <Heading size="sm">Daredevil 🩸 Deployer</Heading>
+        <Breadcrumb.Root>
+          <Breadcrumb.List>
+            <Breadcrumb.Item>
+              <Breadcrumb.Link href="/" />
+            </Breadcrumb.Item>
+            <Breadcrumb.Separator />
+            <Breadcrumb.Item>
+              <Breadcrumb.Link href="/repositories" />
+            </Breadcrumb.Item>
+          </Breadcrumb.List>
+        </Breadcrumb.Root>
+      </Container>
       <main>
         <Outlet />
       </main>
-      <footer>
-        <Typography.p textAlign={'center'}>
+      <footer className="footer-container">
+        <Heading size="sm">
           Operational ~ 2025 Woodford's Den ~ <span>Licenses: </span>
           <a href={bricolageLicense} target="_blank" rel="noopener noreferrer">
             Bricolage Grotesque
@@ -38,7 +34,7 @@ export function Root() {
           <a href={texturinaLicense} target="_blank" rel="noopener noreferrer">
             Texturina
           </a>
-        </Typography.p>
+        </Heading>
       </footer>
     </div>
   );
