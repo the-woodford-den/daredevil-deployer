@@ -1,8 +1,7 @@
 import { useState } from 'react';
 
-import { Grid, GridToolbar } from '@progress/kendo-react-grid';
+import { Box, For, Stack, Text } from '@chakra-ui/react';
 import { type Repository } from './types';
-import { Button } from '@progress/kendo-react-buttons';
 import data from '~/data.json';
 import './style.scss';
 
@@ -12,17 +11,23 @@ const repos: Repository[] = (data as Repository[]).map((x: Repository) => {
 export function Repositories() {
   const [data] = useState(repos);
 
-  const customClick = () => {
-    alert('Custom handler in custom toolbar');
-  };
-
   return (
-    <Grid data={data}>
-      <GridToolbar>
-        <Button title="Click" onClick={customClick}>
-          Click
-        </Button>
-      </GridToolbar>
-    </Grid>
+    <Stack>
+      <For each={data}>
+        {(item, index) => (
+          <Box borderWidth=".1rem" key={index} p="4">
+            <Text fontWeight="semibold">{item.fullName}</Text>
+            <Text color="fg.muted">
+              private: {item.private}, language: {item.language}, branch: {item.defaultBranch}
+            </Text>
+            <Text color="fg.muted">
+              visibility: {item.visibility}, updated: {item.pushedAt}
+            </Text>
+            <Text color="gold">{item.description}</Text>
+          </Box>
+        )}
+      </For>
+    </Stack>
   );
 }
+
