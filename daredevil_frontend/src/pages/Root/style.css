@@ -7,6 +7,12 @@
   width: 100%;
 }
 
+.header-container {
+  height: 5rem;
+  border-bottom: seagreen solid .25rem;
+  margin-bottom: 1rem;
+}
+
 footer {
   bottom: 0;
   margin-top: 2rem;

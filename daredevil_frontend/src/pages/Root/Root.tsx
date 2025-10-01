@@ -2,8 +2,7 @@ import { Link } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
 import bricolageLicense from '~/Bricolage/Grotesque/2025-9-15/license.md?url';
 import texturinaLicense from '~/Texturina/2025-9-15/license.md?url';
-import { Box, Text, Breadcrumb, Container, Flex, Heading, Spacer } from '@chakra-ui/react';
-import { LuZap } from 'react-icons/lu';
+import { Text, Breadcrumb, Container, Flex, Heading, Spacer } from '@chakra-ui/react';
 import './style.css';
 
 export function Root() {
@@ -11,25 +10,23 @@ export function Root() {
     <Container className="root-container">
       <Flex direction="column">
         <Flex align="center" className="header-container">
-          <Box className="b-g-font">Daredevil 🩸 Deployer</Box>
+          <Text className="b-g-font">Daredevil 🩸 Deployer</Text>
           <Spacer />
-          <Box>
-            <Breadcrumb.Root marginEnd="auto">
-              <Breadcrumb.List>
-                <Breadcrumb.Item>
-                  <Breadcrumb.Link asChild>
-                    <Link to="/">Home</Link>
-                  </Breadcrumb.Link>
-                </Breadcrumb.Item>
-                <Breadcrumb.Separator />
-                <Breadcrumb.Item>
-                  <Breadcrumb.Link asChild>
-                    <Link to="/repositories">Repositories</Link>
-                  </Breadcrumb.Link>
-                </Breadcrumb.Item>
-              </Breadcrumb.List>
-            </Breadcrumb.Root>
-          </Box>
+          <Breadcrumb.Root marginEnd="auto">
+            <Breadcrumb.List>
+              <Breadcrumb.Item>
+                <Breadcrumb.Link asChild>
+                  <Link to="/">home</Link>
+                </Breadcrumb.Link>
+              </Breadcrumb.Item>
+              <Breadcrumb.Separator />
+              <Breadcrumb.Item>
+                <Breadcrumb.Link asChild>
+                  <Link to="/repositories">Repositories</Link>
+                </Breadcrumb.Link>
+              </Breadcrumb.Item>
+            </Breadcrumb.List>
+          </Breadcrumb.Root>
         </Flex>
       </Flex>
       <main>
