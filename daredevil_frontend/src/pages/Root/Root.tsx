@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
 import bricolageLicense from '~/Bricolage/Grotesque/2025-9-15/license.md?url';
 import texturinaLicense from '~/Texturina/2025-9-15/license.md?url';
 import { Breadcrumb, Container, Heading } from '@chakra-ui/react';
+import { LuZap } from 'react-icons/lu';
 import './style.css';
 
 export function Root() {
@@ -12,11 +14,17 @@ export function Root() {
         <Breadcrumb.Root>
           <Breadcrumb.List>
             <Breadcrumb.Item>
-              <Breadcrumb.Link href="/" />
+              <Breadcrumb.Link asChild>
+                <Link to="/">Home</Link>
+              </Breadcrumb.Link>
             </Breadcrumb.Item>
-            <Breadcrumb.Separator />
+            <Breadcrumb.Separator>
+              <LuZap />
+            </Breadcrumb.Separator>
             <Breadcrumb.Item>
-              <Breadcrumb.Link href="/repositories" />
+              <Breadcrumb.Link asChild>
+                <Link to="/repositories">Repositories</Link>
+              </Breadcrumb.Link>
             </Breadcrumb.Item>
           </Breadcrumb.List>
         </Breadcrumb.Root>
