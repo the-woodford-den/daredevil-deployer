@@ -1,5 +1,4 @@
 import { useState, type ReactNode } from 'react';
-import './style.css';
 import reactUrl from '~/react.svg';
 import rubyUrl from '~/ruby.svg';
 import docsUrl from '~/documentation.svg';
@@ -7,17 +6,19 @@ import designUrl from '~/design.svg';
 import { FaBeer, FaCity, FaDev, FaLemon } from 'react-icons/fa';
 import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
 import {
+  Avatar,
+  Card,
+  Container,
   For,
   Grid,
   GridItem,
-  IconButton,
   HStack,
+  IconButton,
+  Image,
   Text,
   VStack,
-  Card,
-  Avatar,
 } from '@chakra-ui/react';
-
+import './style.css';
 
 
 interface DataModel {
@@ -61,11 +62,17 @@ export function Home() {
         gap="6"
       >
         <GridItem colSpan={2}>
-          <section className="section-container">
-            <img src={rubyUrl} alt="Ruby Logo" className="ruby-logo" />
-            <h3 className="welcome-title">Daredevil Deployer</h3>
-            <h4 className="welcome-subtitle">Deploying Apps</h4>
-          </section>
+          <Container className="section-container">
+            <Image
+              src={rubyUrl}
+              alt="Ruby Logo"
+              boxSize="9rem"
+              fit="contain"
+              className="ruby-logo"
+            />
+            <Text textStyle="7xl">Daredevil Deployer</Text>
+            <Text textStyle="3xl">Deploying Apps</Text>
+          </Container>
         </GridItem>
         <GridItem className="home-welcome-buttons">
           <HStack gap="6" wrap="wrap">
