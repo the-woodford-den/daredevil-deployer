@@ -1,3 +1,11 @@
+.home-title {
+  padding-top: 2.5rem;
+}
+
+.home-intro {
+  padding-top: 2.5rem;
+}
+
 @media (max-width: 56.25rem) {}
 
 @media (max-width: 30rem) {}

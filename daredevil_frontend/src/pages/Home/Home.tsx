@@ -7,7 +7,9 @@ import { FaBeer, FaCity, FaDev, FaLemon } from 'react-icons/fa';
 import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
 import {
   Avatar,
+  Box,
   Card,
+  Code,
   Container,
   Flex,
   For,
@@ -62,8 +64,8 @@ export function Home() {
         templateColumns="repeat(3, 1fr)"
         gap="6"
       >
-        <GridItem colSpan={2}>
-          <Flex direction="column">
+        <GridItem colSpan={2} className="home-title">
+          <Flex direction="column" fontWeight="600">
             <Flex align="center" gap="4" justify="center">
               <Image
                 src={rubyUrl}
@@ -79,7 +81,7 @@ export function Home() {
             </Flex>
           </Flex>
         </GridItem>
-        <GridItem>
+        <GridItem className="home-title">
           <Flex direction="column">
             <Flex align="flex-end" justify="center">
               <HStack gap="6" wrap="wrap">
@@ -101,15 +103,19 @@ export function Home() {
             </Flex>
           </Flex>
         </GridItem>
-        <GridItem colSpan={3}>
-          <section className="section-container get-started">
-            <div className="center-section">
-              <h5 className="section-title">Welcome Welcome Welcome</h5>
-              <div className="k-ml-2">
-                <code>using the github api</code>
-              </div>
-            </div>
-          </section>
+        <GridItem colSpan={3} className="home-intro">
+          <Flex direction="column">
+            <Box
+              p="4"
+              w="100%"
+              _hover={{ bg: "var(--chakra-colors-fg-muted)", color: "black" }}
+            >
+              <Flex align="center" justify="center" gap="16">
+                <Text textStyle="xl">Welcome Welcome Welcome</Text>
+                <Code>FastAPI, React.js, Github API</Code>
+              </Flex>
+            </Box>
+          </Flex>
         </GridItem>
         <GridItem colSpan={3}></GridItem>
       </Grid>
