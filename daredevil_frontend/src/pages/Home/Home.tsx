@@ -9,6 +9,7 @@ import {
   Avatar,
   Card,
   Container,
+  Flex,
   For,
   Grid,
   GridItem,
@@ -56,41 +57,49 @@ const icons = {
 export function Home() {
   const [data] = useState<DataModel[]>(items);
   return (
-    <>
+    <Container>
       <Grid
         templateColumns="repeat(3, 1fr)"
         gap="6"
       >
         <GridItem colSpan={2}>
-          <Container className="section-container">
-            <Image
-              src={rubyUrl}
-              alt="Ruby Logo"
-              boxSize="9rem"
-              fit="contain"
-              className="ruby-logo"
-            />
-            <Text textStyle="7xl">Daredevil Deployer</Text>
-            <Text textStyle="3xl">Deploying Apps</Text>
-          </Container>
+          <Flex direction="column">
+            <Flex align="center" gap="4" justify="center">
+              <Image
+                src={rubyUrl}
+                alt="Ruby"
+                boxSize="6rem"
+                fit="contain"
+                className="rubyLogo"
+              />
+              <Text textStyle="7xl">Daredevil Deployer</Text>
+            </Flex>
+            <Flex align="center" gap="2" justify="center">
+              <Text textStyle="3xl">Deploying Apps</Text>
+            </Flex>
+          </Flex>
         </GridItem>
-        <GridItem className="home-welcome-buttons">
-          <HStack gap="6" wrap="wrap">
-            <For each={data}>
-              {(item) => (
-                <VStack key={item.id}>
-                  <IconButton
-                    aria-label={item.id}
-                    variant="outline"
-                    size="lg"
-                  >
-                    {item.iconClass && icons[item.iconClass as keyof typeof icons]}
-                  </IconButton>
-                  <Text textStyle="sm">{item.text}</Text>
-                </VStack>
-              )}
-            </For>
-          </HStack>
+        <GridItem>
+          <Flex direction="column">
+            <Flex align="flex-end" justify="center">
+              <HStack gap="6" wrap="wrap">
+                <For each={data}>
+                  {(item) => (
+                    <VStack key={item.id}>
+                      <IconButton
+                        aria-label={item.id}
+                        variant="outline"
+                        size="lg"
+                      >
+                        {item.iconClass && icons[item.iconClass as keyof typeof icons]}
+                      </IconButton>
+                      <Text textStyle="sm">{item.text}</Text>
+                    </VStack>
+                  )}
+                </For>
+              </HStack>
+            </Flex>
+          </Flex>
         </GridItem>
         <GridItem colSpan={3}>
           <section className="section-container get-started">
@@ -215,6 +224,6 @@ export function Home() {
           </Card.Root>
         </GridItem>
       </Grid>
-    </>
+    </Container>
   );
 }
