@@ -40,11 +40,12 @@ a:-webkit-any-link {
 }
 
 .b-g-font {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: "Bricolage Grotesque", sans-serif;
   font-optical-sizing: auto;
+  font-weight: 800;
   font-style: normal;
-  font-variation-settings: 'wdth' 100;
-  font-weight: 400;
+  font-variation-settings:
+    "wdth" 100;
 }
 
 .t-font {

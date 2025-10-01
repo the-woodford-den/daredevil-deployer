@@ -2,33 +2,36 @@ import { Link } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
 import bricolageLicense from '~/Bricolage/Grotesque/2025-9-15/license.md?url';
 import texturinaLicense from '~/Texturina/2025-9-15/license.md?url';
-import { Breadcrumb, Container, Heading } from '@chakra-ui/react';
+import { Box, Text, Breadcrumb, Container, Flex, Heading, Spacer } from '@chakra-ui/react';
 import { LuZap } from 'react-icons/lu';
 import './style.css';
 
 export function Root() {
   return (
-    <div className="root-container">
-      <Container centerContent={true} className="header-container">
-        <Heading size="sm">Daredevil 🩸 Deployer</Heading>
-        <Breadcrumb.Root>
-          <Breadcrumb.List>
-            <Breadcrumb.Item>
-              <Breadcrumb.Link asChild>
-                <Link to="/">Home</Link>
-              </Breadcrumb.Link>
-            </Breadcrumb.Item>
-            <Breadcrumb.Separator>
-              <LuZap />
-            </Breadcrumb.Separator>
-            <Breadcrumb.Item>
-              <Breadcrumb.Link asChild>
-                <Link to="/repositories">Repositories</Link>
-              </Breadcrumb.Link>
-            </Breadcrumb.Item>
-          </Breadcrumb.List>
-        </Breadcrumb.Root>
-      </Container>
+    <Container className="root-container">
+      <Flex direction="column">
+        <Flex align="center" className="header-container">
+          <Box className="b-g-font">Daredevil 🩸 Deployer</Box>
+          <Spacer />
+          <Box>
+            <Breadcrumb.Root marginEnd="auto">
+              <Breadcrumb.List>
+                <Breadcrumb.Item>
+                  <Breadcrumb.Link asChild>
+                    <Link to="/">Home</Link>
+                  </Breadcrumb.Link>
+                </Breadcrumb.Item>
+                <Breadcrumb.Separator />
+                <Breadcrumb.Item>
+                  <Breadcrumb.Link asChild>
+                    <Link to="/repositories">Repositories</Link>
+                  </Breadcrumb.Link>
+                </Breadcrumb.Item>
+              </Breadcrumb.List>
+            </Breadcrumb.Root>
+          </Box>
+        </Flex>
+      </Flex>
       <main>
         <Outlet />
       </main>
@@ -44,6 +47,6 @@ export function Root() {
           </a>
         </Heading>
       </footer>
-    </div>
+    </Container>
   );
 }
