@@ -3,6 +3,7 @@ import reactUrl from '~/react.svg';
 import rubyUrl from '~/ruby.svg';
 import docsUrl from '~/documentation.svg';
 import designUrl from '~/design.svg';
+import megaUrl from '~/mega.png';
 import { FaBeer, FaCity, FaDev, FaLemon } from 'react-icons/fa';
 import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
 import {
@@ -235,8 +236,8 @@ export function Home() {
             <Card.Body gap="4">
               <HStack mb="6" gap="6">
                 <Avatar.Root size="lg" shape="full">
-                  <Avatar.Image src={rubyUrl} />
-                  <Avatar.Fallback name="Ruby" />
+                  <Avatar.Image src={megaUrl} />
+                  <Avatar.Fallback name="MegaMan" />
                 </Avatar.Root>
                 <Card.Title>
                   <Text fontWeight="semibold" textStyle="lg">
@@ -246,14 +247,14 @@ export function Home() {
               </HStack>
               <HStack mb="6" gap="6">
                 <IconButton
-                  aria-label="langs"
+                  aria-label="lemon"
                   variant="outline"
                   size="lg"
                 >
                   <FaLemon />
                 </IconButton>
                 <Card.Description>
-                  <Strong>Ruby, Python, Javascript, Bash</Strong>
+                  <Strong>Python, Javascript, Bash</Strong>
                 </Card.Description>
               </HStack>
               <Card.Footer unstyled={true}>
