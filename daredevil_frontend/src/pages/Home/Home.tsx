@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import { Note } from '@components/Note';
 import reactUrl from '~/react.svg';
 import rubyUrl from '~/ruby.svg';
 import docsUrl from '~/documentation.svg';
@@ -130,38 +131,14 @@ export function Home() {
           </Flex>
         </GridItem>
         <GridItem>
-          <Card.Root>
-            <Card.Body gap="4">
-              <HStack mb="6" gap="6">
-                <Avatar.Root size="lg" shape="square">
-                  <Avatar.Image src={docsUrl} />
-                  <Avatar.Fallback name="Doc Logo" />
-                </Avatar.Root>
-                <Card.Title>
-                  <Text fontWeight="semibold" textStyle="lg">
-                    Documentation
-                  </Text>
-                </Card.Title>
-              </HStack>
-              <HStack mb="6" gap="6">
-                <IconButton
-                  aria-label="devfire"
-                  variant="outline"
-                  size="lg"
-                >
-                  <FaBeer />
-                </IconButton>
-                <Card.Description>
-                  <Strong>In development ...</Strong>
-                </Card.Description>
-              </HStack>
-              <Card.Footer unstyled={true}>
-                <Flex align="center" justify="center">
-                  <Strong textStyle="sm">Be Back Soon</Strong>
-                </Flex>
-              </Card.Footer>
-            </Card.Body>
-          </Card.Root>
+          <Note
+            avatar="docs"
+            title="Documentation"
+            button="beer"
+            footer="This is Amazing, Bye!"
+          >
+            We are developing this cards from chakra ui into 'Notes'.
+          </Note>
         </GridItem>
         <GridItem>
           <Card.Root>
