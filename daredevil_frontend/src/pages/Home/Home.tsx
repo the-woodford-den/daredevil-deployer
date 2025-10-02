@@ -65,7 +65,7 @@ export function Home() {
         templateColumns="repeat(3, 1fr)"
         gap="6"
       >
-        <GridItem colSpan={2} className="home-padtop-2-5">
+        <GridItem colSpan={2} pt="3">
           <Flex direction="column" fontWeight="600">
             <Flex align="center" gap="4" justify="center">
               <Image
@@ -82,7 +82,7 @@ export function Home() {
             </Flex>
           </Flex>
         </GridItem>
-        <GridItem className="home-padtop-2-5">
+        <GridItem pt="3">
           <Flex direction="column">
             <Flex align="flex-end" justify="center">
               <HStack gap="6" wrap="wrap">
@@ -104,7 +104,7 @@ export function Home() {
             </Flex>
           </Flex>
         </GridItem>
-        <GridItem colSpan={3} className="home-padtop-2-5">
+        <GridItem colSpan={3} pt="3">
           <Flex direction="column">
             <Box
               p="4"
@@ -121,10 +121,10 @@ export function Home() {
         <GridItem colSpan={3}></GridItem>
       </Grid>
       <Grid templateColumns="repeat(4, 1fr)" gap="8">
-        <GridItem colSpan={4} className="home-padbot-2-5">
+        <GridItem p="2" colSpan={4} >
           <Flex direction="column">
-            <Flex align="center" justify="center">
-              <Text textStyle="2xl" className="t-font">Features & Statistics</Text>
+            <Flex align="end" justify="center">
+              <Text className="t-font" textStyle="2xl">Features & Statistics</Text>
             </Flex>
           </Flex>
         </GridItem>
