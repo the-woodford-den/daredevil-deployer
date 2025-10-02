@@ -141,106 +141,34 @@ export function Home() {
           </Note>
         </GridItem>
         <GridItem>
-          <Card.Root>
-            <Card.Body gap="4">
-              <HStack mb="6" gap="6">
-                <Avatar.Root size="lg" shape="full">
-                  <Avatar.Image src={reactUrl} />
-                  <Avatar.Fallback name="React Logo" />
-                </Avatar.Root>
-                <Card.Title>
-                  <Text fontWeight="semibold" textStyle="lg">
-                    Using React.js
-                  </Text>
-                </Card.Title>
-              </HStack>
-              <HStack mb="6" gap="6">
-                <IconButton
-                  aria-label="nvimedit"
-                  variant="outline"
-                  size="lg"
-                >
-                  <FaCity />
-                </IconButton>
-                <Card.Description>
-                  <Strong>Using nvim editor & Claude</Strong>
-                </Card.Description>
-              </HStack>
-              <Card.Footer unstyled={true}>
-                <Flex align="center" justify="center">
-                  <Strong textStyle="sm">See ya next time!</Strong>
-                </Flex>
-              </Card.Footer>
-            </Card.Body>
-          </Card.Root>
+          <Note
+            avatar="react"
+            title="React.js Application"
+            button="metroid"
+            footer="You are Amazing, Bye!"
+          >
+            Some of my dev tools include nvim, claude, & tmux.
+          </Note>
         </GridItem>
         <GridItem>
-          <Card.Root>
-            <Card.Body gap="4">
-              <HStack mb="6" gap="6">
-                <Avatar.Root size="lg" shape="full">
-                  <Avatar.Image src={designUrl} />
-                  <Avatar.Fallback name="Design System Logo" />
-                </Avatar.Root>
-                <Card.Title>
-                  <Text fontWeight="semibold" textStyle="lg">
-                    Design System
-                  </Text>
-                </Card.Title>
-              </HStack>
-              <HStack mb="6" gap="6">
-                <IconButton
-                  aria-label="harmonious"
-                  variant="outline"
-                  size="lg"
-                >
-                  <FaDev />
-                </IconButton>
-                <Card.Description>
-                  <Strong>Quickly apply harmonious and consistent styles</Strong>
-                </Card.Description>
-              </HStack>
-              <Card.Footer unstyled={true}>
-                <Flex align="center" justify="center">
-                  <Strong textStyle="sm">Direct Connection</Strong>
-                </Flex>
-              </Card.Footer>
-            </Card.Body>
-          </Card.Root>
+          <Note
+            avatar="mega"
+            title="The Design System"
+            button="raspPi"
+            footer="You are very Special, Bye!"
+          >
+            Quickly apply harmonious and consistently typed styles.
+          </Note>
         </GridItem>
         <GridItem>
-          <Card.Root>
-            <Card.Body gap="4">
-              <HStack mb="6" gap="6">
-                <Avatar.Root size="lg" shape="full">
-                  <Avatar.Image src={megaUrl} />
-                  <Avatar.Fallback name="MegaMan" />
-                </Avatar.Root>
-                <Card.Title>
-                  <Text fontWeight="semibold" textStyle="lg">
-                    Frameworks & Langs
-                  </Text>
-                </Card.Title>
-              </HStack>
-              <HStack mb="6" gap="6">
-                <IconButton
-                  aria-label="lemon"
-                  variant="outline"
-                  size="lg"
-                >
-                  <FaLemon />
-                </IconButton>
-                <Card.Description>
-                  <Strong>Python, Javascript, Bash</Strong>
-                </Card.Description>
-              </HStack>
-              <Card.Footer unstyled={true}>
-                <Flex align="center" justify="center">
-                  <Strong textStyle="sm">Fast Quick Speed</Strong>
-                </Flex>
-              </Card.Footer>
-            </Card.Body>
-          </Card.Root>
+          <Note
+            avatar="design"
+            title="Frameworks"
+            button="lemon"
+            footer="We contribute to the World, Bye!"
+          >
+            Python, FastAPI, Javascript, React.js, Github API
+          </Note>
         </GridItem>
       </Grid>
     </Container>
