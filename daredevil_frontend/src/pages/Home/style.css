@@ -1,9 +1,9 @@
-.home-title {
+.home-padtop-2-5 {
   padding-top: 2.5rem;
 }
 
-.home-intro {
-  padding-top: 2.5rem;
+.home-padbot-2-5 {
+  padding-bottom: 2.5rem;
 }
 
 @media (max-width: 56.25rem) {}

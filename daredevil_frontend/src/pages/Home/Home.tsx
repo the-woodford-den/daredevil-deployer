@@ -18,6 +18,7 @@ import {
   HStack,
   IconButton,
   Image,
+  Strong,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -64,7 +65,7 @@ export function Home() {
         templateColumns="repeat(3, 1fr)"
         gap="6"
       >
-        <GridItem colSpan={2} className="home-title">
+        <GridItem colSpan={2} className="home-padtop-2-5">
           <Flex direction="column" fontWeight="600">
             <Flex align="center" gap="4" justify="center">
               <Image
@@ -81,7 +82,7 @@ export function Home() {
             </Flex>
           </Flex>
         </GridItem>
-        <GridItem className="home-title">
+        <GridItem className="home-padtop-2-5">
           <Flex direction="column">
             <Flex align="flex-end" justify="center">
               <HStack gap="6" wrap="wrap">
@@ -103,7 +104,7 @@ export function Home() {
             </Flex>
           </Flex>
         </GridItem>
-        <GridItem colSpan={3} className="home-intro">
+        <GridItem colSpan={3} className="home-padtop-2-5">
           <Flex direction="column">
             <Box
               p="4"
@@ -119,24 +120,29 @@ export function Home() {
         </GridItem>
         <GridItem colSpan={3}></GridItem>
       </Grid>
-      <Grid templateColumns="repeat(6, 1fr)">
-        <GridItem colSpan={6}>
-          <h5 className="section-title">Highlights</h5>
+      <Grid templateColumns="repeat(4, 1fr)" gap="8">
+        <GridItem colSpan={4} className="home-padbot-2-5">
+          <Flex direction="column">
+            <Flex align="center" justify="center">
+              <Text textStyle="2xl" className="t-font">Features & Statistics</Text>
+            </Flex>
+          </Flex>
         </GridItem>
-        <GridItem></GridItem>
         <GridItem>
           <Card.Root>
-            <Card.Title>
-              <Avatar.Root size="lg">
-                <Avatar.Image src={docsUrl} />
-                <Avatar.Fallback name="Doc Logo" />
-              </Avatar.Root>
-              <Text fontWeight="semibold" textStyle="lg">
-                Documentation
-              </Text>
-            </Card.Title>
-            <Card.Body>
-              <VStack key="fire">
+            <Card.Body gap="4">
+              <HStack mb="6" gap="6">
+                <Avatar.Root size="lg" shape="square">
+                  <Avatar.Image src={docsUrl} />
+                  <Avatar.Fallback name="Doc Logo" />
+                </Avatar.Root>
+                <Card.Title>
+                  <Text fontWeight="semibold" textStyle="lg">
+                    Documentation
+                  </Text>
+                </Card.Title>
+              </HStack>
+              <HStack mb="6" gap="6">
                 <IconButton
                   aria-label="devfire"
                   variant="outline"
@@ -144,24 +150,33 @@ export function Home() {
                 >
                   <FaBeer />
                 </IconButton>
-                <Text textStyle="sm">In development ...</Text>
-              </VStack>
+                <Card.Description>
+                  <Strong>In development ...</Strong>
+                </Card.Description>
+              </HStack>
+              <Card.Footer unstyled={true}>
+                <Flex align="center" justify="center">
+                  <Strong textStyle="sm">Be Back Soon</Strong>
+                </Flex>
+              </Card.Footer>
             </Card.Body>
           </Card.Root>
         </GridItem>
         <GridItem>
           <Card.Root>
-            <Card.Title>
-              <Avatar.Root size="lg">
-                <Avatar.Image src={reactUrl} />
-                <Avatar.Fallback name="React Logo" />
-              </Avatar.Root>
-              <Text fontWeight="semibold" textStyle="lg">
-                Using React.js
-              </Text>
-            </Card.Title>
-            <Card.Body>
-              <VStack key="nvim">
+            <Card.Body gap="4">
+              <HStack mb="6" gap="6">
+                <Avatar.Root size="lg" shape="full">
+                  <Avatar.Image src={reactUrl} />
+                  <Avatar.Fallback name="React Logo" />
+                </Avatar.Root>
+                <Card.Title>
+                  <Text fontWeight="semibold" textStyle="lg">
+                    Using React.js
+                  </Text>
+                </Card.Title>
+              </HStack>
+              <HStack mb="6" gap="6">
                 <IconButton
                   aria-label="nvimedit"
                   variant="outline"
@@ -169,24 +184,33 @@ export function Home() {
                 >
                   <FaCity />
                 </IconButton>
-                <Text textStyle="sm">Using nvim editor ... Claude Code</Text>
-              </VStack>
+                <Card.Description>
+                  <Strong>Using nvim editor & Claude</Strong>
+                </Card.Description>
+              </HStack>
+              <Card.Footer unstyled={true}>
+                <Flex align="center" justify="center">
+                  <Strong textStyle="sm">See ya next time!</Strong>
+                </Flex>
+              </Card.Footer>
             </Card.Body>
           </Card.Root>
         </GridItem>
         <GridItem>
           <Card.Root>
-            <Card.Title>
-              <Avatar.Root size="lg">
-                <Avatar.Image src={designUrl} />
-                <Avatar.Fallback name="Design System Logo" />
-              </Avatar.Root>
-              <Text fontWeight="semibold" textStyle="lg">
-                Design System
-              </Text>
-            </Card.Title>
-            <Card.Body>
-              <VStack key="components">
+            <Card.Body gap="4">
+              <HStack mb="6" gap="6">
+                <Avatar.Root size="lg" shape="full">
+                  <Avatar.Image src={designUrl} />
+                  <Avatar.Fallback name="Design System Logo" />
+                </Avatar.Root>
+                <Card.Title>
+                  <Text fontWeight="semibold" textStyle="lg">
+                    Design System
+                  </Text>
+                </Card.Title>
+              </HStack>
+              <HStack mb="6" gap="6">
                 <IconButton
                   aria-label="harmonious"
                   variant="outline"
@@ -194,27 +218,33 @@ export function Home() {
                 >
                   <FaDev />
                 </IconButton>
-                <Text textStyle="sm">
-                  Quickly apply harmonious and consistent styles to the components in your app with
-                  the Progress Design System.
-                </Text>
-              </VStack>
+                <Card.Description>
+                  <Strong>Quickly apply harmonious and consistent styles</Strong>
+                </Card.Description>
+              </HStack>
+              <Card.Footer unstyled={true}>
+                <Flex align="center" justify="center">
+                  <Strong textStyle="sm">Direct Connection</Strong>
+                </Flex>
+              </Card.Footer>
             </Card.Body>
           </Card.Root>
         </GridItem>
         <GridItem>
           <Card.Root>
-            <Card.Title>
-              <Avatar.Root size="lg">
-                <Avatar.Image src={rubyUrl} />
-                <Avatar.Fallback name="Ruby" />
-              </Avatar.Root>
-              <Text fontWeight="semibold" textStyle="lg">
-                Ruby on Rails
-              </Text>
-            </Card.Title>
-            <Card.Body>
-              <VStack key="languages">
+            <Card.Body gap="4">
+              <HStack mb="6" gap="6">
+                <Avatar.Root size="lg" shape="full">
+                  <Avatar.Image src={rubyUrl} />
+                  <Avatar.Fallback name="Ruby" />
+                </Avatar.Root>
+                <Card.Title>
+                  <Text fontWeight="semibold" textStyle="lg">
+                    Frameworks & Langs
+                  </Text>
+                </Card.Title>
+              </HStack>
+              <HStack mb="6" gap="6">
                 <IconButton
                   aria-label="langs"
                   variant="outline"
@@ -222,10 +252,15 @@ export function Home() {
                 >
                   <FaLemon />
                 </IconButton>
-                <Text textStyle="sm">
-                  Ruby, Python, Javascript, Bash
-                </Text>
-              </VStack>
+                <Card.Description>
+                  <Strong>Ruby, Python, Javascript, Bash</Strong>
+                </Card.Description>
+              </HStack>
+              <Card.Footer unstyled={true}>
+                <Flex align="center" justify="center">
+                  <Strong textStyle="sm">Fast Quick Speed</Strong>
+                </Flex>
+              </Card.Footer>
             </Card.Body>
           </Card.Root>
         </GridItem>
