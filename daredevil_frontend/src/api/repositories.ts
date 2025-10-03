@@ -1,23 +1,31 @@
 import { type Repository } from '@/pages/Repositories';
+import { ResultAsync } from 'neverthrow';
 
-export const getRepos = async (token: string): Promise<Repository[]> => {
-  const options = {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-  };
+type ApiError =
+  | { type: 'NETWORK_ERROR'; message: string }
+  | { type: 'NOT_FOUND'; message: string }
+  | { type: 'UNAUTHORIZED'; message: string }
+  | { type: 'UNKNOWN_ERROR'; message: string };
 
-  const params = new URLSearchParams({
-    user_token: token
-  });
-
+export const getRepos = (token: string): ResultAsync<Repository[], ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const response = await fetch(
-    `${backendUrl}/github/repos?${params}`
-  );
-  if (!response.ok) {
-    throw new Error('Could not fetch Repositories.');
-  }
 
-  const data = (await response.json()) as Repository[];
-  return data;
+  return ResultAsync.fromPromise(
+    fetch(`${backendUrl}/github/repos?${token}`)
+      .then(async (response) => {
+        if (!response.ok) {
+          throw {
+            type: 'NETWORK_ERROR', message: 'Could not fetch Repositories.'
+          };
+        }
+        return (await response.json()) as Repository[];
+      }
+      ),
+    (error) => {
+      if (error && typeof error === 'object' && 'type' in error) {
+        return error as ApiError;
+      }
+      return { type: 'UNKNOWN_ERROR', message: String(error) };
+    }
+  );
 };
