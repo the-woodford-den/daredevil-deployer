@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
 import { Box, For, Stack, Text } from '@chakra-ui/react';
-import { type Repository } from './types';
-import { getRepos } from '@api/repositories'
+import { type Repository } from '@/data/repository';
+import { getRepos } from '@/api/repositories'
 import './style.css';
 // import data from '~/data.json';
 // const repos: Repository[] = (data as Repository[]).map((x: Repository) => {

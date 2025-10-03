@@ -8,16 +8,16 @@
       "~/*": [
         "./src/assets/*"
       ],
-      "@api/*": [
+      "@/api/*": [
         "./src/api/*"
       ],
-      "@components/*": [
+      "@/components/*": [
         "./src/components/*"
       ],
-      "@data/*": [
+      "@/data/*": [
         "./src/data/*"
       ],
-      "@pages/*": [
+      "@/pages/*": [
         "./src/pages/*"
       ]
     },

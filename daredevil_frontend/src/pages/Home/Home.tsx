@@ -1,16 +1,9 @@
 import { useState, type ReactNode } from 'react';
-import { Note } from '@components/Note';
-import reactUrl from '~/react.svg';
+import { Note } from '@/components/Note';
 import rubyUrl from '~/ruby.svg';
-import docsUrl from '~/documentation.svg';
-import designUrl from '~/design.svg';
-import megaUrl from '~/mega.png';
-import { FaBeer, FaCity, FaDev, FaLemon } from 'react-icons/fa';
 import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
 import {
-  Avatar,
   Box,
-  Card,
   Code,
   Container,
   Flex,
@@ -20,7 +13,6 @@ import {
   HStack,
   IconButton,
   Image,
-  Strong,
   Text,
   VStack,
 } from '@chakra-ui/react';
