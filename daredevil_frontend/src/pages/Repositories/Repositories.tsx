@@ -11,19 +11,18 @@ import './style.css';
 
 
 export function Repositories() {
+  const [data, setData] = useState<Repository[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    async function reposGrab() {
-      const token = import.meta.env.VITE_GITHUB_USER_TOKEN;
-      if (token) {
-        const repos = await getRepos(token);
-        setData(repos);
-      }
+    const token = import.meta.env.VITE_GITHUB_USER_TOKEN;
+    if (token) {
+      getRepos(token).match(
+        (repos) => setData(repos),
+        (err) => setError(err.message)
+      );
     }
-    reposGrab();
-
-  }, [])
-
-  const [data, setData] = useState<Repository[]>();
+  }, []);
 
   return (
     <Stack>
