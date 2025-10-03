@@ -1,5 +1,6 @@
 import logfire
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from .configs.settings import get_settings
 from .dbs.engine import init_db
@@ -26,6 +27,13 @@ from .routes import user as user_routes
 app = FastAPI()
 app.include_router(git_routes.api)
 app.include_router(user_routes.api)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.on_event("startup")

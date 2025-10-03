@@ -5,13 +5,14 @@ export const getRepos = async (token: string): Promise<Repository[]> => {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   };
+
   const params = new URLSearchParams({
-    user_token: token,
+    user_token: token
   });
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const response = await fetch(
-    `${import.meta.env.BACKEND_URL}github/repos?${params.toString()}`,
-    options,
+    `${backendUrl}/github/repos?${params}`
   );
   if (!response.ok) {
     throw new Error('Could not fetch Repositories.');

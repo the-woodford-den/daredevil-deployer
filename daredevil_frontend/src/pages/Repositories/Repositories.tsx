@@ -1,15 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Box, For, Stack, Text } from '@chakra-ui/react';
 import { type Repository } from './types';
-import data from '~/data.json';
+import { getRepos } from '@api/repositories'
 import './style.css';
+// import data from '~/data.json';
+// const repos: Repository[] = (data as Repository[]).map((x: Repository) => {
+//   return x;
+// });
 
-const repos: Repository[] = (data as Repository[]).map((x: Repository) => {
-  return x;
-});
+
 export function Repositories() {
-  const [data] = useState(repos);
+  useEffect(() => {
+    async function reposGrab() {
+      const token = import.meta.env.VITE_GITHUB_USER_TOKEN;
+      if (token) {
+        const repos = await getRepos(token);
+        setData(repos);
+      }
+    }
+    reposGrab();
+
+  }, [])
+
+  const [data, setData] = useState<Repository[]>();
 
   return (
     <Stack>
