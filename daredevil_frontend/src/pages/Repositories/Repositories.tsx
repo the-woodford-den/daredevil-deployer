@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { type Repository } from '@/data/repository';
 import { getRepos } from '@/api/repositories'
+import { Loading } from '@/components/Loading';
 import './style.css';
 // import data from '~/data.json';
 // const repos: Repository[] = (data as Repository[]).map((x: Repository) => {
@@ -48,52 +49,7 @@ export function Repositories() {
 
   if (loading) {
     return (
-      <HStack mb="5">
-        <SkeletonCircle
-          size="12"
-          css={{
-            "--start-color": "colors.teal.500",
-            "--end-color": "colors.green.500",
-          }}
-          variant="shine"
-        />
-        <Stack flex="1">
-          <Skeleton
-            height="5"
-            css={{
-              "--start-color": "colors.teal.500",
-              "--end-color": "colors.green.500",
-            }}
-            variant="shine"
-          />
-          <Skeleton
-            height="5"
-            css={{
-              "--start-color": "colors.teal.500",
-              "--end-color": "colors.green.500",
-            }}
-            variant="shine"
-          />
-          <Skeleton
-            height="5"
-            css={{
-              "--start-color": "colors.teal.500",
-              "--end-color": "colors.green.500",
-            }}
-            variant="shine"
-            width="80%"
-          />
-          <Skeleton
-            height="5"
-            css={{
-              "--start-color": "colors.teal.500",
-              "--end-color": "colors.green.500",
-            }}
-            variant="shine"
-            width="60%"
-          />
-        </Stack>
-      </HStack>
+      <Loading />
     );
   }
 
