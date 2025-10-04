@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 
-import { Box, For, Stack, Text } from '@chakra-ui/react';
+import {
+  Box,
+  For,
+  HStack,
+  Skeleton,
+  SkeletonCircle,
+  Stack,
+  Text
+} from '@chakra-ui/react';
 import { type Repository } from '@/data/repository';
 import { getRepos } from '@/api/repositories'
 import './style.css';
@@ -13,16 +21,32 @@ import './style.css';
 export function Repositories() {
   const [data, setData] = useState<Repository[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<Boolean>(true);
 
   useEffect(() => {
     const token = import.meta.env.VITE_GITHUB_USER_TOKEN;
+
     if (token) {
       getRepos(token).match(
         (repos) => setData(repos),
         (err) => setError(err.message)
-      );
+      ).then(() => {
+        setLoading(false);
+      });
     }
   }, []);
+
+  if (loading) {
+    return (
+      <HStack>
+        <SkeletonCircle size="12" />
+        <Stack flex="1">
+          <Skeleton height="5" />
+          <Skeleton height="5" width="80%" />
+        </Stack>
+      </HStack>
+    );
+  }
 
   return (
     <Stack>
