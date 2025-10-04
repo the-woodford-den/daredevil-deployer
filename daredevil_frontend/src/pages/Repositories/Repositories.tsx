@@ -26,23 +26,72 @@ export function Repositories() {
   useEffect(() => {
     const token = import.meta.env.VITE_GITHUB_USER_TOKEN;
 
+    async function delay() {
+      await new Promise((resolve) =>
+        setTimeout(resolve, 3000),
+      );
+    }
+
     if (token) {
-      getRepos(token).match(
-        (repos) => setData(repos),
-        (err) => setError(err.message)
-      ).then(() => {
+      const fetchRepos = async () => {
+        const result = await getRepos(token);
+        result.match(
+          (repos) => setData(repos),
+          (err) => setError(err.message)
+        );
+        await delay();
         setLoading(false);
-      });
+      };
+      fetchRepos();
     }
   }, []);
 
   if (loading) {
     return (
-      <HStack>
-        <SkeletonCircle size="12" />
+      <HStack mb="5">
+        <SkeletonCircle
+          size="12"
+          css={{
+            "--start-color": "colors.teal.500",
+            "--end-color": "colors.green.500",
+          }}
+          variant="shine"
+        />
         <Stack flex="1">
-          <Skeleton height="5" />
-          <Skeleton height="5" width="80%" />
+          <Skeleton
+            height="5"
+            css={{
+              "--start-color": "colors.teal.500",
+              "--end-color": "colors.green.500",
+            }}
+            variant="shine"
+          />
+          <Skeleton
+            height="5"
+            css={{
+              "--start-color": "colors.teal.500",
+              "--end-color": "colors.green.500",
+            }}
+            variant="shine"
+          />
+          <Skeleton
+            height="5"
+            css={{
+              "--start-color": "colors.teal.500",
+              "--end-color": "colors.green.500",
+            }}
+            variant="shine"
+            width="80%"
+          />
+          <Skeleton
+            height="5"
+            css={{
+              "--start-color": "colors.teal.500",
+              "--end-color": "colors.green.500",
+            }}
+            variant="shine"
+            width="60%"
+          />
         </Stack>
       </HStack>
     );
