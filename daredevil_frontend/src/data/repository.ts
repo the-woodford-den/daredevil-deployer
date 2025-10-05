@@ -1,11 +1,11 @@
 export interface Repository {
-  fullName: string,
+  full_name: string,
   private: boolean,
   description: string,
   url: string,
   language: string,
-  defaultBranch: string,
+  default_branch: string,
   visibility: string,
-  pushedAt: string
+  pushed_at: string
 };
 

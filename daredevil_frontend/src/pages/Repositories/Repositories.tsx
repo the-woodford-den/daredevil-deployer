@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
-
 import {
   Box,
   For,
-  HStack,
-  Skeleton,
-  SkeletonCircle,
   Stack,
   Text
 } from '@chakra-ui/react';
+import { getRepos, type ApiError } from '@/api/repositories'
 import { type Repository } from '@/data/repository';
-import { getRepos } from '@/api/repositories'
+import { Alarm } from '@/components/Alarm';
 import { Loading } from '@/components/Loading';
 import './style.css';
 // import data from '~/data.json';
@@ -21,7 +18,7 @@ import './style.css';
 
 export function Repositories() {
   const [data, setData] = useState<Repository[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ApiError | null>(null);
   const [loading, setLoading] = useState<Boolean>(true);
 
   useEffect(() => {
@@ -38,7 +35,7 @@ export function Repositories() {
         const result = await getRepos(token);
         result.match(
           (repos) => setData(repos),
-          (err) => setError(err.message)
+          (err) => setError(err)
         );
         await delay();
         setLoading(false);
@@ -48,28 +45,35 @@ export function Repositories() {
   }, []);
 
   if (loading) {
-    return (
-      <Loading />
-    );
+    return <Loading />;
   }
 
   return (
-    <Stack>
-      <For each={data}>
-        {(item, index) => (
-          <Box borderWidth=".1rem" key={index} p="4">
-            <Text fontWeight="semibold">{item.fullName}</Text>
-            <Text color="fg.muted">
-              private: {item.private}, language: {item.language}, branch: {item.defaultBranch}
-            </Text>
-            <Text color="fg.muted">
-              visibility: {item.visibility}, updated: {item.pushedAt}
-            </Text>
-            <Text color="gold">{item.description}</Text>
-          </Box>
-        )}
-      </For>
-    </Stack>
+    <>
+      {error && (
+        <Alarm
+          status="error"
+          title={error.type}
+          width="60%"
+        >{error.message}</Alarm>
+      )}
+      <Stack>
+        <For each={data}>
+          {(item, index) => (
+            <Box borderWidth=".1rem" key={index} p="4">
+              <Text fontWeight="semibold">{item.full_name}</Text>
+              <Text color="fg.muted">
+                language: {item.language}, default branch: {item.default_branch}
+              </Text>
+              <Text color="fg.muted">
+                visibility: {item.visibility}, updated: {item.pushed_at}
+              </Text>
+              <Text color="gold">{item.description}</Text>
+            </Box>
+          )}
+        </For>
+      </Stack>
+    </>
   );
 }
 

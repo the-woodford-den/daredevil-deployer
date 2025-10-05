@@ -1,7 +1,7 @@
-import { type Repository } from '@/pages/Repositories';
+import { type Repository } from '@/data/repository';
 import { ResultAsync } from 'neverthrow';
 
-type ApiError =
+export type ApiError =
   | { type: 'NETWORK_ERROR'; message: string }
   | { type: 'NOT_FOUND'; message: string }
   | { type: 'UNAUTHORIZED'; message: string }
