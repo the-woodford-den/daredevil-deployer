@@ -112,7 +112,39 @@ export function Home() {
             </Box>
           </Flex>
         </GridItem>
-        <GridItem colSpan={3}></GridItem>
+        <GridItem pb="2" colSpan={3} >
+          <Flex direction="column">
+            <Flex align="end" justify="center">
+              <Text className="t-font" textStyle="2xl">Github App Login</Text>
+            </Flex>
+          </Flex>
+        </GridItem>
+        <GridItem pb="8" colSpan={3} >
+          <Flex direction="column">
+            <Flex align="center" gap="8" justify="center">
+              <Note
+                avatar="mega"
+                title="Gain Access"
+                button="metroid"
+                footer="This needs to be an input form"
+              >
+                Input Field For: Client_ID,
+                Possible Field For: userEmail,
+                Possible Field For: userName
+              </Note>
+              <Note
+                avatar="ruby"
+                title="Network Access"
+                button="raspPi"
+                footer="This needs to be an input form"
+              >
+                Input Field For: SSH KEY?,
+                Possible Field For: network address,
+                Possible Field For: userName
+              </Note>
+            </Flex>
+          </Flex>
+        </GridItem>
       </Grid>
       <Grid templateColumns="repeat(4, 1fr)" gap="8">
         <GridItem p="2" colSpan={4} >
