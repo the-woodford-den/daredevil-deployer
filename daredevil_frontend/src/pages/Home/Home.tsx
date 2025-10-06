@@ -1,21 +1,19 @@
 import { useState, type ReactNode } from 'react';
 import { Note } from '@/components/Note';
+import { LoginForm } from '@/components/LoginForm';
 import rubyUrl from '~/ruby.svg';
 import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
 import {
   Box,
   Code,
   Container,
-  Field,
   Flex,
   For,
   Grid,
   GridItem,
   HStack,
   IconButton,
-  Input,
   Image,
-  Stack,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -130,24 +128,7 @@ export function Home() {
                 title="Gain Access"
                 footer="This needs to be an input form"
               >
-                <Stack gap="8" maxW="md" css={{ "--field-label-width": "6rem" }}>
-                  <Field.Root orientation="horizontal" required>
-                    <Field.Label>
-                      Client_ID
-                      <Field.RequiredIndicator />
-                    </Field.Label>
-                    <Input flex="1" />
-                    <Field.HelperText>Github App Client ID</Field.HelperText>
-                  </Field.Root>
-                  <Field.Root orientation="horizontal" required>
-                    <Field.Label>
-                      Email
-                      <Field.RequiredIndicator />
-                    </Field.Label>
-                    <Input flex="1" />
-                    <Field.HelperText>Github User Email</Field.HelperText>
-                  </Field.Root>
-                </Stack>
+                <LoginForm />
               </Note>
               <Note
                 avatar="ruby"
