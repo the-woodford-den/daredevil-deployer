@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from 'react';
-import { Alert, Stack } from '@chakra-ui/react';
+import { Alert, Spinner, Stack } from '@chakra-ui/react';
+import { LuAlarmSmoke } from 'react-icons/lu';
 
 type Params = {
   status: "info" | "warning" | "success" | "error" | "neutral";
@@ -7,6 +8,10 @@ type Params = {
   width: string;
 } & PropsWithChildren
 
+const indicators = {
+  error: <LuAlarmSmoke />,
+  info: <Spinner size="sm" />
+}
 
 export function Alarm({
   children,
@@ -17,7 +22,9 @@ export function Alarm({
   return (
     <Stack width={width}>
       <Alert.Root status={status}>
-        <Alert.Indicator />
+        <Alert.Indicator>
+          {indicators[status as keyof typeof indicators]}
+        </Alert.Indicator>
         <Alert.Content>
           <Alert.Title>{title}</Alert.Title>
           <Alert.Description>

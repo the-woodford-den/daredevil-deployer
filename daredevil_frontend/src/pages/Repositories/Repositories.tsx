@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Box,
+  Flex,
   For,
   Stack,
   Text
@@ -10,10 +11,6 @@ import { type Repository } from '@/data/repository';
 import { Alarm } from '@/components/Alarm';
 import { Loading } from '@/components/Loading';
 import './style.css';
-// import data from '~/data.json';
-// const repos: Repository[] = (data as Repository[]).map((x: Repository) => {
-//   return x;
-// });
 
 
 export function Repositories() {
@@ -45,7 +42,18 @@ export function Repositories() {
   }, []);
 
   if (loading) {
-    return <Loading />;
+    return (
+      <>
+        <Flex justify="center" pb="4">
+          <Alarm
+            status="info"
+            title="In progress..."
+            width="60%"
+          >Loading Repositories</Alarm>
+        </Flex>
+        <Loading />
+      </>
+    );
   }
 
   return (
