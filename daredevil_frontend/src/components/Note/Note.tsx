@@ -37,7 +37,7 @@ const aHash = {
 type Params = {
   avatar: string;
   title: string;
-  button: string;
+  button?: string;
   footer: string;
 } & PropsWithChildren
 
@@ -68,13 +68,15 @@ export function Note({
           </Card.Title>
         </HStack>
         <HStack mb="6" gap="6">
-          <IconButton
-            aria-label={button as string}
-            variant="outline"
-            size="lg"
-          >
-            {icons[button as keyof typeof icons]}
-          </IconButton>
+          {button &&
+            <IconButton
+              aria-label={button as string}
+              variant="outline"
+              size="lg"
+            >
+              {icons[button as keyof typeof icons]}
+            </IconButton>
+          }
           <Card.Description>
             <Strong>{children}</Strong>
           </Card.Description>

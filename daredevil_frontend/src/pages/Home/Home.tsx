@@ -6,13 +6,16 @@ import {
   Box,
   Code,
   Container,
+  Field,
   Flex,
   For,
   Grid,
   GridItem,
   HStack,
   IconButton,
+  Input,
   Image,
+  Stack,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -125,12 +128,26 @@ export function Home() {
               <Note
                 avatar="mega"
                 title="Gain Access"
-                button="metroid"
                 footer="This needs to be an input form"
               >
-                Input Field For: Client_ID,
-                Possible Field For: userEmail,
-                Possible Field For: userName
+                <Stack gap="8" maxW="md" css={{ "--field-label-width": "6rem" }}>
+                  <Field.Root orientation="horizontal" required>
+                    <Field.Label>
+                      Client_ID
+                      <Field.RequiredIndicator />
+                    </Field.Label>
+                    <Input flex="1" />
+                    <Field.HelperText>Github App Client ID</Field.HelperText>
+                  </Field.Root>
+                  <Field.Root orientation="horizontal" required>
+                    <Field.Label>
+                      Email
+                      <Field.RequiredIndicator />
+                    </Field.Label>
+                    <Input flex="1" />
+                    <Field.HelperText>Github User Email</Field.HelperText>
+                  </Field.Root>
+                </Stack>
               </Note>
               <Note
                 avatar="ruby"
