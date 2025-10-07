@@ -123,24 +123,34 @@ export function Home() {
           </Flex>
         </GridItem>
         <GridItem pb="8" colSpan={2}>
-          <Stack w="full">
-            <Note
-              avatar="mega"
-              title="Gain Access"
+          <Flex
+            w="full"
+            justify="right"
+          >
+            <Box
+              background="black"
+              p="2rem"
+              color="white"
+              w="65%"
             >
               <LoginForm />
-            </Note>
-          </Stack>
+            </Box>
+          </Flex>
         </GridItem>
         <GridItem pb="8" colSpan={2}>
-          <Stack w="full">
-            <Note
-              avatar="ruby"
-              title="Network Access"
+          <Flex
+            w="full"
+            justify="left"
+          >
+            <Box
+              background="black"
+              p="2rem"
+              color="white"
+              w="65%"
             >
               <NetworkForm />
-            </Note>
-          </Stack>
+            </Box>
+          </Flex>
         </GridItem>
         <GridItem p="2" colSpan={4}>
           <Flex direction="column">
