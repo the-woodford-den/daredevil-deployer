@@ -6,7 +6,8 @@ import {
   Stack,
   Text
 } from '@chakra-ui/react';
-import { getRepos, type ApiError } from '@/api/repositories'
+import { getRepos } from '@/api/repositories';
+import { type ApiError } from '@/models/error';
 import { type Repository } from '@/models/repository';
 import { Alarm } from '@/components/Alarm';
 import { Loading } from '@/components/Loading';
@@ -58,13 +59,19 @@ export function Repositories() {
 
   return (
     <>
-      {error && (
-        <Alarm
-          status="error"
-          title={error.type}
-          width="60%"
-        >{error.message}</Alarm>
-      )}
+      <Flex justify="center" pb="4">
+        {error ? (
+          <Alarm
+            status="error"
+            title={error.type}
+            width="60%"
+          >{error.message}</Alarm>
+        ) : (
+          <Text fontWeight="bolder" className="t-font">
+            Repositories
+          </Text>
+        )}
+      </Flex>
       <Stack>
         <For each={data}>
           {(item, index) => (

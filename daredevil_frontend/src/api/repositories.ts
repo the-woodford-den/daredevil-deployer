@@ -1,11 +1,7 @@
-import { type Repository } from '@/models/repository';
 import { ResultAsync } from 'neverthrow';
+import { type Repository } from '@/models/repository';
+import { type ApiError } from '@/models/error';
 
-export type ApiError =
-  | { type: 'NETWORK_ERROR'; message: string }
-  | { type: 'NOT_FOUND'; message: string }
-  | { type: 'UNAUTHORIZED'; message: string }
-  | { type: 'UNKNOWN_ERROR'; message: string };
 
 export const getRepos = (token: string): ResultAsync<Repository[], ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;

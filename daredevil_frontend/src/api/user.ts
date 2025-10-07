@@ -1,4 +1,5 @@
-import type { User } from '@/data/user';
+import { ResultAsync } from 'neverthrow';
+import type { User } from '@/models/user';
 
 interface UserResponse {
   user_token: string;
