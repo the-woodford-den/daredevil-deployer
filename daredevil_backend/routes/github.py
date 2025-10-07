@@ -61,12 +61,10 @@ async def create_token(*, client_id: str) -> dict:
 
                     response_data = response.json()
                     if "access_token" in response_data:
-                        user_access_token = {}
-                        user_access_token["user_token"] = response_data["access_token"]
-                        logfire.info(
-                            f"Github user access token obtained: {user_access_token}"
-                        )
-                        return user_access_token
+                        token = {}
+                        token["user_token"] = response_data["access_token"]
+                        logfire.info(f"GH user access token {token}")
+                        return token
                     elif "error" in response_data:
                         error = response_data.get("error")
                         match error:
@@ -79,11 +77,11 @@ async def create_token(*, client_id: str) -> dict:
                                 await asyncio.sleep(interval)
                             case _:
                                 if error in ["expired_token", "access_denied"]:
-                                    logfire.error(f"Github oauth error: {error}")
-                                    raise Exception(f"Github oauth failed: {error}")
+                                    logfire.error(f"GH oauth error: {error}")
+                                    raise Exception(f"GH oauth fail {error}")
                     else:
                         logfire.error(
-                            f"Unexpected github oauth error in response: {response_data}"
+                            f"Github oauth error in response: {response_data}"
                         )
                         await asyncio.sleep(interval)
                     continue

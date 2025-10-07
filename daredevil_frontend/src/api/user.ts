@@ -1,4 +1,4 @@
-import type { User } from '@data/user';
+import type { User } from '@/data/user';
 
 interface UserResponse {
   user_token: string;
@@ -12,7 +12,7 @@ export const getUserToken = async (client_id: string): Promise<User> => {
       body: JSON.stringify({ client_id }),
     };
 
-    const response = await fetch(`${import.meta.env.BACKEND_URL}github/create-token`, options);
+    const response = await fetch(`${import.meta.env.BACKEND_URL}/github/create-token`, options);
 
     if (!response.ok) {
       console.error('Response was not ok!', response.status);

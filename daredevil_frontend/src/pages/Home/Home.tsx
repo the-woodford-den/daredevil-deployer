@@ -15,6 +15,7 @@ import {
   HStack,
   IconButton,
   Image,
+  Stack,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -58,10 +59,10 @@ export function Home() {
   return (
     <Container>
       <Grid
-        templateColumns="repeat(3, 1fr)"
+        templateColumns="repeat(4, 1fr)"
         gap="6"
       >
-        <GridItem colSpan={2} pt="3">
+        <GridItem colSpan={3} pt="3">
           <Flex direction="column" fontWeight="600">
             <Flex align="center" gap="4" justify="center">
               <Image
@@ -100,7 +101,7 @@ export function Home() {
             </Flex>
           </Flex>
         </GridItem>
-        <GridItem colSpan={3} pt="3">
+        <GridItem colSpan={4} pt="3">
           <Flex direction="column">
             <Box
               p="4"
@@ -114,36 +115,34 @@ export function Home() {
             </Box>
           </Flex>
         </GridItem>
-        <GridItem pb="2" colSpan={3} >
+        <GridItem pb="2" colSpan={4} >
           <Flex direction="column">
             <Flex align="end" justify="center">
               <Text className="t-font" textStyle="2xl">Github App Login</Text>
             </Flex>
           </Flex>
         </GridItem>
-        <GridItem pb="8" colSpan={3} >
-          <Flex direction="column">
-            <Flex align="center" gap="8" justify="center">
-              <Note
-                avatar="mega"
-                title="Gain Access"
-                footer="Please Enter"
-              >
-                <LoginForm />
-              </Note>
-              <Note
-                avatar="ruby"
-                title="Network Access"
-                footer="Please Enter"
-              >
-                <NetworkForm />
-              </Note>
-            </Flex>
-          </Flex>
+        <GridItem pb="8" colSpan={2}>
+          <Stack w="full">
+            <Note
+              avatar="mega"
+              title="Gain Access"
+            >
+              <LoginForm />
+            </Note>
+          </Stack>
         </GridItem>
-      </Grid>
-      <Grid templateColumns="repeat(4, 1fr)" gap="8">
-        <GridItem p="2" colSpan={4} >
+        <GridItem pb="8" colSpan={2}>
+          <Stack w="full">
+            <Note
+              avatar="ruby"
+              title="Network Access"
+            >
+              <NetworkForm />
+            </Note>
+          </Stack>
+        </GridItem>
+        <GridItem p="2" colSpan={4}>
           <Flex direction="column">
             <Flex align="end" justify="center">
               <Text className="t-font" textStyle="2xl">Features & Statistics</Text>
@@ -154,7 +153,6 @@ export function Home() {
           <Note
             avatar="docs"
             title="Documentation"
-            button="beer"
             footer="This is Amazing, Bye!"
           >
             We are developing this cards from chakra ui into 'Notes'.
@@ -164,7 +162,6 @@ export function Home() {
           <Note
             avatar="react"
             title="React.js Application"
-            button="metroid"
             footer="You are Amazing, Bye!"
           >
             Some of my dev tools include nvim, claude, & tmux.
@@ -174,7 +171,6 @@ export function Home() {
           <Note
             avatar="mega"
             title="The Design System"
-            button="raspPi"
             footer="You are very Special, Bye!"
           >
             Quickly apply harmonious and consistently typed styles.
@@ -184,7 +180,6 @@ export function Home() {
           <Note
             avatar="design"
             title="Frameworks"
-            button="lemon"
             footer="We contribute to the World, Bye!"
           >
             Python, FastAPI, Javascript, React.js, Github API

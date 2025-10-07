@@ -1,4 +1,4 @@
-import { type Repository } from '@/data/repository';
+import { type Repository } from '@/models/repository';
 import { ResultAsync } from 'neverthrow';
 
 export type ApiError =

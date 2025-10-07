@@ -38,7 +38,7 @@ type Params = {
   avatar: string;
   title: string;
   button?: string;
-  footer: string;
+  footer?: string;
 } & PropsWithChildren
 
 export function Note({
@@ -50,9 +50,9 @@ export function Note({
 }: Params) {
 
   return (
-    <Card.Root>
-      <Card.Body gap="4">
-        <HStack mb="6" gap="6">
+    <Card.Root size="lg">
+      <Card.Body gap="4" w="full">
+        <HStack mb="4" gap="6">
           <Avatar.Root size="lg" shape="full">
             <Avatar.Image
               src={aHash[avatar as keyof typeof aHash].url}
@@ -77,15 +77,15 @@ export function Note({
               {icons[button as keyof typeof icons]}
             </IconButton>
           }
-          <Card.Description>
-            <Strong>{children}</Strong>
-          </Card.Description>
+          {children}
         </HStack>
-        <Card.Footer unstyled={true}>
-          <Flex align="center" justify="center">
-            <Strong textStyle="sm">{footer}</Strong>
-          </Flex>
-        </Card.Footer>
+        {footer &&
+          <Card.Footer unstyled={true}>
+            <Flex align="center" justify="center">
+              <Strong textStyle="sm">{footer}</Strong>
+            </Flex>
+          </Card.Footer>
+        }
       </Card.Body>
     </Card.Root>
   );

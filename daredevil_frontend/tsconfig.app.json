@@ -14,8 +14,8 @@
       "@/components/*": [
         "./src/components/*"
       ],
-      "@/data/*": [
-        "./src/data/*"
+      "@/models/*": [
+        "./src/models/*"
       ],
       "@/pages/*": [
         "./src/pages/*"

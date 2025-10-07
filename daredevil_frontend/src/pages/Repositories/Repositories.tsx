@@ -7,7 +7,7 @@ import {
   Text
 } from '@chakra-ui/react';
 import { getRepos, type ApiError } from '@/api/repositories'
-import { type Repository } from '@/data/repository';
+import { type Repository } from '@/models/repository';
 import { Alarm } from '@/components/Alarm';
 import { Loading } from '@/components/Loading';
 import './style.css';

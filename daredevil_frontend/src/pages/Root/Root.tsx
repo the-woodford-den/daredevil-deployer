@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import bricolageLicense from '~/Bricolage/Grotesque/2025-9-15/license.md?url';
 import texturinaLicense from '~/Texturina/2025-9-15/license.md?url';
 import { Text, Breadcrumb, Container, Flex, Heading } from '@chakra-ui/react';

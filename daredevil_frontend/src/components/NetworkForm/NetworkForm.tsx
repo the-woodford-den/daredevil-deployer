@@ -1,24 +1,25 @@
-import { Field, Input, Stack } from '@chakra-ui/react';
+import { Button, Field, Input, Stack } from '@chakra-ui/react';
 
 export function NetworkForm() {
   return (
-    <Stack gap="8" maxW="xl" css={{ "--field-label-width": "8rem" }}>
+    <Stack gap="8" className="network-form">
       <Field.Root orientation="horizontal" required>
         <Field.Label>
           IP Address
           <Field.RequiredIndicator />
         </Field.Label>
-        <Input flex="1" />
-        <Field.HelperText orientation="vertical">Home Network IP</Field.HelperText>
+        <Input name="ipAddress" />
       </Field.Root>
       <Field.Root orientation="horizontal" required>
         <Field.Label>
           SSH Key
           <Field.RequiredIndicator />
         </Field.Label>
-        <Input flex="1" />
-        <Field.HelperText orientation="vertical">Name & Location</Field.HelperText>
+        <Input name="sshKey" />
       </Field.Root>
+      <Button type="submit" alignSelf="flex-end">
+        Submit
+      </Button>
     </Stack>
   );
 }

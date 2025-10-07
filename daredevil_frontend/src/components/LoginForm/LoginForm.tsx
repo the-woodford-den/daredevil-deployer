@@ -1,24 +1,25 @@
-import { Field, Input, Stack } from '@chakra-ui/react';
+import { Button, Field, Input, Stack } from '@chakra-ui/react';
 
 export function LoginForm() {
   return (
-    <Stack gap="8" maxW="xl" css={{ "--field-label-width": "8rem" }}>
+    <Stack gap="8" className="login-form">
       <Field.Root orientation="horizontal" required>
         <Field.Label>
           Client ID
           <Field.RequiredIndicator />
         </Field.Label>
-        <Input flex="1" />
-        <Field.HelperText>Github App</Field.HelperText>
+        <Input name="clientId" />
       </Field.Root>
       <Field.Root orientation="horizontal" required>
         <Field.Label>
           Email
           <Field.RequiredIndicator />
         </Field.Label>
-        <Input flex="1" />
-        <Field.HelperText>Github Email</Field.HelperText>
+        <Input name="email" type="email" />
       </Field.Root>
+      <Button type="submit" alignSelf="flex-end">
+        Submit
+      </Button>
     </Stack>
   );
 }
