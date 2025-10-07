@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Note } from '@/components/Note';
 import { LoginForm } from '@/components/LoginForm';
+import { NetworkForm } from '@/components/NetworkForm';
 import rubyUrl from '~/ruby.svg';
 import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
 import {
@@ -126,19 +127,16 @@ export function Home() {
               <Note
                 avatar="mega"
                 title="Gain Access"
-                footer="This needs to be an input form"
+                footer="Please Enter"
               >
                 <LoginForm />
               </Note>
               <Note
                 avatar="ruby"
                 title="Network Access"
-                button="raspPi"
-                footer="This needs to be an input form"
+                footer="Please Enter"
               >
-                Input Field For: SSH KEY?,
-                Possible Field For: network address,
-                Possible Field For: userName
+                <NetworkForm />
               </Note>
             </Flex>
           </Flex>
