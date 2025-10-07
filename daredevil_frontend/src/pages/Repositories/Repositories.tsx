@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   Box,
   Flex,
+  Heading,
   For,
   Stack,
   Text
@@ -67,9 +68,9 @@ export function Repositories() {
             width="60%"
           >{error.message}</Alarm>
         ) : (
-          <Text fontWeight="bolder" className="t-font">
+          <Heading size="5xl" className="t-font">
             Repositories
-          </Text>
+          </Heading>
         )}
       </Flex>
       <Stack>
