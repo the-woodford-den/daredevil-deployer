@@ -1,7 +1,9 @@
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
+import { type User } from '@/models/user';
+import { type ApiError } from '@/models/error';
 import { Note } from '@/components/Note';
-import { LoginForm } from '@/components/LoginForm';
-import { GithubForm } from '@/components/GithubForm';
+import { createToken } from '@/api/user';
+import { UserTokenForm } from '@/components/UserTokenForm';
 import rubyUrl from '~/ruby.svg';
 import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
 import {
@@ -12,6 +14,7 @@ import {
   For,
   Grid,
   GridItem,
+  Heading,
   HStack,
   IconButton,
   Image,
@@ -19,6 +22,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import './style.css';
+import { Alarm } from '@/components/Alarm';
 
 
 interface WebLinks {
@@ -54,10 +58,38 @@ const icons = {
 
 
 export function Root() {
-  const [data] = useState<WebLinks[]>(items);
-  const [noLogin] = useState<boolean>(true)
+  const [jsonData] = useState<WebLinks[]>(items);
+  const [user, setUser] = useState<User>();
+  const [error, setError] = useState<ApiError | null>(null);
+  const [loading, setLoading] = useState<Boolean>(true);
+  const ref = useRef<HTMLFormElement>(null);
+
+  const handleUserToken = async (data: FormData) => {
+    const clientId = data.get("clientId");
+    const result = await createToken(`${clientId}`);
+    result.match(
+      (user) => setUser(user),
+      (err) => setError(err)
+    );
+    ref.current?.reset();
+  };
+
+
   return (
     <Container>
+      <Flex justify="center" p="3">
+        {error ? (
+          <Alarm
+            status="error"
+            title={error.type}
+            width="60%"
+          >{error.message}</Alarm>
+        ) : (
+          <Heading size="5xl" className="t-font">
+            Welcome Welcome Welcome
+          </Heading>
+        )}
+      </Flex>
       <Grid
         templateColumns="repeat(4, 1fr)"
         gap="6"
@@ -83,7 +115,7 @@ export function Root() {
           <Flex direction="column">
             <Flex align="flex-end" justify="center">
               <HStack gap="6" wrap="wrap">
-                <For each={data}>
+                <For each={jsonData}>
                   {(item) => (
                     <VStack key={item.id}>
                       <IconButton
@@ -101,21 +133,7 @@ export function Root() {
             </Flex>
           </Flex>
         </GridItem>
-        <GridItem colSpan={4} pt="3">
-          <Flex direction="column">
-            <Box
-              p="4"
-              w="100%"
-              _hover={{ bg: "var(--chakra-colors-fg-muted)", color: "black" }}
-            >
-              <Flex align="center" justify="center" gap="16">
-                <Text textStyle="4xl">Welcome Welcome Welcome</Text>
-                <Code>FastAPI, React.js, Github API</Code>
-              </Flex>
-            </Box>
-          </Flex>
-        </GridItem>
-        <GridItem pb="8" colSpan={2}>
+        <GridItem pt="6" pb="8" colSpan={2}>
           <Flex
             w="full"
             justify="right"
@@ -126,11 +144,11 @@ export function Root() {
               color="white"
               w="65%"
             >
-              <LoginForm />
+              {user ? <Text textStyle="4xl">{user.clientId}</Text> : <Text textStyle="5xl">Nada</Text>}
             </Box>
           </Flex>
         </GridItem>
-        <GridItem pb="8" colSpan={2}>
+        <GridItem pt="6" pb="8" colSpan={2}>
           <Flex
             w="full"
             justify="left"
@@ -141,7 +159,11 @@ export function Root() {
               color="white"
               w="65%"
             >
-              <GithubForm isDisabled={noLogin} />
+              <form ref={ref} action={async (formData) => {
+                await handleUserToken(formData);
+              }}>
+                <UserTokenForm />
+              </form>
             </Box>
           </Flex>
         </GridItem>

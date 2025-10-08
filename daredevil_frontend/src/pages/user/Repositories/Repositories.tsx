@@ -7,7 +7,7 @@ import {
   Stack,
   Text
 } from '@chakra-ui/react';
-import { getRepos } from '@/api/repositories';
+import { getRepositories } from '@/api/repositories';
 import { type ApiError } from '@/models/error';
 import { type Repository } from '@/models/repository';
 import { Alarm } from '@/components/Alarm';
@@ -31,7 +31,7 @@ export function Repositories() {
 
     if (token) {
       const fetchRepos = async () => {
-        const result = await getRepos(token);
+        const result = await getRepositories(token);
         result.match(
           (repos) => setData(repos),
           (err) => setError(err)
