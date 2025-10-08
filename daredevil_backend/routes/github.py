@@ -6,8 +6,12 @@ import logfire
 from fastapi import APIRouter, HTTPException, WebSocket
 from httpx import AsyncClient
 from rich import inspect, print
+from sqlmodel import select
 
-from ..models.github import RepositoryResponse
+from ..dbs.engine import get_async_session
+from ..models.github import (CreateTokenResponse, OAuthAccessTokenResponse,
+                             RepositoryResponse)
+from ..models.user import User
 
 api = APIRouter(prefix="/github")
 
@@ -34,98 +38,112 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-@api.websocket("/create-token-status/{auth_request}")
-async def create_token_status(*, auth_request, websocket: WebSocket):
+@api.websocket("poll-create-token")
+async def poll_create_token(*, client_id: str, websocket: WebSocket):
     await manager.connect(websocket)
     while True:
+        token_link = "https://github.com/login/oauth/access_token"
         header = {
             "Accept": "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
             "User-Agent": "daredevil-token-depot",
         }
-        client_id = auth_request.get("client_id", "1")
-        device_code = auth_request.get("device_code", "2")
-        interval = auth_request.get("interval", 5)
-        expires_in = auth_request.get("expires_in", 600)
-        endpoint = "https://github.com/login/oauth/access_token"
+        session = await get_async_session()
+        async with session:
+            statement = select(User).where(User.client_id == client_id)
+            user = (await session.exec(statement)).one()
+        interval = user.interval
         grant_type = "urn:ietf:params:oauth:grant-type:device_code"
 
         logfire.info("polling user access token with code ...")
         await manager.send_update(
-            "polling user access token with code ...", websocket
+            "polling user access token at github ...", websocket
         )
         start_time = time.time()
-        async with AsyncClient() as viper:
-            try:
-                while time.time() - start_time < expires_in:
+        try:
+            while time.time() - start_time < user.expires_in:
+                async with AsyncClient() as viper:
                     response = await viper.post(
-                        url=endpoint,
+                        url=token_link,
                         headers=header,
                         data={
-                            "client_id": client_id,
-                            "device_code": device_code,
+                            "client_id": user.client_id,
+                            "device_code": user.device_code,
                             "grant_type": grant_type,
                         },
                     )
 
-                response_data = response.json()
+                    oauth_response = response.json()
 
-                if "access_token" in response_data:
-                    token = {}
-                    token["user_token"] = response_data["access_token"]
+                    if "access_token" in oauth_response:
+                        oa_atr_model = OAuthAccessTokenResponse.model_validate(
+                            oauth_response
+                        )
+                        logfire.info("GH user access token collected")
+                        await manager.send_update(
+                            f"OAuth token retrieved: {oa_atr_model.access_token}",
+                            websocket,
+                        )
+                        async with session:
+                            user.access_token = oa_atr_model.access_token
+                            session.add(user)
+                            session.commit()
+                            session.refresh(user)
+                            print(user)
 
-                    logfire.info(f"GH user access token {token}")
-                    await manager.send_update(f"token: {token}", websocket)
-
-                    manager.disconnect(websocket)
-                    return token
-                elif "error" in response_data:
-                    error = response_data.get("error")
-                    match error:
-                        case "authorization_pending":
-                            logfire.info("authorization is pending")
-                            await manager.send_update(
-                                "authorization is pending", websocket
-                            )
-                            await asyncio.sleep(interval)
-                        case "slow_down":
-                            logfire.info("authorization slow down")
-                            await manager.send_update(
-                                "authorization slow down", websocket
-                            )
-                            interval += 5
-                            await asyncio.sleep(interval)
-                        case _:
-                            if error in ["expired_token", "access_denied"]:
-                                logfire.error(f"GH oauth error: {error}")
+                        manager.disconnect(websocket)
+                        inspect(user)
+                        break
+                    elif "error" in oauth_response:
+                        error = oauth_response.get("error")
+                        match error:
+                            case "authorization_pending":
+                                logfire.info("Authorization is Pending")
                                 await manager.send_update(
-                                    f"GH oauth error: {error.msg}", websocket
+                                    "Authorization is Pending", websocket
                                 )
-                                manager.disconnect(websocket)
-                                raise Exception(f"GH oauth fail {error.msg}")
-                else:
-                    logfire.error(
-                        f"Github oauth error in response: {response_data}"
-                    )
-                    await manager.send_update(
-                        f"GitHub oauth error in response: {response_data}",
-                        websocket,
-                    )
-                    await asyncio.sleep(interval)
-                continue
+                            case "slow_down":
+                                logfire.info("authorization slow down")
+                                await manager.send_update(
+                                    "Authorization Slow Down", websocket
+                                )
+                                interval += 5
+                            case "incorrect_device_code":
+                                logfire.info(
+                                    "Incorrect Device Code, Try Again."
+                                )
+                                await manager.send_update(
+                                    "Incorrect Device Code, Try Again.",
+                                    websocket,
+                                )
+                            case _:
+                                if error in [
+                                    "expired_token",
+                                    "access_denied",
+                                    "device_flow_disabled",
+                                    "unsupported_grant_type",
+                                    "incorrect_client_credentials",
+                                ]:
+                                    raise Exception(error)
+                        await asyncio.sleep(interval)
+                        continue
 
-            finally:
-                logfire.error("GitHub OAuth polling timed out")
-                await manager.send_update(
-                    "GitHub OAuth polling timed out", websocket
-                )
-                manager.disconnect(websocket)
-                raise Exception("GitHub OAuth polling timed out")
+        except Exception as e:
+            logfire.error(f"GitHub OAuth Polling Error: {e.msg}")
+            await manager.send_update(
+                f"GitHub OAuth Polling Error: {e.msg}", websocket
+            )
+            manager.disconnect(websocket)
+            raise Exception(f"Error: {e.msg}")
+        finally:
+            logfire.info("GitHub OAuth polling closed")
+            await manager.send_update("GitHub OAuth polling closed.", websocket)
+            manager.disconnect(websocket)
 
 
 # OAuth Device Authorization
 @api.post("/create-token")
-async def create_token(*, client_id: str) -> dict:
+async def create_token(*, client_id: str) -> CreateTokenResponse:
     endpoint = "https://github.com/login/device/code"
     header = {
         "Accept": "application/vnd.github+json",
@@ -135,22 +153,26 @@ async def create_token(*, client_id: str) -> dict:
 
     with logfire.span("requesting github device-flow user token ..."):
         try:
+            session = get_async_session()
             async with AsyncClient() as viper:
                 response = await viper.post(
                     url=endpoint, headers=header, data={"client_id": client_id}
                 )
+                response["client_id"] = client_id
+                ctr_model = CreateTokenResponse.model_validate(response.json())
 
-                print(response)
-                auth_request = response.json()
-                print(auth_request)
+                logfire.info(f"github token response: {ctr_model}")
+                async with session:
+                    user = User.model_validate(response.json())
+                    session.add(user)
+                    session.commit()
+                    session.refresh(user)
+                    print(user)
 
-                if "device_code" in auth_request:
-                    device_code = auth_request["device_code"]
-                else:
-                    raise Exception(f"no device code! {auth_request}")
+                inspect(user)
+                inspect(ctr_model)
 
-                logfire.info(f"github login info: {auth_request}")
-                return {"device_code": device_code, "link": endpoint}
+                return ctr_model
 
         except Exception as e:
             logfire.error(f"Authentication request failed with : {e}")
