@@ -51,7 +51,9 @@ async def create_token_status(*, auth_request, websocket: WebSocket):
         grant_type = "urn:ietf:params:oauth:grant-type:device_code"
 
         logfire.info("polling user access token with code ...")
-        await manager.send_update("polling user access token with code ...", websocket)
+        await manager.send_update(
+            "polling user access token with code ...", websocket
+        )
         start_time = time.time()
         async with AsyncClient() as viper:
             try:
@@ -103,12 +105,10 @@ async def create_token_status(*, auth_request, websocket: WebSocket):
                                 raise Exception(f"GH oauth fail {error.msg}")
                 else:
                     logfire.error(
-                        f"Github oauth error in response: {
-                            response_data}"
+                        f"Github oauth error in response: {response_data}"
                     )
                     await manager.send_update(
-                        f"GitHub oauth error in response: {
-                            response_data}",
+                        f"GitHub oauth error in response: {response_data}",
                         websocket,
                     )
                     await asyncio.sleep(interval)
@@ -116,7 +116,9 @@ async def create_token_status(*, auth_request, websocket: WebSocket):
 
             finally:
                 logfire.error("GitHub OAuth polling timed out")
-                await manager.send_update(f"GitHub OAuth polling timed out", websocket)
+                await manager.send_update(
+                    "GitHub OAuth polling timed out", websocket
+                )
                 manager.disconnect(websocket)
                 raise Exception("GitHub OAuth polling timed out")
 

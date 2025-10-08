@@ -22,7 +22,7 @@ async def github_app():
     session = GithubJWT()
     jwt = session.generate()
 
-    endpoint = f"https://api.github.com/app"
+    endpoint = "https://api.github.com/app"
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
@@ -54,7 +54,9 @@ async def github_app():
                     logfire.info(f"User {user_obj.login} created!")
 
                 del auth_response["owner"]
-                statement = select(App).where(App.github_app_id == auth_response["id"])
+                statement = select(App).where(
+                    App.github_app_id == auth_response["id"]
+                )
                 github_app = (await session.exec(statement)).one_or_none()
                 if github_app is None:
                     app_id_value = auth_response["id"]
