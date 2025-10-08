@@ -1,0 +1,13 @@
+.layout-container {
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+main {
+  overflow: scroll !important;
+  flex: 1;
+}

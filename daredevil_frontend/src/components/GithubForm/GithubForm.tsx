@@ -1,26 +1,32 @@
 import { Button, Field, Heading, Input, Stack } from '@chakra-ui/react';
 
-export function LoginForm() {
+type Params = {
+  isDisabled: boolean;
+}
+
+export function GithubForm({
+  isDisabled
+}: Params) {
   return (
     <Stack gap="8" className="login-form">
       <Heading size="lg" className="t-font">
-        User Login
+        Github Login
       </Heading>
+      <Field.Root orientation="horizontal" required>
+        <Field.Label>
+          Client ID
+          <Field.RequiredIndicator />
+        </Field.Label>
+        <Input disabled={isDisabled} name="clientId" />
+      </Field.Root>
       <Field.Root orientation="horizontal" required>
         <Field.Label>
           Email
           <Field.RequiredIndicator />
         </Field.Label>
-        <Input name="email" type="email" />
+        <Input disabled={isDisabled} name="email" type="email" />
       </Field.Root>
-      <Field.Root orientation="horizontal" required>
-        <Field.Label>
-          Password
-          <Field.RequiredIndicator />
-        </Field.Label>
-        <Input name="password" type="password" />
-      </Field.Root>
-      <Button type="submit" alignSelf="flex-end">
+      <Button disabled={isDisabled} type="submit" alignSelf="flex-end">
         Submit
       </Button>
     </Stack>
