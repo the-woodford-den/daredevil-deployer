@@ -14,11 +14,14 @@
       "@/components/*": [
         "./src/components/*"
       ],
-      "@/models/*": [
-        "./src/models/*"
+      "@/data/*": [
+        "./src/data/*"
       ],
       "@/pages/*": [
         "./src/pages/*"
+      ],
+      "@/state/*": [
+        "./src/state/*"
       ]
     },
     "noUncheckedSideEffectImports": true,
