@@ -1,26 +1,20 @@
-import asyncio
-import time
-from typing import Annotated
-
 import logfire
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from httpx import AsyncClient
 from rich import inspect, print
 from sqlmodel import select
 
-from ..configs.auth import GithubJWT
-from ..dbs.engine import get_async_session
-from ..models.github import App
-from ..models.user import User
+from ..configs import GithubAppLib
+from ..dbs import get_async_session
+from ..models import App, User
 
 api = APIRouter(prefix="/user")
 
 
 #
-@api.get("/github-app")
-async def github_app():
-    session = GithubJWT()
-    jwt = session.generate()
+@api.get("/github-app/{client_id}")
+async def github_app(*, client_id: str):
+    jwt = GithubAppLib.create_jwt(client_id)
 
     endpoint = "https://api.github.com/app"
     headers = {

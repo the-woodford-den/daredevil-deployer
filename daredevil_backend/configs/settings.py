@@ -1,13 +1,13 @@
 from functools import lru_cache
 from typing import Optional
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from sqlmodel import Field, SQLModel
 
 
-class Settings(SQLModel, BaseSettings):
+class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="allow"
+        env_file=".env", env_file_encoding="utf-8", extra="allow", case_sensitive=False
     )
 
     # GitHub settings

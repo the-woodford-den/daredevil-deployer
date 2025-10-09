@@ -1,3 +1,3 @@
-from engine import get_async_session
+from .engine import get_async_session, init_db
 
-__all__ = ["get_async_session"]
+__all__ = ["get_async_session", "init_db"]

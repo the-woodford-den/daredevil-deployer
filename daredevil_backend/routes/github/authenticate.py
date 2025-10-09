@@ -8,7 +8,7 @@ from httpx import AsyncClient
 from rich import inspect, print
 from sqlmodel import select
 
-from ...config import GithubAppLib
+from ...configs import GithubAppLib
 from ...dbs import get_async_session
 from ...models import (App, AppResponse, AppTokenResponse, CreateTokenResponse,
                        OAuthAccessTokenResponse, User, UserResponse)

@@ -2,10 +2,11 @@ import logfire
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .configs.settings import get_settings
-from .dbs.engine import init_db
-from .routes import github as git_routes
+from .configs import get_settings
+from .dbs import init_db
 from .routes import user as user_routes
+from .routes.github import authenticate as git_routes
+from .routes.github import repository as repo_routes
 
 # async def create_app() -> FastAPI:
 #     app = FastAPI()
@@ -26,6 +27,7 @@ from .routes import user as user_routes
 
 app = FastAPI()
 app.include_router(git_routes.api)
+app.include_router(repo_routes.api)
 app.include_router(user_routes.api)
 app.add_middleware(
     CORSMiddleware,

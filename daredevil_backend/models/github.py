@@ -1,12 +1,9 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import Optional
 from uuid import UUID
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, SQLModel
 
 from .base import IDModel, TSModel
-
-if TYPE_CHECKING:
-    from .user import User
 
 
 class OAuthAccessTokenResponse(SQLModel):
@@ -90,19 +87,19 @@ class AppBase(SQLModel):
     slug: str = Field()
     node_id: str = Field()
     client_id: str = Field()
-    owner: Optional[AppOwnerResponse] = Field(default=None)
     name: str = Field()
     description: Optional[str] = Field(default=None)
     external_url: str = Field()
     html_url: str = Field()
     created_at: str = Field()
     updated_at: str = Field()
-    events: List[Optional[str]] = Field(default_factory=list)
-    permissions: Optional[AppPermissionsResponse] = Field(default=None)
 
 
 class AppResponse(AppBase):
     id: int = Field()
+    owner: Optional[AppOwnerResponse] = Field(default=None)
+    events: list[Optional[str]] = Field(default_factory=list)
+    permissions: Optional[AppPermissionsResponse] = Field(default=None)
 
 
 class App(AppBase, IDModel, TSModel, table=True):
@@ -210,7 +207,7 @@ class RepositoryBase(SQLModel):
 
 
 class RepositoryResponse(RepositoryBase):
-    topics: List[Optional[str]]
+    topics: list[Optional[str]]
     owner: Optional[AppOwnerResponse]
     license: Optional["RepoLicenseResponse"]
     permissions: Optional[RepoPermissionsBase]

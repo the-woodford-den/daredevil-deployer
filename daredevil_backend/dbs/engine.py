@@ -8,9 +8,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from ..configs.settings import get_settings
-from ..models.github import App
-from ..models.user import User
+from ..configs import get_settings
+from ..models import App, User
 
 settings = get_settings()
 inspect(settings)
