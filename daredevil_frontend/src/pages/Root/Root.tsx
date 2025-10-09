@@ -1,14 +1,19 @@
-import { useRef, useState, type ReactNode } from 'react';
-import { type User } from '@/models/user';
-import { type ApiError } from '@/models/error';
-import { Note } from '@/components/Note';
+import { useRef, useState } from 'react';
 import { createToken } from '@/api/user';
+import { Alarm } from '@/components/Alarm';
+import { DisplayList } from '@/components/DisplayList';
+import { DisplayPolling } from '@/components/DisplayPolling';
+import { Note } from '@/components/Note';
 import { UserTokenForm } from '@/components/UserTokenForm';
+import {
+  type User,
+  type ApiError,
+  type WebLinks
+} from '@/data';
 import rubyUrl from '~/ruby.svg';
 import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
 import {
   Box,
-  Code,
   Container,
   Flex,
   For,
@@ -22,31 +27,26 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import './style.css';
-import { Alarm } from '@/components/Alarm';
 
-
-interface WebLinks {
-  id: string;
-  text?: string;
-  icon?: ReactNode;
-  iconClass?: string;
-}
 
 const items: WebLinks[] = [
   {
     id: 'notion',
     text: 'Notion Docs',
     iconClass: 'metroid',
+    url: 'https://www.notion.com/'
   },
   {
     id: 'firecracker',
     text: 'Firecracker',
     iconClass: 'capybara',
+    url: 'https://firecracker-microvm.github.io/'
   },
   {
     id: 'fastapi',
     text: 'Fast API',
     iconClass: 'ram',
+    url: 'https://fastapi.tiangolo.com/'
   },
 ];
 
@@ -61,7 +61,6 @@ export function Root() {
   const [jsonData] = useState<WebLinks[]>(items);
   const [user, setUser] = useState<User>();
   const [error, setError] = useState<ApiError | null>(null);
-  const [loading, setLoading] = useState<Boolean>(true);
   const ref = useRef<HTMLFormElement>(null);
 
   const handleUserToken = async (data: FormData) => {
@@ -122,8 +121,11 @@ export function Root() {
                         aria-label={item.id}
                         variant="outline"
                         size="lg"
+                        asChild={true}
                       >
-                        {item.iconClass && icons[item.iconClass as keyof typeof icons]}
+                        <a href={item.url} target="_blank">
+                          {icons[item.iconClass as keyof typeof icons]}
+                        </a>
                       </IconButton>
                       <Text textStyle="sm">{item.text}</Text>
                     </VStack>
@@ -144,7 +146,14 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {user ? <Text textStyle="4xl">{user.clientId}</Text> : <Text textStyle="5xl">Nada</Text>}
+              {user ? (
+                <DisplayList
+                  item1={user.verificationUri}
+                  item2={user.userCode}
+                  item3={`Expires in: ${Number(user.expiresIn) / 60} minutes`}
+                  indicator="circle"
+                />
+              ) : (<Text textStyle="5xl">Nada</Text>)}
             </Box>
           </Flex>
         </GridItem>
@@ -159,11 +168,16 @@ export function Root() {
               color="white"
               w="65%"
             >
-              <form ref={ref} action={async (formData) => {
-                await handleUserToken(formData);
-              }}>
-                <UserTokenForm />
-              </form>
+              {user ? (
+                <DisplayPolling
+                  clientId={user.clientId}
+                  indicator="squirrel"
+                />
+              ) : (
+                <form ref={ref} action={async (formData) => { await handleUserToken(formData) }}>
+                  <UserTokenForm />
+                </form>
+              )}
             </Box>
           </Flex>
         </GridItem>

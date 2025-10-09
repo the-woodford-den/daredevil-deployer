@@ -8,10 +8,12 @@ import {
   Text
 } from '@chakra-ui/react';
 import { getRepositories } from '@/api/repositories';
-import { type ApiError } from '@/models/error';
-import { type Repository } from '@/models/repository';
 import { Alarm } from '@/components/Alarm';
 import { Loading } from '@/components/Loading';
+import {
+  type ApiError,
+  type Repository
+} from '@/data';
 import './style.css';
 
 

@@ -1,6 +1,8 @@
 import { ResultAsync } from 'neverthrow';
-import { type Repository } from '@/models/repository';
-import { type ApiError } from '@/models/error';
+import {
+  type Repository,
+  type ApiError
+} from '@/data';
 
 
 export const getRepositories = (token: string): ResultAsync<Repository[], ApiError> => {

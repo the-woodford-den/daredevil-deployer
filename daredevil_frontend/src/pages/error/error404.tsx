@@ -8,11 +8,11 @@ export function Error404() {
       gap="6"
       mt="4"
     >
-      <GridItem colSpan={3}>
+      <GridItem alignSelf="auto" justifySelf="center" colSpan={3}>
         <Heading size="2xl">Route Not Found!</Heading>
       </GridItem>
       <GridItem colSpan={3}></GridItem>
-      <GridItem colSpan={3}>
+      <GridItem alignSelf="auto" justifySelf="center" colSpan={3}>
         <Heading size="md">Try Again!</Heading>
       </GridItem>
     </Grid>

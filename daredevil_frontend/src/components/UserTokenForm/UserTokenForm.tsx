@@ -5,7 +5,7 @@ export function UserTokenForm() {
   const { pending } = useFormStatus();
 
   return (
-    <Stack gap="8" className="login-form">
+    <Stack gap="8" className="user-token-form">
       <Heading size="lg" className="t-font">
         Github Login
       </Heading>

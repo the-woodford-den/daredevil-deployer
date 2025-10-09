@@ -1,4 +1,4 @@
-import { GithubForm } from '@/components/GithubForm';
+import { NetworkForm } from '@/components/NetworkForm';
 import { Note } from '@/components/Note';
 import {
   Box,
@@ -16,7 +16,7 @@ export function Dashboard() {
         </Heading>
       </GridItem>
       <GridItem colSpan={2}>
-        <GithubForm />
+        <NetworkForm />
       </GridItem>
       <GridItem>
         <Box
@@ -29,8 +29,7 @@ export function Dashboard() {
           </Heading>
         </Box>
       </GridItem>
-      <GridItem></GridItem>
-      <GridItem></GridItem>
+      <GridItem colSpan={2}></GridItem>
       <GridItem>
         <Note
           avatar="mega"
