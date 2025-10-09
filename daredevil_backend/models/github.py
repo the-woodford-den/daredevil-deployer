@@ -34,95 +34,87 @@ class UserResponse(SQLModel):
     access_token: Optional[str] = None
 
 
-class AppMergeQueuesResponse(SQLModel):
-    # metadata: str
-    packages: str
-    pages: str
-    profile: str
-    pull_requests: str
-    repository_advisories: str
-    repository_custom_properties: str
-    repository_hooks: str
-    repository_projects: str
-    secrets: str
-    secret_scanning_alerts: str
-    secret_scanning_bypass_requests: str
-    security_events: str
-    starring: str
-    statuses: str
-    user_events: str
-    vulnerability_alerts: str
-    watching: str
-    workflows: str
-
-
 class AppPermissionsResponse(SQLModel):
-    actions: str
-    actions_variables: str
-    administration: str
-    attestations: str
-    checks: str
-    contents: str
-    dependabot_secrets: str
-    deployments: str
-    discussions: str
-    emails: str
-    environments: str
-    followers: str
-    issues: str
+    actions: Optional[str] = Field(default=None)
+    actions_variables: Optional[str] = Field(default=None)
+    administration: Optional[str] = Field(default=None)
+    attestations: Optional[str] = Field(default=None)
+    checks: Optional[str] = Field(default=None)
+    contents: Optional[str] = Field(default=None)
+    dependabot_secrets: Optional[str] = Field(default=None)
+    deployments: Optional[str] = Field(default=None)
+    discussions: Optional[str] = Field(default=None)
+    emails: Optional[str] = Field(default=None)
+    environments: Optional[str] = Field(default=None)
+    followers: Optional[str] = Field(default=None)
+    issues: Optional[str] = Field(default=None)
 
 
-class AppBase(SQLModel):
-    client_id: str
-    slug: str
-    node_id: str
-    name: str
-    description: str
-    external_url: str
-    html_url: str
-    created_at: str
-    updated_at: str
-    installations_count: int | None = 0
-
-
-class AppResponse(AppBase):
-    id: int
-    events: List[str] = []
-    permissions: AppPermissionsResponse
-    merge_queues: AppMergeQueuesResponse
-
-
-class App(AppBase, IDModel, TSModel, table=True):
-    github_app_id: int
+class AppEventsBase(SQLModel):
+    issues: Optional[str] = Field(default=None)
+    checks: Optional[str] = Field(default=None)
+    metadata: Optional[str] = Field(default=None)
+    contents: Optional[str] = Field(default=None)
+    deployments: Optional[str] = Field(default=None)
+    additionalProperties: Optional[str] = Field(default=None)
 
 
 class AppOwnerBase(SQLModel):
+    name: Optional[str] = Field(default=None)
+    email: Optional[str] = Field(default=None)
     login: str
     node_id: str
     avatar_url: str
-    gravatar_id: str
-    url: str
-    html_url: str
-    followers_url: str
-    following_url: str
-    gists_url: str
-    starred_url: str
-    subscriptions_url: str
-    organizations_url: str
-    repos_url: str
-    events_url: str
-    received_events_url: str
-    type: str
-    user_view_type: str
-    site_admin: bool
+    gravatar_id: Optional[str] = Field(default=None)
+    url: str = Field()
+    html_url: str = Field()
+    followers_url: str = Field()
+    following_url: str = Field()
+    gists_url: str = Field()
+    starred_url: str = Field()
+    subscriptions_url: str = Field()
+    organizations_url: str = Field()
+    repos_url: str = Field()
+    events_url: str = Field()
+    received_events_url: str = Field()
+    type: str = Field()
+    user_view_type: str = Field()
+    site_admin: bool = Field(default=False)
 
 
 class AppOwnerResponse(AppOwnerBase):
     id: int
 
 
-class AppOwner(AppOwnerBase):
-    github_id: int
+class AppBase(SQLModel):
+    slug: str = Field()
+    node_id: str = Field()
+    client_id: str = Field()
+    owner: Optional[AppOwnerResponse] = Field(default=None)
+    name: str = Field()
+    description: Optional[str] = Field(default=None)
+    external_url: str = Field()
+    html_url: str = Field()
+    created_at: str = Field()
+    updated_at: str = Field()
+    events: List[Optional[str]] = Field(default_factory=list)
+    permissions: Optional[AppPermissionsResponse] = Field(default=None)
+
+
+class AppResponse(AppBase):
+    id: int = Field()
+
+
+class App(AppBase, IDModel, TSModel, table=True):
+    __tablename__ = "github_apps"
+    github_app_id: int
+    token: Optional[str] = Field(default=None)
+    expires_at: Optional[str] = Field(default=None)
+
+
+class AppTokenResponse(SQLModel):
+    token: str = Field()
+    expires_at: str = Field()
 
 
 class RepoPermissionsBase(SQLModel):

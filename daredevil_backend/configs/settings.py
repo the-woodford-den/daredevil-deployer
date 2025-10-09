@@ -1,24 +1,26 @@
 from functools import lru_cache
+from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlmodel import Field, SQLModel
 
 
-class Settings(BaseSettings):
+class Settings(SQLModel, BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="allow"
     )
 
     # GitHub settings
-    gh_username: str | None = None
-    gha_id: str | None = None
-    gha_private_key: str | None = None
-    logfire_token: str | None = None
-    db_host: str
-    db_name: str
-    db_port: str
-    db_user: str
-    db_url: str
-    gha_client_id: str
+    gha_client_id: Optional[str] = Field(default=None)
+    gh_username: Optional[str] = Field(default=None)
+    gha_id: Optional[str] = Field(default=None)
+    gha_private_key: Optional[str] = Field(default=None)
+    logfire_token: Optional[str] = Field(default=None)
+    db_host: str = Field()
+    db_name: str = Field()
+    db_port: str = Field()
+    db_user: str = Field()
+    db_url: str = Field()
 
     def __getattr__(self, name: str):
         return None

@@ -8,19 +8,17 @@ from rich import inspect
 from .settings import get_settings
 
 
-class GithubJWT:
+class GithubAppLib:
+    """The Github App Library for Auth, Configs, etc. as the App itself."""
 
     def __init__(self):
-        settings = get_settings()
-        self.gh_username = settings.gh_username
-        self.gha_client_id = settings.gha_client_id
-        self.gha_pk_path = settings.gha_private_key
+        self.settings = get_settings()
 
-    def generate(self):
-        with logfire.span("creating auth jwt"):
+    def create_jwt(self, client_id: str):
+        with logfire.span("GithubApp Creating its own JWT..."):
             try:
                 pk_path = Path.cwd()
-                full_path = pk_path / self.gha_pk_path
+                full_path = pk_path / self.settings.gha_private_key
 
                 with open(full_path, "rb") as key_file:
                     signing_key = key_file.read()
@@ -28,11 +26,13 @@ class GithubJWT:
                 payload = {
                     "iat": int(time.time()),
                     "exp": int(time.time()) + 600,
-                    "iss": self.gha_client_id,
+                    "iss": client_id,
                 }
-                github_jwt = jwt.encode(payload, signing_key, algorithm="RS256")
+                encoded_jwt = jwt.encode(
+                    payload, signing_key, algorithm="RS256"
+                )
 
-                return github_jwt
+                return encoded_jwt
 
             except Exception as e:
                 logfire.error(f"Error Message {e}")

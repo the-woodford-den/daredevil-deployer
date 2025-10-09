@@ -3,15 +3,15 @@ import time
 from typing import List
 
 import logfire
-from fastapi import APIRouter, HTTPException, WebSocket
+from fastapi import APIRouter, WebSocket
 from httpx import AsyncClient
 from rich import inspect, print
 from sqlmodel import select
 
-from ..dbs.engine import get_async_session
-from ..models.github import (CreateTokenResponse, OAuthAccessTokenResponse,
-                             RepositoryResponse, UserResponse)
-from ..models.user import User
+from ...config import GithubAppLib
+from ...dbs import get_async_session
+from ...models import (App, AppResponse, AppTokenResponse, CreateTokenResponse,
+                       OAuthAccessTokenResponse, User, UserResponse)
 
 api = APIRouter(prefix="/github")
 
@@ -36,6 +36,80 @@ class ConnectionManager:
 
 
 manager = ConnectionManager()
+# url = f"https://api.github.com/users/{username}/installation"
+
+
+@api.get("/get-app")
+async def get_app(*, app_slug: str) -> App:
+    url = f"https://api.github.com/apps/{app_slug}"
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "daredevil-deployer",
+    }
+    try:
+        async with AsyncClient() as viper:
+            response = await viper.get(url=url, headers=headers)
+            data = response.json()
+            github_app_obj = AppResponse.model_validate(data)
+
+            session = await get_async_session()
+            async with session:
+                statement = select(App).where(
+                    App.github_app_id == github_app_obj.id
+                )
+                github_app = (await session.exec(statement)).one_or_none()
+                if github_app is None:
+                    gha_id = github_app_obj.id
+                    app_dict = App.model_dump(github_app_obj)
+                    del app_dict["id"]
+                    app_dict["github_app_id"] = gha_id
+                    app_obj = App.model_validate(app_dict)
+                    session.add(app_obj)
+                    await session.commit()
+                    await session.refresh(app_obj)
+
+    except Exception as e:
+        logfire.error(f"GitHub App Ids Get Error: {e.msg}")
+        raise Exception(f"Error: {e.msg}")
+    finally:
+        logfire.info("GitHub App Validated & Stored in DB")
+        inspect(app_obj)
+        return app_obj
+
+
+# Authenticate as a GitHub App
+@api.post("/authenticate-as-app")
+async def authenticate_as_app(*, gha_id: str) -> AppTokenResponse:
+    session = await get_async_session()
+    async with session:
+        statement = select(App).where(App.github_app_id == gha_id)
+        g_app = (await session.exec(statement)).one_or_none()
+        if g_app is None:
+            return {"status_code": 404, "message": "Not Found."}
+
+    app_jwt = GithubAppLib.create_jwt(g_app.client_id)
+
+    url = f"https://api.github.com/app/installations/{g_app.github_app_id}/access_tokens"
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Authorization": f"Bearer ${app_jwt}",
+        "User-Agent": "daredevil-deployer",
+    }
+    async with AsyncClient() as viper:
+        response = await viper.post(url=url, headers=headers)
+        gh_app_token_obj = AppTokenResponse.model_validate(response.json())
+        g_app.token = gh_app_token_obj.token
+        g_app.expires_at = gh_app_token_obj.expires_at
+
+        async with session:
+            session.add(g_app)
+            await session.commit()
+            await session.refresh(g_app)
+    inspect(g_app)
+    inspect(gh_app_token_obj)
+    return gh_app_token_obj
 
 
 @api.websocket("/poll-create-token/{id}")
@@ -189,33 +263,3 @@ async def create_token(*, client_id: str) -> UserResponse:
         except Exception as e:
             logfire.error(f"Authentication request failed with : {e}")
             raise Exception(f"Authentication request failed with : {e}")
-
-
-@api.get("/repos")
-async def get_repos(*, user_token: str) -> List[RepositoryResponse]:
-    endpoint = "https://api.github.com/user/repos"
-    header = {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "Authorization": f"Bearer {user_token}",
-    }
-
-    with logfire.span("... grabbing list of user repositories ..."):
-        try:
-            async with AsyncClient(timeout=60) as viper:
-                response = await viper.get(
-                    headers=header,
-                    url=endpoint,
-                )
-                repo_list = response.json()
-                repo_response = []
-                for repo in repo_list:
-                    repo_obj = RepositoryResponse.model_validate(repo)
-                    inspect(repo_obj)
-                    repo_response.append(repo_obj)
-
-            return repo_list
-
-        except HTTPException as e:
-            logfire.error("Error Message {msg=}", msg=e)
-            raise HTTPException(status_code=e.status_code, detail=e.detail)
