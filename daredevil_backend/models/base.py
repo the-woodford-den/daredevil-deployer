@@ -1,7 +1,8 @@
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, SQLModel, text
+from sqlalchemy import func
+from sqlmodel import Column, DateTime, Field, SQLModel
 
 
 class IDModel(SQLModel):
@@ -11,14 +12,9 @@ class IDModel(SQLModel):
 class TSModel(SQLModel):
     created_at: datetime = Field(
         default_factory=datetime.now,
-        nullable=False,
-        sa_column_kwargs={"server_default": text("current_timestamp(0)")},
+        sa_column=Column(DateTime(timezone=True), server_default=func.now())
     )
     updated_at: datetime = Field(
         default_factory=datetime.now,
-        nullable=False,
-        sa_column_kwargs={
-            "server_default": text("current_timestamp(0)"),
-            "onupdate": text("current_timestamp(0)"),
-        },
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     )

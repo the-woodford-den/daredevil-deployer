@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { List } from '@chakra-ui/react';
 import { LuSquirrel } from 'react-icons/lu';
+import { type UUID } from 'crypto';
 
 
 const icons = {
@@ -8,18 +9,19 @@ const icons = {
 }
 
 type Params = {
-  clientId: string;
+  userId: UUID;
   indicator: string;
 }
 
 export function DisplayPolling({
-  clientId,
+  userId,
   indicator
 }: Params) {
+  console.log(userId);
   const [pollMessage, setPollMessage] = useState()
   const icon = icons[indicator as keyof typeof icons];
   const ws_base = import.meta.env.VITE_WS_BACKEND_URL;
-  const ws_path = `/github/poll-create-token/${clientId}`;
+  const ws_path = `/github/poll-create-token/${userId}`;
 
   useEffect(() => {
     const ws = new WebSocket(`${ws_base}${ws_path}`);
@@ -46,7 +48,7 @@ export function DisplayPolling({
         ws.close();
       }
     };
-  }, [clientId])
+  }, [userId])
 
 
   return (

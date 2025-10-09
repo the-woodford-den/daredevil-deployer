@@ -26,7 +26,9 @@ export const createToken = (clientId: string): ResultAsync<User, ApiError> => {
         deviceCode: userResponse.device_code,
         userCode: userResponse.user_code,
         verificationUri: userResponse.verification_uri,
+        id: userResponse.id
       } as User;
+      console.log(userResponse);
 
       return userObject;
     }

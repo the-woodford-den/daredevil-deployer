@@ -10,7 +10,7 @@ from sqlmodel import select
 
 from ..dbs.engine import get_async_session
 from ..models.github import (CreateTokenResponse, OAuthAccessTokenResponse,
-                             RepositoryResponse)
+                             RepositoryResponse, UserResponse)
 from ..models.user import User
 
 api = APIRouter(prefix="/github")
@@ -38,14 +38,15 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-@api.websocket("/poll-create-token/{client_id}")
-async def poll_create_token(*, client_id: str, websocket: WebSocket):
+@api.websocket("/poll-create-token/{id}")
+async def poll_create_token(*, id: str, websocket: WebSocket):
     await manager.connect(websocket)
     session = await get_async_session()
     async with session:
-        statement = select(User).where(User.client_id == client_id)
-        user = (await session.exec(statement)).one()
-    interval = user.interval or 5  # Default to 5 seconds if not set
+        statement = select(User).where(User.id == id)
+        user = (await session.exec(statement)).one_or_none()
+        inspect(user)
+    interval = user.interval or 15
     logfire.info(f"Starting polling with interval: {interval} seconds")
 
     while True:
@@ -59,7 +60,8 @@ async def poll_create_token(*, client_id: str, websocket: WebSocket):
 
         logfire.info("polling user access token with code ...")
         await manager.send_update(
-            f"polling user access token at github (waiting {interval}s) ...", websocket
+            f"polling user access token at github (waiting {interval}s) ...",
+            websocket,
         )
         start_time = time.time()
         try:
@@ -111,9 +113,12 @@ async def poll_create_token(*, client_id: str, websocket: WebSocket):
                                 )
                             case "slow_down":
                                 interval += 10
-                                logfire.info(f"authorization slow down - increasing interval to {interval}s")
+                                logfire.info(
+                                    f"authorization slow down - increasing interval to {interval}s"
+                                )
                                 await manager.send_update(
-                                    f"Authorization Slow Down - waiting {interval}s", websocket
+                                    f"Authorization Slow Down - waiting {interval}s",
+                                    websocket,
                                 )
                             case "incorrect_device_code":
                                 logfire.info(
@@ -149,7 +154,7 @@ async def poll_create_token(*, client_id: str, websocket: WebSocket):
 
 # OAuth Device Authorization
 @api.post("/create-token")
-async def create_token(*, client_id: str) -> CreateTokenResponse:
+async def create_token(*, client_id: str) -> UserResponse:
     endpoint = "https://github.com/login/device/code"
     header = {
         "Accept": "application/vnd.github+json",
@@ -175,10 +180,9 @@ async def create_token(*, client_id: str) -> CreateTokenResponse:
                     session.add(user)
                     await session.commit()
                     await session.refresh(user)
-
-                inspect(user)
-                inspect(ctr_model)
-                return ctr_model
+                    data = user.model_dump()
+                    inspect(data)
+                    return data
             else:
                 return response
 

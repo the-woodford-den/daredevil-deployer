@@ -70,6 +70,7 @@ export function Root() {
       (user) => setUser(user),
       (err) => setError(err)
     );
+    console.log(user);
     ref.current?.reset();
   };
 
@@ -170,7 +171,7 @@ export function Root() {
             >
               {user ? (
                 <DisplayPolling
-                  clientId={user.clientId}
+                  userId={user.id}
                   indicator="squirrel"
                 />
               ) : (

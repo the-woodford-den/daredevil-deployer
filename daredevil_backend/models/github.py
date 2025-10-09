@@ -23,6 +23,17 @@ class CreateTokenResponse(SQLModel):
     interval: int
 
 
+class UserResponse(SQLModel):
+    id: UUID
+    device_code: str
+    user_code: str
+    verification_uri: str
+    expires_in: int
+    interval: int
+    client_id: Optional[str] = None
+    access_token: Optional[str] = None
+
+
 class AppMergeQueuesResponse(SQLModel):
     # metadata: str
     packages: str
@@ -83,7 +94,6 @@ class AppResponse(AppBase):
 
 class App(AppBase, IDModel, TSModel, table=True):
     github_app_id: int
-    # user: "User" = Relationship(back_populates="app")
 
 
 class AppOwnerBase(SQLModel):
