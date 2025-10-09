@@ -10,8 +10,8 @@ if TYPE_CHECKING:
 
 
 class User(IDModel, TSModel, table=True):
-    access_token: Optional[str]
-    client_id: Optional[str]
+    access_token: Optional[str] | None = Field(default=None)
+    client_id: Optional[str] | None = Field(default=None)
     device_code: Optional[str]
     user_code: Optional[str]
     verification_uri: Optional[str]

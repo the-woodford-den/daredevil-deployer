@@ -9,7 +9,8 @@ from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from ..configs.settings import get_settings
-from ..models import github, user
+from ..models.github import App
+from ..models.user import User
 
 settings = get_settings()
 inspect(settings)
@@ -33,7 +34,9 @@ async def check_and_create_database():
             if not result.fetchone():
                 # Database doesn't exist, create it
                 await connection.execute(text("COMMIT"))
-                await connection.execute(text(f"CREATE DATABASE {settings.db_name}"))
+                await connection.execute(
+                    text(f"CREATE DATABASE {settings.db_name}")
+                )
                 logfire.info(f"Database {settings.db_name} created")
             else:
                 logfire.info(f"Database {settings.db_name} already exists")

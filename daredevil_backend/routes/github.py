@@ -38,9 +38,16 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-@api.websocket("poll-create-token")
+@api.websocket("/poll-create-token/{client_id}")
 async def poll_create_token(*, client_id: str, websocket: WebSocket):
     await manager.connect(websocket)
+    session = await get_async_session()
+    async with session:
+        statement = select(User).where(User.client_id == client_id)
+        user = (await session.exec(statement)).one()
+    interval = user.interval or 5  # Default to 5 seconds if not set
+    logfire.info(f"Starting polling with interval: {interval} seconds")
+
     while True:
         token_link = "https://github.com/login/oauth/access_token"
         header = {
@@ -48,20 +55,19 @@ async def poll_create_token(*, client_id: str, websocket: WebSocket):
             "X-GitHub-Api-Version": "2022-11-28",
             "User-Agent": "daredevil-token-depot",
         }
-        session = await get_async_session()
-        async with session:
-            statement = select(User).where(User.client_id == client_id)
-            user = (await session.exec(statement)).one()
-        interval = user.interval
         grant_type = "urn:ietf:params:oauth:grant-type:device_code"
 
         logfire.info("polling user access token with code ...")
         await manager.send_update(
-            "polling user access token at github ...", websocket
+            f"polling user access token at github (waiting {interval}s) ...", websocket
         )
         start_time = time.time()
         try:
             while time.time() - start_time < user.expires_in:
+                # Wait for the interval before polling
+                logfire.info(f"Waiting {interval}s before next poll...")
+                await asyncio.sleep(interval)
+
                 async with AsyncClient() as viper:
                     response = await viper.post(
                         url=token_link,
@@ -74,6 +80,7 @@ async def poll_create_token(*, client_id: str, websocket: WebSocket):
                     )
 
                     oauth_response = response.json()
+                    logfire.info(f"GitHub response: {oauth_response}")
 
                     if "access_token" in oauth_response:
                         oa_atr_model = OAuthAccessTokenResponse.model_validate(
@@ -87,8 +94,8 @@ async def poll_create_token(*, client_id: str, websocket: WebSocket):
                         async with session:
                             user.access_token = oa_atr_model.access_token
                             session.add(user)
-                            session.commit()
-                            session.refresh(user)
+                            await session.commit()
+                            await session.refresh(user)
                             print(user)
 
                         manager.disconnect(websocket)
@@ -103,11 +110,11 @@ async def poll_create_token(*, client_id: str, websocket: WebSocket):
                                     "Authorization is Pending", websocket
                                 )
                             case "slow_down":
-                                logfire.info("authorization slow down")
+                                interval += 10
+                                logfire.info(f"authorization slow down - increasing interval to {interval}s")
                                 await manager.send_update(
-                                    "Authorization Slow Down", websocket
+                                    f"Authorization Slow Down - waiting {interval}s", websocket
                                 )
-                                interval += 5
                             case "incorrect_device_code":
                                 logfire.info(
                                     "Incorrect Device Code, Try Again."
@@ -125,7 +132,6 @@ async def poll_create_token(*, client_id: str, websocket: WebSocket):
                                     "incorrect_client_credentials",
                                 ]:
                                     raise Exception(error)
-                        await asyncio.sleep(interval)
                         continue
 
         except Exception as e:
@@ -153,26 +159,28 @@ async def create_token(*, client_id: str) -> CreateTokenResponse:
 
     with logfire.span("requesting github device-flow user token ..."):
         try:
-            session = get_async_session()
             async with AsyncClient() as viper:
                 response = await viper.post(
                     url=endpoint, headers=header, data={"client_id": client_id}
                 )
-                response["client_id"] = client_id
+
+            if response.status_code == 200:
                 ctr_model = CreateTokenResponse.model_validate(response.json())
 
                 logfire.info(f"github token response: {ctr_model}")
+                session = await get_async_session()
                 async with session:
                     user = User.model_validate(response.json())
+                    user.client_id = client_id
                     session.add(user)
-                    session.commit()
-                    session.refresh(user)
-                    print(user)
+                    await session.commit()
+                    await session.refresh(user)
 
                 inspect(user)
                 inspect(ctr_model)
-
                 return ctr_model
+            else:
+                return response
 
         except Exception as e:
             logfire.error(f"Authentication request failed with : {e}")
