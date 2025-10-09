@@ -2,10 +2,7 @@
 
 import { type ReactNode, useCallback, useState } from "react";
 import { UserContext } from './UserContext';
-import {
-  signIn,
-  signOut
-} from '@/data'
+import { signIn, signOut } from '@/data';
 
 export function UserProvider({
   children,
@@ -13,7 +10,7 @@ export function UserProvider({
   children: ReactNode;
 }) {
   const [userName, setUserName] = useState<string | undefined>();
-  const [permissions, setPermissions] = useState<string | undefined>();
+  const [permissions, setPermissions] = useState<string[] | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSignIn = useCallback(async () => {
