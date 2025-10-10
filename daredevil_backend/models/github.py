@@ -1,9 +1,15 @@
 from typing import Optional
 from uuid import UUID
 
+from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
 from .base import IDModel, TSModel
+
+
+class AppTokenResponse(SQLModel):
+    token: str = Field()
+    expires_at: str = Field()
 
 
 class OAuthAccessTokenResponse(SQLModel):
@@ -32,25 +38,8 @@ class UserResponse(SQLModel):
 
 
 class AppPermissionsResponse(SQLModel):
-    actions: Optional[str] = Field(default=None)
-    actions_variables: Optional[str] = Field(default=None)
-    administration: Optional[str] = Field(default=None)
-    attestations: Optional[str] = Field(default=None)
-    checks: Optional[str] = Field(default=None)
-    contents: Optional[str] = Field(default=None)
-    dependabot_secrets: Optional[str] = Field(default=None)
-    deployments: Optional[str] = Field(default=None)
-    discussions: Optional[str] = Field(default=None)
-    emails: Optional[str] = Field(default=None)
-    environments: Optional[str] = Field(default=None)
-    followers: Optional[str] = Field(default=None)
-    issues: Optional[str] = Field(default=None)
-
-
-class AppEventsBase(SQLModel):
     issues: Optional[str] = Field(default=None)
     checks: Optional[str] = Field(default=None)
-    metadata: Optional[str] = Field(default=None)
     contents: Optional[str] = Field(default=None)
     deployments: Optional[str] = Field(default=None)
     additionalProperties: Optional[str] = Field(default=None)
@@ -58,7 +47,7 @@ class AppEventsBase(SQLModel):
 
 class AppOwnerBase(SQLModel):
     name: Optional[str] = Field(default=None)
-    email: Optional[str] = Field(default=None)
+    email: Optional[EmailStr] = Field(default=None)
     login: str
     node_id: str
     avatar_url: str
@@ -98,8 +87,6 @@ class AppResponse(AppBase):
     owner: Optional[AppOwnerResponse] = Field(default=None)
     events: list[Optional[str]] = Field(default_factory=list)
     permissions: Optional[AppPermissionsResponse] = Field(default=None)
-    created_at: str = Field()
-    updated_at: str = Field()
 
 
 class App(AppBase, IDModel, TSModel, table=True):
@@ -107,11 +94,6 @@ class App(AppBase, IDModel, TSModel, table=True):
     github_app_id: int
     token: Optional[str] = Field(default=None)
     expires_at: Optional[str] = Field(default=None)
-
-
-class AppTokenResponse(SQLModel):
-    token: str = Field()
-    expires_at: str = Field()
 
 
 class RepoPermissionsBase(SQLModel):
@@ -206,10 +188,19 @@ class RepositoryBase(SQLModel):
     watchers: Optional[int]
 
 
+class RepoLicenseResponse(SQLModel):
+    key: Optional[str] | None = None
+    name: Optional[str] | None = None
+    url: Optional[str] | None = None
+    spdx_id: Optional[str] | None = None
+    node_id: Optional[str] | None = None
+    html_url: Optional[str] | None = None
+
+
 class RepositoryResponse(RepositoryBase):
     topics: list[Optional[str]]
     owner: Optional[AppOwnerResponse]
-    license: Optional["RepoLicenseResponse"]
+    license: Optional[RepoLicenseResponse]
     permissions: Optional[RepoPermissionsBase]
     id: int
 
@@ -219,10 +210,32 @@ class RepositoryResponse(RepositoryBase):
 #     user: "User" = Relationship(back_populates="repositories")
 
 
-class RepoLicenseResponse(SQLModel):
-    key: Optional[str] | None = None
-    name: Optional[str] | None = None
-    url: Optional[str] | None = None
-    spdx_id: Optional[str] | None = None
-    node_id: Optional[str] | None = None
-    html_url: Optional[str] | None = None
+# class AppPermissionsResponse(SQLModel):
+#     actions: Optional[str] = Field(default=None)
+#     actions_variables: Optional[str] = Field(default=None)
+#     administration: Optional[str] = Field(default=None)
+#     attestations: Optional[str] = Field(default=None)
+#     checks: Optional[str] = Field(default=None)
+#     contents: Optional[str] = Field(default=None)
+#     dependabot_secrets: Optional[str] = Field(default=None)
+#     deployments: Optional[str] = Field(default=None)
+#     discussions: Optional[str] = Field(default=None)
+#     emails: Optional[str] = Field(default=None)
+#     environments: Optional[str] = Field(default=None)
+#     followers: Optional[str] = Field(default=None)
+#     issues: Optional[str] = Field(default=None)
+
+# class AppPermissionsResponse(SQLModel):
+#     actions: Optional[str] = Field(default=None)
+#     actions_variables: Optional[str] = Field(default=None)
+#     administration: Optional[str] = Field(default=None)
+#     attestations: Optional[str] = Field(default=None)
+#     checks: Optional[str] = Field(default=None)
+#     contents: Optional[str] = Field(default=None)
+#     dependabot_secrets: Optional[str] = Field(default=None)
+#     deployments: Optional[str] = Field(default=None)
+#     discussions: Optional[str] = Field(default=None)
+#     emails: Optional[str] = Field(default=None)
+#     environments: Optional[str] = Field(default=None)
+#     followers: Optional[str] = Field(default=None)
+#     issues: Optional[str] = Field(default=None)

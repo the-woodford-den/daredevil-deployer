@@ -3,17 +3,21 @@ import time
 from typing import List
 
 import logfire
-from fastapi import APIRouter, WebSocket
-from httpx import AsyncClient
+from fastapi import APIRouter, HTTPException, WebSocket
+from httpx import AsyncClient, HTTPStatusError
 from rich import inspect, print
 from sqlmodel import select
 
 from ...configs import GithubAppLib
 from ...dbs import get_async_session
-from ...models import (App, AppResponse, AppTokenResponse, CreateTokenResponse,
+from ...models import (App, AppResponse, AppTokenResponse,
                        OAuthAccessTokenResponse, User, UserResponse)
 
 api = APIRouter(prefix="/github")
+
+
+# class ApiError(SQLModel):
+#     status_code: Literal[401, 403, 404, 422]
 
 
 class ConnectionManager:
@@ -37,14 +41,23 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 # url = f"https://api.github.com/users/{username}/installation"
+# u.model_dump_json(exclude=set("password")
 
 
 @api.get("/get-app")
-async def get_app(*, app_slug: str) -> App:
-    url = f"https://api.github.com/apps?app_slug={app_slug}"
+async def get_app(*, app_slug: str, client_id: str) -> App:
+    """This GET request searches Github Api looking for App with 'app_slug'"""
+    """I found out late one night this route also needs a JWT from a key..."""
+
+    gha_lib = GithubAppLib()
+    app_jwt = gha_lib.create_jwt(client_id=client_id)
+
+    url = f"https://api.github.com/apps?{app_slug}"
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
+        "Authorization": f"Bearer {app_jwt}",
+        "User-Agent": "daredevil-deployer",
     }
     try:
         async with AsyncClient() as viper:
@@ -95,22 +108,21 @@ async def authenticate_as_app(*, gha_id: str) -> AppTokenResponse:
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
-        "Authorization": f"Bearer ${app_jwt}",
+        "Authorization": f"Bearer {app_jwt}",
         "User-Agent": "daredevil-deployer",
     }
-    async with AsyncClient() as viper:
-        response = await viper.post(url=url, headers=headers)
-        gh_app_token_obj = AppTokenResponse.model_validate(response.json())
-        g_app.token = gh_app_token_obj.token
-        g_app.expires_at = gh_app_token_obj.expires_at
 
-        async with session:
-            session.add(g_app)
-            await session.commit()
-            await session.refresh(g_app)
-    inspect(g_app)
-    inspect(gh_app_token_obj)
-    return gh_app_token_obj
+    try:
+        async with AsyncClient() as viper:
+            response = await viper.post(url=url, headers=headers)
+            inspect(response.json())
+            gh_app_token_obj = AppTokenResponse.model_validate(response.json())
+            inspect(gh_app_token_obj)
+
+        return gh_app_token_obj
+    except Exception as e:
+        logfire.error(f"GHA Installation Get Error: {e.status_code}")
+        raise Exception(f"Error: {e.status_code}")
 
 
 @api.websocket("/poll-create-token/{id}")
@@ -227,40 +239,47 @@ async def poll_create_token(*, id: str, websocket: WebSocket):
             manager.disconnect(websocket)
 
 
-# OAuth Device Authorization
-@api.post("/create-token")
-async def create_token(*, client_id: str) -> UserResponse:
-    endpoint = "https://github.com/login/device/code"
+# Github App Installation Token
+@api.post("/create-installation-token")
+async def create_installation_token(*, client_id: str) -> AppTokenResponse:
+    """This endpoint locates the installation of the github app by"""
+    """ an installation id. The request needs a jwt with the app's client id."""
+    """"""
+
+    gha_lib = GithubAppLib()
+    app_jwt = gha_lib.create_jwt(client_id=client_id)
+
     header = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "daredevil-token-depot",
+        "Authorization": f"Bearer {app_jwt}",
     }
+    organ = "the-woodford-den"
 
-    with logfire.span("requesting github device-flow user token ..."):
+    url = f"https://api.github.com/orgs/{organ}/installation"
+    async with AsyncClient() as client:
+        response = await client.get(url=url, headers=header)
+        data = response.json()
+        inspect(data)
+
+    endpoint = (
+        f"https://api.github.com/app/installations/{data['id']}/access_tokens"
+    )
+
+    with logfire.span("Sending Request from create_installation_token() ..."):
         try:
-            async with AsyncClient() as viper:
-                response = await viper.post(
-                    url=endpoint, headers=header, data={"client_id": client_id}
-                )
+            async with AsyncClient() as client:
+                response = await client.post(url=endpoint, headers=header)
+                logfire.info(f"github token response: {response.json()}")
+                inspect(response.json())
 
-            if response.status_code == 200:
-                ctr_model = CreateTokenResponse.model_validate(response.json())
+                response.raise_for_status()
 
-                logfire.info(f"github token response: {ctr_model}")
-                session = await get_async_session()
-                async with session:
-                    user = User.model_validate(response.json())
-                    user.client_id = client_id
-                    session.add(user)
-                    await session.commit()
-                    await session.refresh(user)
-                    data = user.model_dump()
-                    inspect(data)
-                    return data
-            else:
-                return response
+                return response.json()
+        except HTTPStatusError as e:
+            logfire.error(f"HTTP Status Error: {e.response.status_code}")
 
-        except Exception as e:
-            logfire.error(f"Authentication request failed with : {e}")
-            raise Exception(f"Authentication request failed with : {e}")
+            raise HTTPException(
+                status_code=e.response.status_code,
+                detail=f"GitHub API error: {e.response.text}",
+            )
