@@ -41,16 +41,17 @@ manager = ConnectionManager()
 
 @api.get("/get-app")
 async def get_app(*, app_slug: str) -> App:
-    url = f"https://api.github.com/apps/{app_slug}"
+    url = f"https://api.github.com/apps?app_slug={app_slug}"
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "daredevil-deployer",
     }
     try:
         async with AsyncClient() as viper:
             response = await viper.get(url=url, headers=headers)
+            inspect(response)
             data = response.json()
+            inspect(data)
             github_app_obj = AppResponse.model_validate(data)
 
             session = await get_async_session()

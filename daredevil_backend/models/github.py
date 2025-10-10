@@ -91,8 +91,6 @@ class AppBase(SQLModel):
     description: Optional[str] = Field(default=None)
     external_url: str = Field()
     html_url: str = Field()
-    created_at: str = Field()
-    updated_at: str = Field()
 
 
 class AppResponse(AppBase):
@@ -100,6 +98,8 @@ class AppResponse(AppBase):
     owner: Optional[AppOwnerResponse] = Field(default=None)
     events: list[Optional[str]] = Field(default_factory=list)
     permissions: Optional[AppPermissionsResponse] = Field(default=None)
+    created_at: str = Field()
+    updated_at: str = Field()
 
 
 class App(AppBase, IDModel, TSModel, table=True):

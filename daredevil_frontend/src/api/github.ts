@@ -11,33 +11,31 @@ export const getGithubApp = (appSlug: string): ResultAsync<GithubApp, ApiError> 
   });
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/github/get-app?${params}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    }).then(async (response) => {
-      if (!response.ok) {
-        throw {
-          type: 'NETWORK_ERROR', message: 'No Github App Found....'
-        };
-      }
-      const ghAppResponse = await response.json();
-      const appObject = {
-        id: ghAppResponse.id,
-        slug: ghAppResponse.slug,
-        nodeId: ghAppResponse.node_id,
-        clientId: ghAppResponse.client_id,
-        name: ghAppResponse.name,
-        externalUrl: ghAppResponse.external_url,
-        htmlUrl: ghAppResponse.html_url,
-        createdAt: ghAppResponse.created_at,
-        updatedAt: ghAppResponse.updated_at,
-        githubAppId: ghAppResponse.github_app_id
-      } as GithubApp;
-      console.log(appObject);
+    fetch(`${backendUrl}/github/get-app?${params}`)
+      .then(async (response) => {
+        if (!response.ok) {
+          throw {
+            type: 'NETWORK_ERROR', message: 'No Github App Found....'
+          };
+        }
+        const ghAppResponse = await response.json();
+        const appObject = {
+          id: ghAppResponse.id,
+          slug: ghAppResponse.slug,
+          nodeId: ghAppResponse.node_id,
+          clientId: ghAppResponse.client_id,
+          name: ghAppResponse.name,
+          externalUrl: ghAppResponse.external_url,
+          htmlUrl: ghAppResponse.html_url,
+          createdAt: ghAppResponse.created_at,
+          updatedAt: ghAppResponse.updated_at,
+          githubAppId: ghAppResponse.github_app_id
+        } as GithubApp;
+        console.log(appObject);
 
-      return appObject;
-    }
-    ),
+        return appObject;
+      }
+      ),
     (error) => {
       if (error && typeof error === 'object' && 'type' in error) {
         return error as ApiError;

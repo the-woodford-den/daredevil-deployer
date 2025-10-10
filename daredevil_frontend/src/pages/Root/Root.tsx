@@ -64,7 +64,7 @@ export function Root() {
   const ref = useRef<HTMLFormElement>(null);
 
   const handleGithubAppGet = async (data: FormData) => {
-    const slug = data.get("slug");
+    const slug = data.get("appSlug");
     const result = await getGithubApp(`${slug}`);
     result.match(
       (app) => setGithubApp(app),
