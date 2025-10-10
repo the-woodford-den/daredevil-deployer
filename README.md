@@ -13,7 +13,7 @@
 ---
 
 ### *Current Goals*
-<div align="center">
+<div align="left">
   <h3 align="center">This application will battle the github api to provide authentication, authorization to build applications</h3>
 
   - Authenticate github users which belong to **the-woodford-den** organization
