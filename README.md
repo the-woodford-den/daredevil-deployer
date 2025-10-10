@@ -14,10 +14,10 @@
 
 <h3 align="left">🩸Current Goals🩸</h3>
 
-<code>Authenticate & empower **the-woodford-den** users with a collection of tools & features for development</code>
-<code>Build & monitor github actions, pipelines for a project</code>
-<code>Deploy an environment / repository / project to a local server</code>
-<code>Deploy to AWS / Cloud Platforms</code>
+<p><code>Authenticate, empower the-woodford-den users with a collection of tools, features for development</code></p>
+<p><code>Build, monitor github actions, pipelines for a project</code></p>
+<p><code>Deploy an environment / repository / project to a local server</code></p>
+<p><code>Deploy to AWS / Cloud Platforms</code></p>
 
 
 ---
@@ -25,22 +25,22 @@
 <h2 align="left">🩸Daredevil Backend: uv + FastAPI + Python🩸</h2>
 <h4 align="left">🩸This part of Daredevil provides a minimal setup to get FastAPI working using uv package/project manager🩸</h4>
 
-<code>cd daredevil_backend</code>
-<code>source .venv/bin/activate</code>
-<code>uv run fastapi dev</code>
+<p><code>cd daredevil_backend</code></p>
+<p><code>source .venv/bin/activate</code></p>
+<p>code>uv run fastapi dev</code></p>
 
-<code>http://127.0.0.1:8000/</code>
-<code>http://127.0.0.1:8000/docs</code>
+<p><code>http://127.0.0.1:8000/</code></p>
+<p><code>http://127.0.0.1:8000/docs</code></p>
 
 ---
 
 <h3 align="left">🩸Daredevil Frontend: React + TypeScript + Vite🩸</h3>
 <h4 align="left">🩸This part of Daredevil provides a minimal setup to get React working in Vite with HMR and some ESLint rules🩸</h4>
 
-<code>cd daredevil_frontend</code>
-<code>npm install</code>
-<code>npm run dev</code>
-<code>http://localhost:5173/</code>
+<p><code>cd daredevil_frontend</code></p>
+<p><code>npm install</code></p>
+<p><code>npm run dev</code></p>
+<p><code>http://localhost:5173/</code></p>
 
 ---
 
