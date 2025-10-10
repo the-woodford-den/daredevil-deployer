@@ -1,13 +1,13 @@
 import { useRef, useState } from 'react';
-import { createToken } from '@/api/user';
+import { getGithubApp } from '@/api/github';
 import { Alarm } from '@/components/Alarm';
 import { DisplayList } from '@/components/DisplayList';
 import { DisplayPolling } from '@/components/DisplayPolling';
 import { Note } from '@/components/Note';
-import { UserTokenForm } from '@/components/UserTokenForm';
+import { GithubAppGetForm } from '@/components/GithubAppGetForm';
 import {
-  type User,
   type ApiError,
+  type GithubApp,
   type WebLinks
 } from '@/data';
 import rubyUrl from '~/ruby.svg';
@@ -59,18 +59,18 @@ const icons = {
 
 export function Root() {
   const [jsonData] = useState<WebLinks[]>(items);
-  const [user, setUser] = useState<User>();
+  const [githubApp, setGithubApp] = useState<GithubApp>();
   const [error, setError] = useState<ApiError | null>(null);
   const ref = useRef<HTMLFormElement>(null);
 
-  const handleUserToken = async (data: FormData) => {
-    const clientId = data.get("clientId");
-    const result = await createToken(`${clientId}`);
+  const handleGithubAppGet = async (data: FormData) => {
+    const slug = data.get("slug");
+    const result = await getGithubApp(`${slug}`);
     result.match(
-      (user) => setUser(user),
+      (app) => setGithubApp(app),
       (err) => setError(err)
     );
-    console.log(user);
+    console.log(githubApp);
     ref.current?.reset();
   };
 
@@ -146,11 +146,11 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {user ? (
+              {githubApp ? (
                 <DisplayList
-                  item1={user.verificationUri}
-                  item2={user.userCode}
-                  item3={`Expires in: ${Number(user.expiresIn) / 60} minutes`}
+                  item1={"yep"}
+                  item2={"no"}
+                  item3={"whoop"}
                   indicator="circle"
                 />
               ) : (<Text textStyle="5xl">Nada</Text>)}
@@ -168,14 +168,14 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {user ? (
+              {githubApp ? (
                 <DisplayPolling
-                  userId={user.id}
+                  userId={githubApp.id}
                   indicator="squirrel"
                 />
               ) : (
-                <form ref={ref} action={async (formData) => { await handleUserToken(formData) }}>
-                  <UserTokenForm />
+                <form ref={ref} action={async (formData) => { await handleGithubAppGet(formData) }}>
+                  <GithubAppGetForm />
                 </form>
               )}
             </Box>
