@@ -1,6 +1,5 @@
 <div display="flex">
-  <p align="left" flex="1">🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 </p>
-  <p align="right" flex="1">🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 </p>
+  <p align="center" flex="1">🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 </p>
 </div>
 <p align="center" flex="1">
   <a href="https://github.com/the-woodford-den/daredevil-deployer">
