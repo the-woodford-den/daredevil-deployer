@@ -12,39 +12,35 @@
 
 ---
 
-### *Current Goals*
-<div align="left">
+<h2 align="left">🩸Current Goals🩸</h2>
 
-  - Authenticate github users which belong to **the-woodford-den** organization
-  - Build & monitor github actions, pipelines for a project
-  - Deploy an environment for a project to a local server
-  - Deploy an environment for a project to AWS
----
----
+<p><code>Authenticate, empower the-woodford-den users with a collection of tools, features for development</code></p>
+<p><code>Build, monitor github actions, pipelines for a project</code></p>
+<p><code>Deploy an environment / repository / project to a local server</code></p>
+<p><code>Deploy to AWS / Cloud Platforms</code></p>
 
-## **Daredevil Backend: uv + FastAPI + Python**
-### *This part of Daredevil provides a minimal setup to get FastAPI working using uv package/project manager.*
-
- - ```cd daredevil_backend```
- - ```source .venv/bin/activate```
- - ```uv run fastapi dev```
-
- - ```http://127.0.0.1:8000/```
- - ```http://127.0.0.1:8000/docs```
 
 ---
 
-## **Daredevil Frontend: React + TypeScript + Vite**
-### *This part of Daredevil provides a minimal setup to get React working in Vite with HMR and some ESLint rules.*
+<h2 align="left">🩸Daredevil Backend: uv + FastAPI + Python🩸</h2>
+<h4 align="left">🩸This part of Daredevil provides a minimal setup to get FastAPI working using uv package/project manager🩸</h4>
 
- - ```cd daredevil_frontend```
- - ```npm install```
- - ```npm run dev```
+<p><code>cd daredevil_backend</code></p>
+<p><code>source .venv/bin/activate</code></p>
+<p><code>uv run fastapi dev</code></p>
 
- - ```http://localhost:5173/```
+<p><code>http://127.0.0.1:8000/</code></p>
+<p><code>http://127.0.0.1:8000/docs</code></p>
 
 ---
 
-</div>
+<h2 align="left">🩸Daredevil Frontend: React + TypeScript + Vite🩸</h2>
+<h4 align="left">🩸This part of Daredevil provides a minimal setup to get React working in Vite with HMR and some ESLint rules🩸</h4>
 
+<p><code>cd daredevil_frontend</code></p>
+<p><code>npm install</code></p>
+<p><code>npm run dev</code></p>
+<p><code>http://localhost:5173/</code></p>
+
+---
 
