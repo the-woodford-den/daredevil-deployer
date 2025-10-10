@@ -9,12 +9,12 @@ export function GithubAppGetForm() {
       <Heading size="lg" className="t-font">
         Github App Installation
       </Heading>
-      <Field.Root orientation="horizontal">
+      <Field.Root required orientation="horizontal">
         <Field.Label>
-          App Slug
+          Client Id
           <Field.RequiredIndicator />
         </Field.Label>
-        <Input name="appSlug" type="text" disabled={pending} />
+        <Input name="clientId" type="text" disabled={pending} />
       </Field.Root>
       <Button type="submit" disabled={pending}>
         {pending ? "Submitting ..." : "Submit"}

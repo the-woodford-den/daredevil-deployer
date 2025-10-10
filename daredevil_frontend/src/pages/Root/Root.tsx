@@ -1,13 +1,11 @@
 import { useRef, useState } from 'react';
-import { getGithubApp } from '@/api/github';
+import { getAccessTokenGithubApp } from '@/api/github';
 import { Alarm } from '@/components/Alarm';
-import { DisplayList } from '@/components/DisplayList';
-import { DisplayPolling } from '@/components/DisplayPolling';
 import { Note } from '@/components/Note';
 import { GithubAppGetForm } from '@/components/GithubAppGetForm';
 import {
   type ApiError,
-  type GithubApp,
+  type GithubTokenResponse,
   type WebLinks
 } from '@/data';
 import rubyUrl from '~/ruby.svg';
@@ -59,18 +57,18 @@ const icons = {
 
 export function Root() {
   const [jsonData] = useState<WebLinks[]>(items);
-  const [githubApp, setGithubApp] = useState<GithubApp>();
+  const [githubToken, setGithubToken] = useState<GithubTokenResponse>();
   const [error, setError] = useState<ApiError | null>(null);
   const ref = useRef<HTMLFormElement>(null);
 
   const handleGithubAppGet = async (data: FormData) => {
-    const slug = data.get("appSlug");
-    const result = await getGithubApp(`${slug}`);
+    const client_id = data.get("clientId") as string;
+    const result = await getAccessTokenGithubApp(client_id);
     result.match(
-      (app) => setGithubApp(app),
+      (token) => setGithubToken(token),
       (err) => setError(err)
     );
-    console.log(githubApp);
+    console.log(githubToken);
     ref.current?.reset();
   };
 
@@ -146,13 +144,14 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {githubApp ? (
-                <DisplayList
-                  item1={"yep"}
-                  item2={"no"}
-                  item3={"whoop"}
-                  indicator="circle"
-                />
+              {githubToken ? (
+                <Note
+                  avatar="react"
+                  title="Client Id"
+                  footer={githubToken.clientId}
+                >
+                  <Text textStyle="2xl">{githubToken.expires_at}</Text>
+                </Note>
               ) : (<Text textStyle="5xl">Nada</Text>)}
             </Box>
           </Flex>
@@ -168,11 +167,14 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {githubApp ? (
-                <DisplayPolling
-                  userId={githubApp.id}
-                  indicator="squirrel"
-                />
+              {githubToken ? (
+                <Note
+                  avatar="mega"
+                  title="Access Token"
+                  footer={githubToken.token}
+                >
+                  <Text textStyle="lg">{githubToken.token}</Text>
+                </Note>
               ) : (
                 <form ref={ref} action={async (formData) => { await handleGithubAppGet(formData) }}>
                   <GithubAppGetForm />
