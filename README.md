@@ -10,8 +10,17 @@
 <h1 align="center">🩸DAREDEVIL-DEPLOYER🩸</h1>
 <h3 align="center">🩸An app connecting to the Github Api for building, testing, & deploying environments🩸</h3>
 
-<p align="center">
+---
 
+### *Current Goals*
+<div align="center">
+  <h3 align="center">This application will battle the github api to provide authentication, authorization to build applications</h3>
+
+  - Authenticate github users which belong to **the-woodford-den** organization
+  - Build & monitor github actions, pipelines for a project
+  - Deploy an environment for a project to a local server
+  - Deploy an environment for a project to AWS
+---
 ---
 
 ## **Daredevil Backend: uv + FastAPI + Python**
@@ -37,6 +46,6 @@
 
 ---
 
-</p>
+</div>
 
 
