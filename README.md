@@ -12,39 +12,37 @@
 
 ---
 
-### *Current Goals*
-<div align="left">
+<h3 align="left">*Current Goals*</h3>
+<p align="left">
 
-  - Authenticate github users which belong to **the-woodford-den** organization
-  - Build & monitor github actions, pipelines for a project
-  - Deploy an environment for a project to a local server
-  - Deploy an environment for a project to AWS
----
----
+< Authenticate & empower **the-woodford-den** users with a collection of tools & features for development"\n"
+< Build & monitor github actions, pipelines for a project
+< Deploy an environment / repository / project to a local server
+< Deploy to AWS / Cloud Platforms
 
-## **Daredevil Backend: uv + FastAPI + Python**
-### *This part of Daredevil provides a minimal setup to get FastAPI working using uv package/project manager.*
-
- - ```cd daredevil_backend```
- - ```source .venv/bin/activate```
- - ```uv run fastapi dev```
-
- - ```http://127.0.0.1:8000/```
- - ```http://127.0.0.1:8000/docs```
+</p>
 
 ---
 
-## **Daredevil Frontend: React + TypeScript + Vite**
-### *This part of Daredevil provides a minimal setup to get React working in Vite with HMR and some ESLint rules.*
+<h2 align="left"> *Daredevil Backend: uv + FastAPI + Python* </h2>
+<h4 align="left"> *This part of Daredevil provides a minimal setup to get FastAPI working using uv package/project manager* </h4>
 
- - ```cd daredevil_frontend```
- - ```npm install```
- - ```npm run dev```
+`cd daredevil_backend`
+`source .venv/bin/activate`
+`uv run fastapi dev`
 
- - ```http://localhost:5173/```
+`http://127.0.0.1:8000/`
+`http://127.0.0.1:8000/docs`
 
 ---
 
-</div>
+<h3> **Daredevil Frontend: React + TypeScript + Vite** </h3>
+<h4 align="left"> *This part of Daredevil provides a minimal setup to get React working in Vite with HMR and some ESLint rules* </h4>
 
+`cd daredevil_frontend`
+`npm install`
+`npm run dev`
+`http://localhost:5173/`
+
+---
 
