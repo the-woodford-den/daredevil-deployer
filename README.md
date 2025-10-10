@@ -1,10 +1,12 @@
-<p align="left" flex="1">🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 </p>
+<div display="flex">
+  <p align="left" flex="1">🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 </p>
+  <p align="right" flex="1">🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 </p>
+</div>
 <p align="center" flex="1">
   <a href="https://github.com/the-woodford-den/daredevil-deployer">
     <img src="https://raw.githubusercontent.com/the-woodford-den/daredevil-deployer/main/daredevil_frontend/src/assets/dd-pixel.png?raw=true" alt="Pixel Daredevil" width="300" />
   </a>
 </p>
-<p align="right" flex="1">🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 🩸 </p>
 
 <h1 align="center">🩸DAREDEVIL-DEPLOYER🩸</h1>
 <h3 align="center">🩸An app connecting to the Github Api for building, testing, & deploying environments🩸</h3>
