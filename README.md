@@ -4,14 +4,14 @@
   </a>
 </p>
 
-<h1 align="center">🩸*DAREDEVIL-DEPLOYER*🩸</h1>
-<h3 align="right">🩸*An application connecting to the Github Api, to build, test, and deploy environments for web applications*🩸</h3>
+<h1 align="center">🩸DAREDEVIL-DEPLOYER🩸</h1>
+<h3 align="center">🩸An application connecting to the Github Api, to build, test, and deploy environments for web applications🩸</h3>
 
 <p align="center">
 
 ---
 
-## Daredevil Backend: uv + FastAPI + Python
+## **Daredevil Backend: uv + FastAPI + Python**
 ### *This part of Daredevil provides a minimal setup to get FastAPI working using uv package/project manager.*
 
  - ```cd daredevil_backend```
@@ -23,7 +23,7 @@
 
 ---
 
-## Daredevil Frontend: React + TypeScript + Vite
+## **Daredevil Frontend: React + TypeScript + Vite**
 ### *This part of Daredevil provides a minimal setup to get React working in Vite with HMR and some ESLint rules.*
 
  - ```cd daredevil_frontend```
