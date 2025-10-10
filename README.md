@@ -27,7 +27,7 @@
 
 <p><code>cd daredevil_backend</code></p>
 <p><code>source .venv/bin/activate</code></p>
-<p>code>uv run fastapi dev</code></p>
+<p><code>uv run fastapi dev</code></p>
 
 <p><code>http://127.0.0.1:8000/</code></p>
 <p><code>http://127.0.0.1:8000/docs</code></p>
