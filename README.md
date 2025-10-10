@@ -12,7 +12,7 @@
 
 ---
 
-<h3 align="left">🩸Current Goals🩸</h3>
+<h2 align="left">🩸Current Goals🩸</h2>
 
 <p><code>Authenticate, empower the-woodford-den users with a collection of tools, features for development</code></p>
 <p><code>Build, monitor github actions, pipelines for a project</code></p>
@@ -34,7 +34,7 @@
 
 ---
 
-<h3 align="left">🩸Daredevil Frontend: React + TypeScript + Vite🩸</h3>
+<h2 align="left">🩸Daredevil Frontend: React + TypeScript + Vite🩸</h2>
 <h4 align="left">🩸This part of Daredevil provides a minimal setup to get React working in Vite with HMR and some ESLint rules🩸</h4>
 
 <p><code>cd daredevil_frontend</code></p>
