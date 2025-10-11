@@ -1,6 +1,3 @@
-import pytest
-from jwt import InvalidIssuerError
-
 from ....configs import GithubAppLib
 
 
