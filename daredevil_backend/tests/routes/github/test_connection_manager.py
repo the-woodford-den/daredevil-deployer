@@ -1,21 +1,19 @@
-"""Tests for ConnectionManager in routes/github/authenticate.py"""
+"""ConnectionManager tests routes/github/authenticate.py"""
 
 import pytest
 
 
 class TestConnectionManager:
-    """Test suite for WebSocket ConnectionManager"""
+    """test suite --> websockets & ConnectionManager"""
 
     @pytest.mark.asyncio
     async def test_connect_accepts_and_adds_websocket(
         self, connection_manager, mock_websocket_factory
     ):
-        """Test that connect() accepts the websocket and adds it to active connections."""
         websocket = mock_websocket_factory()
-
         await connection_manager.connect(websocket)
-
         websocket.accept.assert_awaited_once()
+
         assert websocket in connection_manager.active_connections
         assert len(connection_manager.active_connections) == 1
 
@@ -23,12 +21,10 @@ class TestConnectionManager:
     async def test_send_update_only_to_target_websocket(
         self, connection_manager, mock_websocket_factory
     ):
-        """Test that send_update() only sends to the target websocket, not others."""
         ws1 = mock_websocket_factory()
         ws2 = mock_websocket_factory()
         connection_manager.active_connections.extend([ws1, ws2])
         test_message = "Message for ws1 only"
-
         await connection_manager.send_update(test_message, ws1)
 
         ws1.send_text.assert_awaited_once_with(test_message)
@@ -42,27 +38,22 @@ class TestConnectionManager:
         ws1 = mock_websocket_factory()
         ws2 = mock_websocket_factory()
 
-        # Connect both websockets
         await connection_manager.connect(ws1)
         await connection_manager.connect(ws2)
         assert len(connection_manager.active_connections) == 2
 
-        # Send individual update to ws1
         await connection_manager.send_update("Update for ws1", ws1)
         assert "Update for ws1" in ws1.sent_messages
         assert "Update for ws1" not in ws2.sent_messages
 
-        # Broadcast to all
         await connection_manager.broadcast("Broadcast message")
         assert "Broadcast message" in ws1.sent_messages
         assert "Broadcast message" in ws2.sent_messages
 
-        # Disconnect ws1
         connection_manager.disconnect(ws1)
         assert len(connection_manager.active_connections) == 1
         assert ws2 in connection_manager.active_connections
 
-        # Broadcast again - only ws2 should receive
         ws1.send_text.reset_mock()
         ws2.send_text.reset_mock()
         await connection_manager.broadcast("Final broadcast")

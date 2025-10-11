@@ -1,4 +1,4 @@
-"""Shared test fixtures for route tests."""
+"""Test fixtures for route tests."""
 
 from typing import List
 from unittest.mock import AsyncMock
@@ -8,7 +8,7 @@ import pytest
 
 @pytest.fixture
 def mock_websocket_factory():
-    """Factory fixture to create multiple mock WebSocket instances."""
+    """A factory fixture which builds multiple mock websockets"""
 
     def _create_mock_websocket():
         websocket = AsyncMock()
@@ -22,7 +22,6 @@ def mock_websocket_factory():
             websocket.sent_messages.append(message)
 
         websocket.send_text.side_effect = track_send_text
-
         return websocket
 
     return _create_mock_websocket
@@ -30,7 +29,7 @@ def mock_websocket_factory():
 
 @pytest.fixture
 def connection_manager():
-    """Create a fresh ConnectionManager instance for each test."""
+    """Build New ConnectionManager Instance"""
     from routes.github import ConnectionManager
 
     return ConnectionManager()
