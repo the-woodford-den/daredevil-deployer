@@ -31,6 +31,6 @@ def mock_websocket_factory():
 @pytest.fixture
 def connection_manager():
     """Create a fresh ConnectionManager instance for each test."""
-    from routes.github.authenticate import ConnectionManager
+    from routes.github import ConnectionManager
 
     return ConnectionManager()

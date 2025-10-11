@@ -1,4 +1,4 @@
-from ....configs import GithubAppLib
+from configs import GithubAppLib
 
 
 def test_no_client_id_jwt_fail():

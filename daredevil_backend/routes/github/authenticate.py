@@ -8,10 +8,10 @@ from httpx import AsyncClient, HTTPStatusError
 from rich import inspect, print
 from sqlmodel import select
 
-from ...configs import GithubAppLib
-from ...dbs import get_async_session
-from ...models import (App, AppResponse, AppTokenResponse,
-                       OAuthAccessTokenResponse, User, UserResponse)
+from configs import GithubAppLib
+from dbs import get_async_session
+from models import (App, AppResponse, AppTokenResponse,
+                    OAuthAccessTokenResponse, User, UserResponse)
 
 api = APIRouter(prefix="/github")
 

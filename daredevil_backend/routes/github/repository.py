@@ -6,8 +6,8 @@ from httpx import AsyncClient
 from rich import inspect
 from sqlmodel import select
 
-from ...dbs import get_async_session
-from ...models import App, RepositoryResponse
+from dbs import get_async_session
+from models import App, RepositoryResponse
 
 api = APIRouter(prefix="/repository")
 
