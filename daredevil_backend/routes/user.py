@@ -6,7 +6,8 @@ from sqlmodel import select
 
 from configs import GithubAppLib
 from dbs import get_async_session
-from models import App, User
+from models import User
+from models.github import App
 
 api = APIRouter(prefix="/user")
 

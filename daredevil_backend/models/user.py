@@ -12,5 +12,5 @@ class User(IDModel, TSModel, table=True):
     device_code: Optional[str] = Field(default=None)
     user_code: Optional[str] = Field(default=None)
     verification_uri: Optional[str] = Field(default=None)
-    expires_in: Optional[int] = Field(default=None)
+    expires_in: Optional[str] = Field(default=None)
     interval: Optional[int] = Field(default=None)

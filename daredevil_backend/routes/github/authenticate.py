@@ -8,7 +8,8 @@ from sqlmodel import select
 
 from configs import GithubAppLib
 from dbs import get_async_session
-from models import App, AppResponse, InstallationResponse
+from models.github import (AppRecord, AppRecordResponse,
+                           InstallationRecordResponse)
 
 api = APIRouter(prefix="/github")
 
@@ -36,8 +37,8 @@ manager = ConnectionManager()
 
 
 # Find App, no jwt authentication required
-@api.get("/find-app-item")
-async def find_app_item(*, app_slug: str) -> AppResponse:
+@api.get("/find-app-record")
+async def find_app_record(*, app_slug: str) -> AppRecordResponse:
     """This GET request searches Github Api looking for an App by slug"""
 
     url = f"https://api.github.com/apps/{app_slug}"
@@ -50,20 +51,20 @@ async def find_app_item(*, app_slug: str) -> AppResponse:
         async with AsyncClient() as viper:
             response = await viper.get(url=url, headers=headers)
             data = response.json()
-            github_app_obj = AppResponse.model_validate(data)
+            github_app_obj = AppRecordResponse.model_validate(data)
 
             session = await get_async_session()
             async with session:
-                statement = select(App).where(
-                    App.github_app_id == github_app_obj.id
+                statement = select(AppRecord).where(
+                    AppRecord.github_app_id == github_app_obj.id
                 )
                 github_app = (await session.exec(statement)).one_or_none()
                 if github_app is None:
                     gha_id = github_app_obj.id
-                    app_dict = AppResponse.model_dump(github_app_obj)
+                    app_dict = AppRecordResponse.model_dump(github_app_obj)
                     del app_dict["id"]
                     app_dict["github_app_id"] = gha_id
-                    app_obj = App.model_validate(app_dict)
+                    app_obj = AppRecord.model_validate(app_dict)
                     session.add(app_obj)
                     await session.commit()
                     await session.refresh(app_obj)
@@ -79,13 +80,17 @@ async def find_app_item(*, app_slug: str) -> AppResponse:
 
 
 # Find An Installation From a List
-@api.get("/find-install-record")
-async def find_install_record(*, username: str) -> InstallationResponse:
+@api.get("/find-installation-record")
+async def find_installation_record(
+    *, username: str
+) -> InstallationRecordResponse:
     """A JWT is required, finds installations of github app"""
 
     session = await get_async_session()
     async with session:
-        statement = select(App).where(App.slug == "daredevil-deployer")
+        statement = select(AppRecord).where(
+            AppRecord.slug == "daredevil-deployer"
+        )
         github_app = (await session.exec(statement)).first()
 
     gha_lib = GithubAppLib()
@@ -110,7 +115,7 @@ async def find_install_record(*, username: str) -> InstallationResponse:
             async with session:
                 for app_install in install_responses:
                     if app_install["account"]["login"] == username:
-                        install_obj = InstallationResponse.model_validate(
+                        install_obj = InstallationRecordResponse.model_validate(
                             app_install
                         )
                         return install_obj

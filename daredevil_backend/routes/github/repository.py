@@ -7,7 +7,7 @@ from rich import inspect
 from sqlmodel import select
 
 from dbs import get_async_session
-from models import App, RepositoryResponse
+from models.github import AppRecord, RepositoryResponse
 
 api = APIRouter(prefix="/repository")
 
@@ -16,7 +16,7 @@ api = APIRouter(prefix="/repository")
 async def get_repos(*, gha_id: str) -> List[RepositoryResponse]:
     session = await get_async_session()
     async with session:
-        statement = select(App).where(App.github_app_id == gha_id)
+        statement = select(AppRecord).where(AppRecord.github_app_id == gha_id)
         g_app = (await session.exec(statement)).one_or_none()
         if g_app is None:
             return {"status_code": 404, "message": "Not Found."}
