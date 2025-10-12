@@ -1,13 +1,13 @@
 import { useRef, useState } from 'react';
-import { getAnApp, getInstallation } from '@/api/github';
+import { findAppItem, findInstallRecord } from '@/api/github';
 import { Alarm } from '@/components/Alarm';
 import { Note } from '@/components/Note';
-import { AppGetForm } from '@/components/AppGetForm';
-import { GetAppInstallForm } from '@/components/GetAppInstallForm';
+import { AppItemForm } from '@/components/AppItemForm';
+import { InstallRecordForm } from '@/components/InstallRecordForm';
 import {
   type ApiError,
-  type GithubAppResponse,
-  type GithubInstallResponse,
+  type AppItemResponse,
+  type InstallRecordResponse,
   type WebLinks
 } from '@/data';
 import rubyUrl from '~/ruby.svg';
@@ -59,31 +59,37 @@ const icons = {
 
 export function Root() {
   const [jsonData] = useState<WebLinks[]>(items);
-  const [githubApp, setGithubApp] = useState<GithubAppResponse>();
-  const [installation, setInstallation] = useState<GithubInstallResponse>();
+  const [eventData, setEventData] = useState<T[] | undefined>(undefined);
+  const [appItem, setAppItem] = useState<AppItemResponse>();
+  const [installRecord, setInstallRecord] = useState<InstallRecordResponse>();
   const [error, setError] = useState<ApiError | null>(null);
   const ref = useRef<HTMLFormElement>(null);
 
 
-  const handleGetAnApp = async (data: FormData) => {
+  const handleFindAppItem = async (data: FormData) => {
     const slug = data.get("slug") as string;
-    const result = await getAnApp(slug);
+    const result = await findAppItem(slug);
     result.match(
-      (app) => setGithubApp(app),
+      (app) => setAppItem(app),
       (err) => setError(err)
     );
-    console.log(githubApp);
+    console.log(appItem);
     ref.current?.reset();
   };
 
-  const handleGetInstall = async (data: FormData) => {
+  const handleFindInstallRecord = async (data: FormData) => {
     const username = data.get("username") as string;
-    const result = await getInstallation(username);
+    const result = await findInstallRecord(username);
     result.match(
-      (installation) => setInstallation(installation),
+      (installObject) => setInstallRecord(installObject),
       (err) => setError(err)
     );
-    console.log(installation);
+    let events: T[] = [];
+    if (installRecord) {
+      installRecord.events.map((event) => (events.push({ id: event, item: event })));
+      setEventData(events);
+    }
+    console.log(installRecord);
     ref.current?.reset();
   };
 
@@ -159,20 +165,26 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {installation ? (
-                <Note
-                  avatar="ruby"
-                  title="Install Data"
-                  footer={installation.accessTokensUrl}
-                >
-                  <Text textStyle="lg">App ID: {installation.appId}</Text>
-                  <Text textStyle="lg">App Slug: {installation.appSlug}</Text>
-                  <Text textStyle="lg">Events: {installation.events}</Text>
-                  <Text textStyle="2xl">{installation.htmlUrl}</Text>
-                </Note>
+              {installRecord ? (
+                <div>
+                  <Text textStyle="xl">{`Installation ID: ${installRecord.id}`}</Text>
+                  <Text textStyle="xl">{`Access Tokens Url: ${installRecord.accessTokensUrl}`}</Text>
+                  <Text textStyle="xl">{`App ID: ${installRecord.appId}`}</Text>
+                  <HStack gap="6" wrap="wrap">
+                    <For each={eventData}>
+                      {(item) => (
+                        <VStack key={item.id}>
+                          <Text textStyle="xl">{item.event}</Text>
+                        </VStack>
+                      )}
+                    </For>
+                  </HStack>
+                  <Text textStyle="lg">{`App Slug: ${installRecord.appSlug}`}</Text>
+                  <Text textStyle="xl">{`Install HTML Url ${installRecord.htmlUrl}`}</Text>
+                </div>
               ) : (
-                <form ref={ref} action={async (formData) => { await handleGetInstall(formData) }}>
-                  <GetAppInstallForm />
+                <form ref={ref} action={async (formData) => { await handleFindInstallRecord(formData) }}>
+                  <InstallRecordForm />
                 </form>
               )
               }
@@ -190,18 +202,15 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {githubApp ? (
-                <Note
-                  avatar="react"
-                  title="Github App Data"
-                >
-                  <Text textStyle="lg">App Name: {githubApp.name}</Text>
-                  <Text textStyle="lg">App ID: {githubApp.id}</Text>
-                  <Text textStyle="lg">Client ID: {githubApp.clientId}</Text>
-                </Note>
+              {appItem ? (
+                <div>
+                  <Text textStyle="md">{`App Name: ${appItem.name}`}</Text>
+                  <Text textStyle="md">{`App ID: ${appItem.id}`}</Text>
+                  <Text textStyle="md">{`Client ID: ${appItem.clientId}`}</Text>
+                </div>
               ) : (
-                <form ref={ref} action={async (formData) => { await handleGetAnApp(formData) }}>
-                  <AppGetForm />
+                <form ref={ref} action={async (formData) => { await handleFindAppItem(formData) }}>
+                  <AppItemForm />
                 </form>
               )}
             </Box>

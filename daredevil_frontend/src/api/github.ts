@@ -1,19 +1,18 @@
 import { ResultAsync } from "neverthrow";
 import {
   type ApiError,
-  type GithubAppResponse,
-  type GithubTokenResponse,
-  type GithubInstallResponse
+  type AppItemResponse,
+  type InstallRecordResponse
 } from "@/data";
 
-export const getInstallation = (username: string): ResultAsync<GithubInstallResponse, ApiError> => {
+export const findInstallRecord = (username: string): ResultAsync<InstallRecordResponse, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const params = new URLSearchParams({
     username: username
   });
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/github/find-install-id?${params}`).then(async (response) => {
+    fetch(`${backendUrl}/github/find-install-record?${params}`).then(async (response) => {
       if (!response.ok) {
         throw {
           type: 'NETWORK_ERROR', message: 'No Tokens....'
@@ -22,6 +21,7 @@ export const getInstallation = (username: string): ResultAsync<GithubInstallResp
 
       const installResponse = await response.json();
       const installObject = {
+        id: installResponse.id,
         account: installResponse.account,
         events: installResponse.events,
         appId: installResponse.app_id,
@@ -29,7 +29,7 @@ export const getInstallation = (username: string): ResultAsync<GithubInstallResp
         accessTokensUrl: installResponse.access_tokens_url,
         htmlUrl: installResponse.html_url,
         repositoriesUrl: installResponse.repositories_url,
-      } as GithubInstallResponse;
+      } as InstallRecordResponse;
 
       console.log(installObject);
       return installObject;
@@ -44,14 +44,14 @@ export const getInstallation = (username: string): ResultAsync<GithubInstallResp
   );
 };
 
-export const getAnApp = (slug: string): ResultAsync<GithubAppResponse, ApiError> => {
+export const findAppItem = (slug: string): ResultAsync<AppItemResponse, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const params = new URLSearchParams({
     app_slug: slug,
   });
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/github/get-an-app?${params}`)
+    fetch(`${backendUrl}/github/find-app-item?${params}`)
       .then(async (response) => {
         if (!response.ok) {
           throw {
@@ -74,7 +74,7 @@ export const getAnApp = (slug: string): ResultAsync<GithubAppResponse, ApiError>
           events: appResponse.events,
           token: appResponse.token,
           expires_at: appResponse.expires_at
-        } as GithubAppResponse;
+        } as AppItemResponse;
 
         console.log(appObject);
         return appObject;

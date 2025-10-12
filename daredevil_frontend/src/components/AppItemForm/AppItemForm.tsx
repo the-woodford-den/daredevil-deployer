@@ -1,7 +1,7 @@
 import { useFormStatus } from 'react-dom';
 import { Button, Field, Heading, Input, Stack } from '@chakra-ui/react';
 
-export function AppGetForm() {
+export function AppItemForm() {
   const { pending } = useFormStatus();
 
   return (

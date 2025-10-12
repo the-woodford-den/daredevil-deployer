@@ -1,7 +1,7 @@
-from .authenticate import ConnectionManager, find_install_id, get_an_app
+from .authenticate import ConnectionManager, find_app_item, find_install_record
 
 __all__ = [
     "ConnectionManager",
-    "find_install_id",
-    "get_an_app",
+    "find_install_record",
+    "find_app_item",
 ]

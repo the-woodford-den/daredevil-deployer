@@ -35,9 +35,9 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-# Get a Github App, no authentication by jwt required
-@api.get("/get-an-app")
-async def get_an_app(*, app_slug: str) -> AppResponse:
+# Find App, no jwt authentication required
+@api.get("/find-app-item")
+async def find_app_item(*, app_slug: str) -> AppResponse:
     """This GET request searches Github Api looking for an App by slug"""
 
     url = f"https://api.github.com/apps/{app_slug}"
@@ -78,9 +78,9 @@ async def get_an_app(*, app_slug: str) -> AppResponse:
         raise Exception(f"GitHub Get An App Error: {e.status} - {e.message}")
 
 
-# Github App Installation List
-@api.get("/find-install-id")
-async def find_install_id(*, username: str) -> InstallationResponse:
+# Find An Installation From a List
+@api.get("/find-install-record")
+async def find_install_record(*, username: str) -> InstallationResponse:
     """A JWT is required, finds installations of github app"""
 
     session = await get_async_session()
