@@ -1,6 +1,6 @@
 from .github import (App, AppResponse, AppTokenResponse, CreateTokenResponse,
-                     OAuthAccessTokenResponse, RepositoryResponse,
-                     UserResponse)
+                     InstallationResponse, OAuthAccessTokenResponse,
+                     RepositoryResponse, UserResponse)
 from .user import User
 
 __all__ = [
@@ -8,6 +8,7 @@ __all__ = [
     "AppResponse",
     "AppTokenResponse",
     "CreateTokenResponse",
+    "InstallationResponse",
     "OAuthAccessTokenResponse",
     "RepositoryResponse",
     "User",

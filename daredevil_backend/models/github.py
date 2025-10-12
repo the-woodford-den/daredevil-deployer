@@ -96,6 +96,24 @@ class App(AppBase, IDModel, TSModel, table=True):
     expires_at: Optional[str] = Field(default=None)
 
 
+class InstallationAccountResponse(SQLModel):
+    name: Optional[str] = Field(default=None)
+    email: Optional[EmailStr] = Field(default=None)
+    login: str
+    id: int
+
+
+class InstallationResponse(SQLModel):
+    id: int = Field()
+    account: InstallationAccountResponse = Field()
+    events: list[str] = Field()
+    app_id: int = Field()
+    app_slug: str = Field()
+    access_tokens_url: str = Field()
+    html_url: str = Field()
+    repositories_url: str = Field()
+
+
 class RepoPermissionsBase(SQLModel):
     admin: bool
     push: bool

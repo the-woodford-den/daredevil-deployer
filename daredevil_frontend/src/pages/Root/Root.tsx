@@ -1,11 +1,13 @@
 import { useRef, useState } from 'react';
-import { getAccessTokenGithubApp } from '@/api/github';
+import { getAnApp, getInstallation } from '@/api/github';
 import { Alarm } from '@/components/Alarm';
 import { Note } from '@/components/Note';
-import { GithubAppGetForm } from '@/components/GithubAppGetForm';
+import { AppGetForm } from '@/components/AppGetForm';
+import { GetAppInstallForm } from '@/components/GetAppInstallForm';
 import {
   type ApiError,
-  type GithubTokenResponse,
+  type GithubAppResponse,
+  type GithubInstallResponse,
   type WebLinks
 } from '@/data';
 import rubyUrl from '~/ruby.svg';
@@ -57,18 +59,31 @@ const icons = {
 
 export function Root() {
   const [jsonData] = useState<WebLinks[]>(items);
-  const [githubToken, setGithubToken] = useState<GithubTokenResponse>();
+  const [githubApp, setGithubApp] = useState<GithubAppResponse>();
+  const [installation, setInstallation] = useState<GithubInstallResponse>();
   const [error, setError] = useState<ApiError | null>(null);
   const ref = useRef<HTMLFormElement>(null);
 
-  const handleGithubAppGet = async (data: FormData) => {
-    const client_id = data.get("clientId") as string;
-    const result = await getAccessTokenGithubApp(client_id);
+
+  const handleGetAnApp = async (data: FormData) => {
+    const slug = data.get("slug") as string;
+    const result = await getAnApp(slug);
     result.match(
-      (token) => setGithubToken(token),
+      (app) => setGithubApp(app),
       (err) => setError(err)
     );
-    console.log(githubToken);
+    console.log(githubApp);
+    ref.current?.reset();
+  };
+
+  const handleGetInstall = async (data: FormData) => {
+    const username = data.get("username") as string;
+    const result = await getInstallation(username);
+    result.match(
+      (installation) => setInstallation(installation),
+      (err) => setError(err)
+    );
+    console.log(installation);
     ref.current?.reset();
   };
 
@@ -144,15 +159,23 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {githubToken ? (
+              {installation ? (
                 <Note
-                  avatar="react"
-                  title="Client Id"
-                  footer={githubToken.clientId}
+                  avatar="ruby"
+                  title="Install Data"
+                  footer={installation.accessTokensUrl}
                 >
-                  <Text textStyle="2xl">{githubToken.expires_at}</Text>
+                  <Text textStyle="lg">App ID: {installation.appId}</Text>
+                  <Text textStyle="lg">App Slug: {installation.appSlug}</Text>
+                  <Text textStyle="lg">Events: {installation.events}</Text>
+                  <Text textStyle="2xl">{installation.htmlUrl}</Text>
                 </Note>
-              ) : (<Text textStyle="5xl">Nada</Text>)}
+              ) : (
+                <form ref={ref} action={async (formData) => { await handleGetInstall(formData) }}>
+                  <GetAppInstallForm />
+                </form>
+              )
+              }
             </Box>
           </Flex>
         </GridItem>
@@ -167,17 +190,18 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {githubToken ? (
+              {githubApp ? (
                 <Note
-                  avatar="mega"
-                  title="Access Token"
-                  footer={githubToken.token}
+                  avatar="react"
+                  title="Github App Data"
                 >
-                  <Text textStyle="lg">{githubToken.token}</Text>
+                  <Text textStyle="lg">App Name: {githubApp.name}</Text>
+                  <Text textStyle="lg">App ID: {githubApp.id}</Text>
+                  <Text textStyle="lg">Client ID: {githubApp.clientId}</Text>
                 </Note>
               ) : (
-                <form ref={ref} action={async (formData) => { await handleGithubAppGet(formData) }}>
-                  <GithubAppGetForm />
+                <form ref={ref} action={async (formData) => { await handleGetAnApp(formData) }}>
+                  <AppGetForm />
                 </form>
               )}
             </Box>
