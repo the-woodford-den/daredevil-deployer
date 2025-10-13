@@ -1,7 +1,8 @@
-from .authenticate import ConnectionManager, find_app_item, find_install_record
+from .github import (ConnectionManager, app_install_callback,
+                     check_github_status)
 
 __all__ = [
+    "app_install_callback",
+    "check_github_status",
     "ConnectionManager",
-    "find_install_record",
-    "find_app_item",
 ]

@@ -1,3 +1,3 @@
-from .user import github_app
+from .root import get_root
 
-__all__ = ["github_app"]
+__all__ = ["get_root"]

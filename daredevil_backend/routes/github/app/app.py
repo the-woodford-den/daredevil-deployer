@@ -1,52 +1,31 @@
-from typing import List
-
 import logfire
-from fastapi import APIRouter, HTTPException, WebSocket
+from fastapi import APIRouter, HTTPException
 from httpx import AsyncClient, HTTPStatusError
 from rich import inspect
 from sqlmodel import select
 
 from configs import GithubAppLib
 from dbs import get_async_session
+from models import User
 from models.github import (AppRecord, AppRecordResponse,
                            InstallationRecordResponse)
 
-api = APIRouter(prefix="/github")
+api = APIRouter(prefix="/app")
 
 
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: List[WebSocket] = []
+@api.get("/")
+async def search_apps(*, slug: str) -> AppRecordResponse:
+    """This GET request searches Github Api for a Github App."""
+    """It uses a slug, only works if you have the App installed on your """
+    """github user account"""
 
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-
-    async def send_update(self, msg: str, websocket: WebSocket):
-        await websocket.send_text(msg)
-
-    async def broadcast(self, msg: str):
-        for connection in self.active_connections:
-            await connection.send_text(msg)
-
-
-manager = ConnectionManager()
-
-
-# Find App, no jwt authentication required
-@api.get("/find-app-record")
-async def find_app_record(*, app_slug: str) -> AppRecordResponse:
-    """This GET request searches Github Api looking for an App by slug"""
-
-    url = f"https://api.github.com/apps/{app_slug}"
+    url = f"https://api.github.com/apps/{slug}"
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
         "User-Agent": "daredevil-deployer",
     }
+
     try:
         async with AsyncClient() as viper:
             response = await viper.get(url=url, headers=headers)
@@ -74,17 +53,29 @@ async def find_app_record(*, app_slug: str) -> AppRecordResponse:
 
         return github_app_obj
 
+        response.raise_for_status()
+    except HTTPStatusError as e:
+        logfire.error(f"HTTP Status Error: {e.response.status_code}")
+
+        raise HTTPException(
+            status_code=e.response.status_code,
+            detail=f"GitHub API error: {e.response.text}",
+        )
     except Exception as e:
-        logfire.error(f"GitHub Get An App Error: {e.status} - {e.message}")
-        raise Exception(f"GitHub Get An App Error: {e.status} - {e.message}")
+        logfire.error(
+            f"App Error in search_apps: {e.response.status_code}:{e.response.text}"
+        )
+        raise Exception(
+            f"App Error in search_apps: {e.response.status_code}:{e.response.text}"
+        )
 
 
-# Find An Installation From a List
-@api.get("/find-installation-record")
-async def find_installation_record(
-    *, username: str
-) -> InstallationRecordResponse:
-    """A JWT is required, finds installations of github app"""
+@api.get("/installations")
+async def search_installations(*, username: str) -> InstallationRecordResponse:
+    """This GET request searches Github Api for Github App Installations."""
+    """It searches by username and needs a jwt for authorization."""
+    """A Github App client_id is required to create the jwt."""
+    """From the list, it compares and pulls from the db by the App slug"""
 
     session = await get_async_session()
     async with session:
@@ -120,6 +111,7 @@ async def find_installation_record(
                         )
                         return install_obj
 
+                response.raise_for_status()
         except HTTPStatusError as e:
             logfire.error(f"HTTP Status Error: {e.response.status_code}")
 
@@ -127,6 +119,67 @@ async def find_installation_record(
                 status_code=e.response.status_code,
                 detail=f"GitHub API error: {e.response.text}",
             )
+
+
+@api.get("/user/{client_id}")
+async def search_user(*, client_id: str):
+    """With the App's client_id, this route returns its data."""
+    """Then, we check the database to see if the App or User / Owner """
+    """exist. We then add / do nothing, then return the data."""
+    """This route requires a jwt."""
+
+    jwt = GithubAppLib.create_jwt(client_id)
+
+    endpoint = "https://api.github.com/app"
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Authorization": f"Bearer {jwt}",
+    }
+
+    with logfire.span("asking github api for user access..."):
+        try:
+            async with AsyncClient() as viper:
+                response = await viper.get(url=endpoint, headers=headers)
+                auth_response = response.json()
+
+            session = await get_async_session()
+            async with session:
+                statement = select(User).where(
+                    User.github_id == auth_response["owner"]["id"]
+                )
+                user = (await session.exec(statement)).one_or_none()
+                if user is None:
+                    github_id_value = auth_response["owner"]["id"]
+                    del auth_response["owner"]["id"]
+                    auth_response["owner"]["github_owner_id"] = github_id_value
+                    create_user = auth_response["owner"]
+                    user_obj = User.model_validate(create_user)
+                    session.add(user_obj)
+                    await session.commit()
+                    await session.refresh(user_obj)
+                    user = user_obj
+                    logfire.info(f"User {user_obj} created!")
+
+                del auth_response["owner"]
+                statement = select(AppRecord).where(
+                    AppRecord.github_app_id == auth_response["id"]
+                )
+                github_app = (await session.exec(statement)).one_or_none()
+                if github_app is None:
+                    app_id_value = auth_response["id"]
+                    del auth_response["id"]
+                    auth_response["github_app_id"] = app_id_value
+                    create_github_app = auth_response
+                    app_obj = AppRecord.model_validate(create_github_app)
+                    session.add(app_obj)
+                    await session.commit()
+                    await session.refresh(app_obj)
+                    logfire.info(f"Github App {app_obj.slug} created!")
+
+            return auth_response
+        except Exception as e:
+            logfire.error("error message: {msg=}", msg=e)
 
 
 # # Get the Authenticated GitHub App
