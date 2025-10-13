@@ -5,7 +5,6 @@ name: Python application
 
 env:
   LOGFIRE_IGNORE_NO_CONFIG: 1
-  ENVIRONMENT: "test"
 
 on:
   push:
@@ -48,4 +47,4 @@ jobs:
         ruff check --select=C901 -e --statistics
     - name: Executing pytest
       run: |
-        dotenv run pytest -v
+        dotenv run -f .env.test pytest -v
