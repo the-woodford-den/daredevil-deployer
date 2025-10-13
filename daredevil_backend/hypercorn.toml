@@ -1,6 +1,6 @@
 # hypercorn.toml
 
-bind="127.0.0.1:8000"
+bind="localhost:4000"
 worker_class="uvloop"
 workers=5
 accesslog="-"

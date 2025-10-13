@@ -1,12 +1,8 @@
-import asyncio
 from contextlib import asynccontextmanager
 
 import logfire
-import uvloop
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from hypercorn.asyncio import serve
-from hypercorn.config import Config
 
 from configs import get_settings
 from dbs import data_store
@@ -17,7 +13,10 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Initialize database on startup
+    data_store.init(settings.db_url)
     yield
+    # Cleanup on shutdown
     if data_store._engine is not None:
         await data_store.close()
 
@@ -48,9 +47,4 @@ async def get_root():
     return {"message": "Daredevil Deployer Application"}
 
 
-hyper_configs = Config()
-hyper_configs.from_toml("hypercorn.toml")
-
-if __name__ == "__main__":
-    uvloop.install()
-    asyncio.run(serve(app, hyper_configs))
+# end

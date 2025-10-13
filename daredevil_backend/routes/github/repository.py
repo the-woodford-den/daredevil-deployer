@@ -1,10 +1,11 @@
 from typing import List
 
 import logfire
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from httpx import AsyncClient
-from rich import inspect
+# from rich import inspect
 from sqlmodel import select
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from dbs import get_async_session
 from models.github import AppRecord, RepositoryResponse
@@ -12,26 +13,26 @@ from models.github import AppRecord, RepositoryResponse
 api = APIRouter(prefix="/github/repository")
 
 
-@api.get("/get-all")
+@api.get("/get-all", response_model=List[RepositoryResponse])
 async def get_all_repositories(
-    *, app_record_id: str
-) -> List[RepositoryResponse]:
+    *,
+    app_record_id: str,
+    async_session: AsyncSession = Depends(get_async_session),
+):
     """Searches the Github Api and returns the Github App's associated Repositories."""
     """This includes the organization and other users who installed the App."""
 
     with logfire.span("Finding AppRecord in ..."):
-        session = await get_async_session()
-        async with session:
-            statement = select(AppRecord).where(
-                AppRecord.github_app_id == app_record_id
-            )
-            app_record = (await session.exec(statement)).one_or_none()
-            if app_record is None:
-                logfire.error(f"AppRecord not located: ${app_record_id}")
-                return {"status_code": 404, "message": "Not Found."}
+        statement = select(AppRecord).where(
+            AppRecord.github_app_id == app_record_id
+        )
+        app_record = (await async_session.exec(statement)).one_or_none()
+        if app_record is None:
+            logfire.error(f"AppRecord not located: ${app_record_id}")
+            return {"status_code": 404, "message": "Not Found."}
 
-            logfire.info(f"AppRecord located: ${app_record.slug}")
-            user_token = app_record.token
+        logfire.info(f"AppRecord located: ${app_record.slug}")
+        user_token = app_record.token
 
         endpoint = "https://api.github.com/user/repos"
         header = {
