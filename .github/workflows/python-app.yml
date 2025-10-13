@@ -16,6 +16,10 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    working-directory: ./daredevil_backend
+
 jobs:
   build:
 
@@ -28,6 +32,7 @@ jobs:
       with:
         python-version: '3.13'
     - name: Install Pip
+      working-directory:
       run: |
         python -m pip install --upgrade pip
     - name: Purge pip cache
