@@ -39,6 +39,10 @@ jobs:
     - name: Install Dependencies
       run: |
         pip install -r requirements.txt
+    - name: Load .env.test
+      uses: xom9ikk/dotenv@v2
+      with:
+        mode: test
     - name: Lint with Ruff
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -47,4 +51,4 @@ jobs:
         ruff check --select=C901 -e --statistics
     - name: Executing pytest
       run: |
-        dotenv run -f .env.test pytest -v
+        pytest -v
