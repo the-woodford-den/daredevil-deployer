@@ -24,9 +24,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Load .env.test
-      uses: "aarcangeli/load-dotenv@v1"
-      with:
-        path: "daredevil_backend/.env.test"
+      run: |
+        set -a
+        source daredevil_backend/.env.test
+        set +a
     - name: Set up Python 3.13
       uses: actions/setup-python@v5
       with:
