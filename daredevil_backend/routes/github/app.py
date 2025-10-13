@@ -151,8 +151,8 @@ async def search_apps_users(*, client_id: str):
                 user = (await session.exec(statement)).one_or_none()
                 if user is None:
                     github_id_value = auth_response["owner"]["id"]
+                    auth_response["owner"]["github_id"] = github_id_value
                     del auth_response["owner"]["id"]
-                    auth_response["owner"]["github_owner_id"] = github_id_value
                     create_user = auth_response["owner"]
                     user_obj = User.model_validate(create_user)
                     session.add(user_obj)

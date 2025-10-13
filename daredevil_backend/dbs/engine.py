@@ -1,5 +1,4 @@
 import logfire
-from rich import inspect
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel
@@ -10,11 +9,8 @@ from models import User
 from models.github import AppRecord, InstallationRecord, Repository
 
 settings = get_settings()
-inspect(settings)
 
-# Use test database if environment is "test"
 if settings.environment == "test":
-    # Replace database name with test database name in the URL
     db_url = settings.db_url.rsplit("/", 1)[0] + "/daredevil_test"
 else:
     db_url = settings.db_url
@@ -25,8 +21,9 @@ _engine = create_async_engine(url=db_url, echo=True, future=True)
 async def check_and_create_database():
     """Checks if database exists, if false -> creates database"""
 
-    # Use test database name if environment is "test"
-    db_name = "daredevil_test" if settings.environment == "test" else settings.db_name
+    db_name = (
+        "daredevil_test" if settings.environment == "test" else settings.db_name
+    )
 
     postgres_url = settings.db_url.rsplit("/", 1)[0] + "/postgres"
     temp_engine = create_async_engine(postgres_url)
@@ -40,9 +37,7 @@ async def check_and_create_database():
 
             if not result.fetchone():
                 await connection.execute(text("COMMIT"))
-                await connection.execute(
-                    text(f"CREATE DATABASE {db_name}")
-                )
+                await connection.execute(text(f"CREATE DATABASE {db_name}"))
                 logfire.info(f"Database {db_name} created")
             else:
                 logfire.info(f"Database {db_name} already exists")

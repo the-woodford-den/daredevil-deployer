@@ -2,9 +2,9 @@ import logfire
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .configs import get_settings
-from .dbs import init_db
-from .routes.github import app_api, github_api, repository_api
+from configs import get_settings
+from dbs import init_db
+from routes.github import app_api, github_api, repository_api
 
 app = FastAPI()
 

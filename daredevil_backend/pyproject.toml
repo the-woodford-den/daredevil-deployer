@@ -1,11 +1,7 @@
-[build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "daredevil-backend"
 version = "0.1.0"
-description = "Add your description here"
+description = "Backend for Daredevil Deployer"
 requires-python = ">=3.13"
 dependencies = [
     "asyncpg>=0.30.0",
@@ -21,10 +17,6 @@ dependencies = [
     "sqlmodel>=0.0.24",
 ]
 
-[tool.setuptools.packages.find]
-include = ["routes*", "models*", "configs*", "dbs*"]
-exclude = ["tests*", "keys*", "bruno*"]
-
 [dependency-groups]
 dev = [
     "coverage>=7.10.6",
@@ -35,6 +27,14 @@ dev = [
     "ruff>=0.13.0",
 ]
 
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["routes*", "models*", "configs*", "dbs*"]
+exclude = ["tests*", "keys*", "bruno*"]
+
 [tool.pytest.ini.options]
 addopts = [
     "--strict-markers",
@@ -43,6 +43,8 @@ addopts = [
     ]
 testpaths = "tests"
 pythonpath = ["."]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
 
 markers = [
     "smoke: subset of tests",
