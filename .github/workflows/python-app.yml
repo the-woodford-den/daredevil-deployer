@@ -48,4 +48,4 @@ jobs:
         ruff check --select=C901 -e --statistics
     - name: Executing pytest
       run: |
-        dotenv pytest -v
+        dotenv run pytest -v
