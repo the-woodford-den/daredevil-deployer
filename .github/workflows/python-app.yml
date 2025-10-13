@@ -15,17 +15,21 @@ on:
 permissions:
   contents: read
 
-defaults:
-  run:
-    working-directory: ./daredevil_backend
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./daredevil_backend
 
     steps:
     - uses: actions/checkout@v4
+    - name: Load .env.test
+      uses: "aarcangeli/load-dotenv@v1"
+      with:
+        path: "./daredevil_backend/.env.test"
     - name: Set up Python 3.13
       uses: actions/setup-python@v5
       with:
@@ -39,10 +43,6 @@ jobs:
     - name: Install Dependencies
       run: |
         pip install -r requirements.txt
-    - name: Load .env.test
-      uses: xom9ikk/dotenv@v2
-      with:
-        mode: test
     - name: Lint with Ruff
       run: |
         # stop the build if there are Python syntax errors or undefined names
