@@ -29,7 +29,7 @@ jobs:
     - name: Load .env.test
       uses: "aarcangeli/load-dotenv@v1"
       with:
-        path: "./daredevil_backend/.env.test"
+        path: "./.env.test"
     - name: Set up Python 3.13
       uses: actions/setup-python@v5
       with:
