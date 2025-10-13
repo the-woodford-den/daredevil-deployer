@@ -20,16 +20,13 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./daredevil_backend
 
     steps:
     - uses: actions/checkout@v4
     - name: Load .env.test
       uses: "aarcangeli/load-dotenv@v1"
       with:
-        path: "./.env.test"
+        path: "daredevil_backend/.env.test"
     - name: Set up Python 3.13
       uses: actions/setup-python@v5
       with:
@@ -42,13 +39,13 @@ jobs:
         pip cache purge
     - name: Install Dependencies
       run: |
-        pip install -r requirements.txt
+        pip install -r daredevil_backend/requirements.txt
     - name: Lint with Ruff
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        ruff check --select=E9,F63,F7,F82 --statistics
+        ruff check daredevil_backend --select=E9,F63,F7,F82 --statistics
         # exit-zero treats all errors as warnings.
-        ruff check --select=C901 -e --statistics
+        ruff check daredevil_backend --select=C901 -e --statistics
     - name: Executing pytest
       run: |
-        pytest -v
+        pytest daredevil_backend/tests -v
