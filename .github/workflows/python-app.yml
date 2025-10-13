@@ -26,7 +26,7 @@ jobs:
     - name: Load .env.test
       run: |
         set -a
-        source daredevil_backend/.env.test
+        source daredevil-deployer/daredevil_backend/.env.test
         set +a
     - name: Set up Python 3.13
       uses: actions/setup-python@v5
