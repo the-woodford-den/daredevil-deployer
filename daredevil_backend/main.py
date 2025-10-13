@@ -4,31 +4,20 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .configs import get_settings
 from .dbs import init_db
-from .routes import user as user_routes
-from .routes.github import authenticate as git_routes
-from .routes.github import repository as repo_routes
-
-# async def create_app() -> FastAPI:
-#     app = FastAPI()
-#     app.include_router(git_routes.api)
-#     app.include_router(user_routes.api)
-#     settings = get_settings()
-#     logfire_token = settings.logfire_token
-#
-#     logfire.configure(
-#         token=logfire_token, environment="dev", service_name="daredevil-backend"
-#     )
-#     logfire.instrument_fastapi(app, capture_headers=True)
-#
-#     await init_db()
-#
-#     return app
-
+from .routes.github import app_api, github_api, repository_api
 
 app = FastAPI()
-app.include_router(git_routes.api)
-app.include_router(repo_routes.api)
-app.include_router(user_routes.api)
+
+
+@app.get("/")
+async def get_root():
+    logfire.info("Daredevil Deployer Application")
+    return {"message": "Daredevil Deployer Application"}
+
+
+app.include_router(github_api)
+app.include_router(app_api)
+app.include_router(repository_api)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],

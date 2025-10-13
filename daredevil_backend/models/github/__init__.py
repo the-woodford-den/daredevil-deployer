@@ -1,13 +1,28 @@
-from .app_record import AppRecord, AppRecordResponse, AppRecordTokenResponse
-from .installation_record import InstallationRecord, InstallationResponseRecord
-from .repository import Repository, RepositoryResponse
+# OAuth and Token models
+from .github import CreateTokenResponse, OAuthAccessTokenResponse, UserResponse
+
+# App Record models
+from .app_records import AppRecord, AppRecordResponse, AppRecordTokenResponse
+
+# Installation Record models
+from .installation_records import InstallationRecord, InstallationRecordResponse
+
+# Repository models
+from .repositories import Repository, RepositoryResponse
 
 __all__ = [
+    # OAuth and Token models
+    "CreateTokenResponse",
+    "OAuthAccessTokenResponse",
+    "UserResponse",
+    # App Record models
     "AppRecord",
     "AppRecordResponse",
     "AppRecordTokenResponse",
+    # Installation Record models
     "InstallationRecord",
-    "InstallationResponseRecord",
+    "InstallationRecordResponse",
+    # Repository models
     "Repository",
     "RepositoryResponse",
 ]

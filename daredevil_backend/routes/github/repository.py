@@ -9,11 +9,11 @@ from sqlmodel import select
 from dbs import get_async_session
 from models.github import AppRecord, RepositoryResponse
 
-api = APIRouter(prefix="/repository")
+api = APIRouter(prefix="/github/repository")
 
 
-@api.get("/collect")
-async def collect_repositories(
+@api.get("/get-all")
+async def get_all_repositories(
     *, app_record_id: str
 ) -> List[RepositoryResponse]:
     """Searches the Github Api and returns the Github App's associated Repositories."""

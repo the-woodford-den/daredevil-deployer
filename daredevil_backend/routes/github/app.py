@@ -10,10 +10,10 @@ from models import User
 from models.github import (AppRecord, AppRecordResponse,
                            InstallationRecordResponse)
 
-api = APIRouter(prefix="/app")
+api = APIRouter(prefix="/github/app")
 
 
-@api.get("/")
+@api.get("/search/{slug}")
 async def search_apps(*, slug: str) -> AppRecordResponse:
     """This GET request searches Github Api for a Github App."""
     """It uses a slug, only works if you have the App installed on your """
@@ -70,7 +70,7 @@ async def search_apps(*, slug: str) -> AppRecordResponse:
         )
 
 
-@api.get("/installations")
+@api.get("/installation/search/{username}")
 async def search_installations(*, username: str) -> InstallationRecordResponse:
     """This GET request searches Github Api for Github App Installations."""
     """It searches by username and needs a jwt for authorization."""
@@ -122,7 +122,7 @@ async def search_installations(*, username: str) -> InstallationRecordResponse:
 
 
 @api.get("/user/{client_id}")
-async def search_user(*, client_id: str):
+async def search_apps_users(*, client_id: str):
     """With the App's client_id, this route returns its data."""
     """Then, we check the database to see if the App or User / Owner """
     """exist. We then add / do nothing, then return the data."""

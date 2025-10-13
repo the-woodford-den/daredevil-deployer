@@ -7,9 +7,6 @@ from httpx import AsyncClient, HTTPStatusError
 api = APIRouter(prefix="/github")
 
 
-WebSocket
-
-
 class ConnectionManager:
     def __init__(self):
         self.active_connections: List[WebSocket] = []
@@ -30,7 +27,7 @@ class ConnectionManager:
 
 
 @api.get("/callback")
-async def app_install_callback():
+async def installed_app_callback():
     """Check Github Status"""
 
     try:

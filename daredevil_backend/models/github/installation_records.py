@@ -9,7 +9,6 @@ from models import IDModel, TSModel
 
 
 class InstallationRecordBase(SQLModel):
-    events: list[str] = Field()
     app_id: int = Field()
     app_slug: str = Field()
     access_tokens_url: str = Field()
@@ -27,6 +26,7 @@ class InstallationRecordAccountResponse(SQLModel):
 class InstallationRecordResponse(InstallationRecordBase):
     id: int = Field()
     account: InstallationRecordAccountResponse = Field()
+    events: list[str] = Field()
 
 
 class InstallationRecord(InstallationRecordBase, IDModel, TSModel, table=True):
