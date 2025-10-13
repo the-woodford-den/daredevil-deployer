@@ -40,10 +40,6 @@ jobs:
     - name: Install Dependencies
       run: |
         pip install -r requirements.txt
-    - name: Load env 
-      uses: theskumar/dotenv@v1.1.0
-      with:
-        path: .
     - name: Lint with Ruff
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -52,4 +48,4 @@ jobs:
         ruff check --select=C901 -e --statistics
     - name: Executing pytest
       run: |
-        pytest -v
+        dotenv -e .env pytest -v
