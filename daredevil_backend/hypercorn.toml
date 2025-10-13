@@ -1,0 +1,9 @@
+# hypercorn.toml
+
+bind="127.0.0.1:8000"
+worker_class="uvloop"
+workers=5
+accesslog="-"
+access_log_format="%(h)s %(l)s %(t)s \"%(r)s\" %(s)s %(b)s"
+debug=true
+use_reloader=true
