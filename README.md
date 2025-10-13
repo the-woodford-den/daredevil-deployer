@@ -3,7 +3,7 @@
 </div>
 <p align="center" flex="1">
   <a href="https://github.com/the-woodford-den/daredevil-deployer">
-    <img src="https://raw.githubusercontent.com/the-woodford-den/daredevil-deployer/main/daredevil_frontend/src/assets/dd-pixel.png?raw=true" alt="Pixel Daredevil" width="300" />
+    <img src="https://raw.githubusercontent.com/the-woodford-den/daredevil-deployer/main/daredevil_frontend/src/assets/ddevil-pixel.png?raw=true" alt="Pixel Daredevil" width="300" />
   </a>
 </p>
 
