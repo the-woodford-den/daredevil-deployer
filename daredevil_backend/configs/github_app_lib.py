@@ -9,7 +9,7 @@ from .settings import get_settings
 
 
 class GithubAppLib:
-    """The Github App Library for Auth, Configs, etc. as the App itself."""
+    """The Github App Library for Configuring Authentication"""
 
     def __init__(self):
         self.settings = get_settings()

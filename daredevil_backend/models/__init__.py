@@ -1,15 +1,4 @@
-from .github import (App, AppResponse, AppTokenResponse, CreateTokenResponse,
-                     OAuthAccessTokenResponse, RepositoryResponse,
-                     UserResponse)
+from .base import IDModel, TSModel
 from .user import User
 
-__all__ = [
-    "App",
-    "AppResponse",
-    "AppTokenResponse",
-    "CreateTokenResponse",
-    "OAuthAccessTokenResponse",
-    "RepositoryResponse",
-    "User",
-    "UserResponse",
-]
+__all__ = ["IDModel", "TSModel", "User"]

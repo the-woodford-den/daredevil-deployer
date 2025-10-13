@@ -6,31 +6,41 @@ from httpx import AsyncClient
 from rich import inspect
 from sqlmodel import select
 
-from ...dbs import get_async_session
-from ...models import App, RepositoryResponse
+from dbs import get_async_session
+from models.github import AppRecord, RepositoryResponse
 
-api = APIRouter(prefix="/repository")
+api = APIRouter(prefix="/github/repository")
 
 
-@api.get("/")
-async def get_repos(*, gha_id: str) -> List[RepositoryResponse]:
-    session = await get_async_session()
-    async with session:
-        statement = select(App).where(App.github_app_id == gha_id)
-        g_app = (await session.exec(statement)).one_or_none()
-        if g_app is None:
-            return {"status_code": 404, "message": "Not Found."}
+@api.get("/get-all")
+async def get_all_repositories(
+    *, app_record_id: str
+) -> List[RepositoryResponse]:
+    """Searches the Github Api and returns the Github App's associated Repositories."""
+    """This includes the organization and other users who installed the App."""
 
-        user_token = g_app.token
+    with logfire.span("Finding AppRecord in ..."):
+        session = await get_async_session()
+        async with session:
+            statement = select(AppRecord).where(
+                AppRecord.github_app_id == app_record_id
+            )
+            app_record = (await session.exec(statement)).one_or_none()
+            if app_record is None:
+                logfire.error(f"AppRecord not located: ${app_record_id}")
+                return {"status_code": 404, "message": "Not Found."}
 
-    endpoint = "https://api.github.com/user/repos"
-    header = {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "Authorization": f"Bearer {user_token}",
-    }
+            logfire.info(f"AppRecord located: ${app_record.slug}")
+            user_token = app_record.token
 
-    with logfire.span("... grabbing list of user repositories ..."):
+        endpoint = "https://api.github.com/user/repos"
+        header = {
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "Authorization": f"Bearer {user_token}",
+        }
+
+    with logfire.span("Searching Github App's list of repositories ..."):
         try:
             async with AsyncClient(timeout=60) as viper:
                 response = await viper.get(
@@ -41,7 +51,7 @@ async def get_repos(*, gha_id: str) -> List[RepositoryResponse]:
                 repo_response = []
                 for repo in repo_list:
                     repo_obj = RepositoryResponse.model_validate(repo)
-                    inspect(repo_obj)
+                    logfire.info(f"Iterating through repository: ${repo.name}")
                     repo_response.append(repo_obj)
 
             return repo_list

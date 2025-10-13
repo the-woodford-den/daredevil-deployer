@@ -15,6 +15,9 @@
 
 # uv lock file (for library projects)
 */uv.lock
+
+# testing
+*/.coverage
 #---End Backend---
 
 #---Frontend--- 

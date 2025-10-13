@@ -1,11 +1,13 @@
 import { useRef, useState } from 'react';
-import { getAccessTokenGithubApp } from '@/api/github';
+import { findAppItem, findInstallRecord } from '@/api/github';
 import { Alarm } from '@/components/Alarm';
 import { Note } from '@/components/Note';
-import { GithubAppGetForm } from '@/components/GithubAppGetForm';
+import { AppItemForm } from '@/components/AppItemForm';
+import { InstallRecordForm } from '@/components/InstallRecordForm';
 import {
   type ApiError,
-  type GithubTokenResponse,
+  type AppItemResponse,
+  type InstallRecordResponse,
   type WebLinks
 } from '@/data';
 import rubyUrl from '~/ruby.svg';
@@ -57,18 +59,37 @@ const icons = {
 
 export function Root() {
   const [jsonData] = useState<WebLinks[]>(items);
-  const [githubToken, setGithubToken] = useState<GithubTokenResponse>();
+  const [eventData, setEventData] = useState<T[] | undefined>(undefined);
+  const [appItem, setAppItem] = useState<AppItemResponse>();
+  const [installRecord, setInstallRecord] = useState<InstallRecordResponse>();
   const [error, setError] = useState<ApiError | null>(null);
   const ref = useRef<HTMLFormElement>(null);
 
-  const handleGithubAppGet = async (data: FormData) => {
-    const client_id = data.get("clientId") as string;
-    const result = await getAccessTokenGithubApp(client_id);
+
+  const handleFindAppItem = async (data: FormData) => {
+    const slug = data.get("slug") as string;
+    const result = await findAppItem(slug);
     result.match(
-      (token) => setGithubToken(token),
+      (app) => setAppItem(app),
       (err) => setError(err)
     );
-    console.log(githubToken);
+    console.log(appItem);
+    ref.current?.reset();
+  };
+
+  const handleFindInstallRecord = async (data: FormData) => {
+    const username = data.get("username") as string;
+    const result = await findInstallRecord(username);
+    result.match(
+      (installObject) => setInstallRecord(installObject),
+      (err) => setError(err)
+    );
+    let events: T[] = [];
+    if (installRecord) {
+      installRecord.events.map((event) => (events.push({ id: event, item: event })));
+      setEventData(events);
+    }
+    console.log(installRecord);
     ref.current?.reset();
   };
 
@@ -144,15 +165,29 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {githubToken ? (
-                <Note
-                  avatar="react"
-                  title="Client Id"
-                  footer={githubToken.clientId}
-                >
-                  <Text textStyle="2xl">{githubToken.expires_at}</Text>
-                </Note>
-              ) : (<Text textStyle="5xl">Nada</Text>)}
+              {installRecord ? (
+                <div>
+                  <Text textStyle="xl">{`Installation ID: ${installRecord.id}`}</Text>
+                  <Text textStyle="xl">{`Access Tokens Url: ${installRecord.accessTokensUrl}`}</Text>
+                  <Text textStyle="xl">{`App ID: ${installRecord.appId}`}</Text>
+                  <HStack gap="6" wrap="wrap">
+                    <For each={eventData}>
+                      {(item) => (
+                        <VStack key={item.id}>
+                          <Text textStyle="xl">{item.event}</Text>
+                        </VStack>
+                      )}
+                    </For>
+                  </HStack>
+                  <Text textStyle="lg">{`App Slug: ${installRecord.appSlug}`}</Text>
+                  <Text textStyle="xl">{`Install HTML Url ${installRecord.htmlUrl}`}</Text>
+                </div>
+              ) : (
+                <form ref={ref} action={async (formData) => { await handleFindInstallRecord(formData) }}>
+                  <InstallRecordForm />
+                </form>
+              )
+              }
             </Box>
           </Flex>
         </GridItem>
@@ -167,17 +202,15 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {githubToken ? (
-                <Note
-                  avatar="mega"
-                  title="Access Token"
-                  footer={githubToken.token}
-                >
-                  <Text textStyle="lg">{githubToken.token}</Text>
-                </Note>
+              {appItem ? (
+                <div>
+                  <Text textStyle="md">{`App Name: ${appItem.name}`}</Text>
+                  <Text textStyle="md">{`App ID: ${appItem.id}`}</Text>
+                  <Text textStyle="md">{`Client ID: ${appItem.clientId}`}</Text>
+                </div>
               ) : (
-                <form ref={ref} action={async (formData) => { await handleGithubAppGet(formData) }}>
-                  <GithubAppGetForm />
+                <form ref={ref} action={async (formData) => { await handleFindAppItem(formData) }}>
+                  <AppItemForm />
                 </form>
               )}
             </Box>
