@@ -16,8 +16,8 @@ api = APIRouter(prefix="/github/app")
 @api.get("/search/{slug}")
 async def search_apps(*, slug: str) -> AppRecordResponse:
     """This GET request searches Github Api for a Github App."""
-    """It uses a slug, only works if you have the App installed on your """
-    """github user account"""
+    """It uses a slug to search, only works if you have the App installed on your """
+    """github user account. We then check the database and add if it don't exist."""
 
     url = f"https://api.github.com/apps/{slug}"
     headers = {

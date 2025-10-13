@@ -11,11 +11,22 @@ from models.github import AppRecord, InstallationRecord, Repository
 
 settings = get_settings()
 inspect(settings)
-_engine = create_async_engine(url=settings.db_url, echo=True, future=True)
+
+# Use test database if environment is "test"
+if settings.environment == "test":
+    # Replace database name with test database name in the URL
+    db_url = settings.db_url.rsplit("/", 1)[0] + "/daredevil_test"
+else:
+    db_url = settings.db_url
+
+_engine = create_async_engine(url=db_url, echo=True, future=True)
 
 
 async def check_and_create_database():
     """Checks if database exists, if false -> creates database"""
+
+    # Use test database name if environment is "test"
+    db_name = "daredevil_test" if settings.environment == "test" else settings.db_name
 
     postgres_url = settings.db_url.rsplit("/", 1)[0] + "/postgres"
     temp_engine = create_async_engine(postgres_url)
@@ -24,17 +35,17 @@ async def check_and_create_database():
         async with temp_engine.begin() as connection:
             result = await connection.execute(
                 text("SELECT 1 FROM pg_database WHERE datname = :db_name"),
-                {"db_name": settings.db_name},
+                {"db_name": db_name},
             )
 
             if not result.fetchone():
                 await connection.execute(text("COMMIT"))
                 await connection.execute(
-                    text(f"CREATE DATABASE {settings.db_name}")
+                    text(f"CREATE DATABASE {db_name}")
                 )
-                logfire.info(f"Database {settings.db_name} created")
+                logfire.info(f"Database {db_name} created")
             else:
-                logfire.info(f"Database {settings.db_name} already exists")
+                logfire.info(f"Database {db_name} already exists")
     finally:
         await temp_engine.dispose()
 

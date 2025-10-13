@@ -1,4 +1,4 @@
-"""ConnectionManager tests routes/github/authenticate.py"""
+"""tests for routes/github/github.py"""
 
 import pytest
 

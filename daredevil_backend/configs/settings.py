@@ -14,6 +14,8 @@ class Settings(BaseSettings):
         extra="allow",
         case_sensitive=False,
     )
+    # Environment
+    environment: str = Field(default="dev")
     # Database
     db_host: str = Field()
     db_name: str = Field()
