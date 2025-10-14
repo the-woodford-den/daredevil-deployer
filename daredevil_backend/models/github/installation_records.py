@@ -1,12 +1,20 @@
 """Github App Installation Typed Record Models"""
 
-from typing import Any, Optional
-from uuid import UUID, uuid4
+from typing import Optional
 
 from pydantic import ConfigDict, EmailStr
 from sqlmodel import Field, SQLModel
 
 from models import IDModel, TSModel
+
+from .repositories import RepositoryResponse
+
+
+class InstallationAccessTokenResponse(SQLModel):
+    token: str = Field()
+    expires_at: str = Field()
+    permissions: dict[str, str] = Field(default=dict[:])
+    repositories: Optional[Optional[RepositoryResponse]] = Field(default=[])
 
 
 class InstallationRecordBase(SQLModel):

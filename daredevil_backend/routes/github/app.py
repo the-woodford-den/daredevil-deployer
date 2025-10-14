@@ -1,14 +1,18 @@
+from typing import Optional
+
 import logfire
 from fastapi import APIRouter, Depends, HTTPException
 from httpx import AsyncClient, HTTPStatusError
 from rich import inspect, print
+from sqlalchemy import text
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from configs import GithubAppLib
 from dbs import get_async_session
 from models import User
-from models.github import (AppRecord, AppRecordResponse, InstallationRecord,
+from models.github import (AppRecord, AppRecordResponse,
+                           InstallationAccessTokenResponse, InstallationRecord,
                            InstallationRecordResponse)
 
 api = APIRouter(prefix="/github/app")
@@ -235,6 +239,88 @@ async def search_installations(
                 status_code=e,
                 detail=f"Internal Error: {e}",
             )
+
+
+@api.post(
+    "/installation/access-tokens/{install_id}",
+    response_model=InstallationAccessTokenResponse,
+)
+async def installation_access_tokens(
+    *, install_id: int, session: AsyncSession = Depends(get_async_session)
+):
+    """This post request will provide a response that will include an installation"""
+    """access token, the time that the token expires, the permissions that the token has, """
+    """and the repositories that the token can access, if applicable. The installation access """
+    """ token will expire after 1 hour."""
+
+    statement = (
+        select(
+            InstallationRecord.app_id,
+            AppRecord.github_app_id,
+            AppRecord.client_id,
+        )
+        .where(InstallationRecord.app_id == AppRecord.github_app_id)
+        .where(InstallationRecord.installation_id == install_id)
+    )
+    results = (await session.execute(statement)).all()
+
+    if not results:
+        logfire.error("No installation found with that install_id")
+        raise HTTPException(status_code=404, detail="Installation not found")
+
+    client_id = results[-1].client_id
+    logfire.info(f"Found Installation with client_id: {client_id}")
+    github_app_library = GithubAppLib()
+    app_jwt = github_app_library.create_jwt(client_id=client_id)
+
+    endpoint = f"https://api.github.com/app/installations/{str(install_id)}/access_tokens"
+    header = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Authorization": f"Bearer {app_jwt}",
+    }
+
+    with logfire.span("Sending request for installation access token..."):
+        try:
+            async with AsyncClient() as client:
+                response = await client.post(url=endpoint, headers=header)
+                response.raise_for_status()
+                access_token_json = response.json()
+
+            logfire.info(f"validating access token ...{access_token_json}")
+            access_token_obj = InstallationAccessTokenResponse.model_validate(
+                access_token_json
+            )
+
+            logfire.info("Responding with token ...")
+            return access_token_obj
+
+        except HTTPStatusError as e:
+            logfire.error(f"Internal Error: {e}")
+            raise HTTPException(
+                status_code=e,
+                detail=f"Internal Error: {e}",
+            )
+
+    # text(`SELECT app_id from github_installation_records where installation_id = install_id UNION SELECT client_id from github_app_records where github_app_id = app_id`)
+    # results = (await session.execute(query_string)).all()
+
+    # results = session.exec(statement)
+    # query_alpha = select(InstallationRecord.app_id).where(
+    #     InstallationRecord.installation_id == install_id
+    # )
+    # query_omega = select(AppRecord.client_id).where(
+    #     AppRecord.github_app_id == InstallationRecord.app_id
+    # )
+    # # union_sigma = query_alpha.union_all(query_omega)
+
+
+# curl --request POST \
+# --url "https://api.github.com/app/installations/INSTALLATION_ID/access_tokens" \
+# --header "Accept: application/vnd.github+json" \
+# --header "Authorization: Bearer JWT" \
+# --header "X-GitHub-Api-Version: 2022-11-28"
+#
 
 
 # # Get the Authenticated GitHub App

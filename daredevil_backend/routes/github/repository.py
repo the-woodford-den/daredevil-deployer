@@ -13,7 +13,7 @@ from models.github import AppRecord, RepositoryResponse
 api = APIRouter(prefix="/github/repository")
 
 
-@api.get("/get-all", response_model=List[RepositoryResponse])
+@api.get("/all", response_model=List[RepositoryResponse])
 async def get_all_repositories(
     *,
     app_record_id: str,
