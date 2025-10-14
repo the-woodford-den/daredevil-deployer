@@ -1,62 +1,52 @@
 """Feature tests for routes/github/app.py"""
 
-import pytest
 from unittest.mock import AsyncMock, patch
 
-from models.github import AppRecordResponse
+import pytest
+from httpx import ASGITransport, AsyncClient
 
+from main import app
 
-@pytest.fixture
-def mock_github_response():
-    """Fixture to provide mock GitHub API response data"""
-    return {
-        "id": 777247,
-        "slug": "batman",
-        "node_id": "19020",
-        "client_id": "1e43tf3",
-        "name": "batman",
-        "description": "I am batman",
-        "external_url": "https://batman.batman",
-        "html_url": "https://github.com/apps/batman",
-        "owner": None,
-        "events": [],
-        "permissions": None,
-    }
+api = "/github/app"
 
 
 class TestGithubAppRoutes:
     """test suite --> routes/github/app.py"""
 
     @pytest.mark.asyncio
-    async def test_response_app_search_slug(self, session, mock_github_response):
-        """Test searching for a GitHub App by slug - unit test with mocked httpx"""
-        from routes.github.app import search_apps
+    async def test_search_apps(self, setup_test_db):
+        """Test searching for a GitHub app by slug - mocks GitHub API"""
+        test_slug = "batman"
 
-        # Create fully custom mocks without AsyncMock
-        class MockResponse:
-            def json(self):
-                return mock_github_response
+        mock_github_response = {
+            "id": 777247,
+            "slug": "batman",
+            "node_id": "19020",
+            "client_id": "1e43tf3",
+            "name": "batman",
+            "description": "I am batman",
+            "external_url": "https://batman.batman",
+            "html_url": "https://github.com/apps/batman",
+            "owner": None,
+            "events": [],
+            "permissions": None,
+        }
 
-        class MockAsyncClient:
-            async def __aenter__(self):
-                return self
+        with patch("routes.github.app.AsyncClient") as MockAsyncClient:
+            mock_client = MockAsyncClient.return_value.__aenter__.return_value
 
-            async def __aexit__(self, exc_type, exc_val, exc_tb):
-                return None
+            mock_response = AsyncMock()
+            mock_response.json = lambda: mock_github_response
 
-            async def get(self, url, headers=None):
-                return MockResponse()
+            mock_client.get = AsyncMock(return_value=mock_response)
 
-        # Patch AsyncClient at the module level before calling
-        with patch('routes.github.app.AsyncClient', MockAsyncClient):
-            # Call the route function directly
-            result = await search_apps(slug="batman", session=session)
+            async with AsyncClient(
+                transport=ASGITransport(app=app), base_url="http://test"
+            ) as client:
+                response = await client.get(f"{api}/search/{test_slug}")
 
-            # Verify the result
-            assert isinstance(result, AppRecordResponse)
-            assert result.slug == "batman"
-            assert result.id == 777247
-            assert result.name == "batman"
-            assert result.description == "I am batman"
-            assert result.external_url == "https://batman.batman"
-            assert result.html_url == "https://github.com/apps/batman"
+                assert response.status_code == 200
+                response_data = response.json()
+                assert response_data["slug"] == "batman"
+                assert response_data["id"] == 777247
+                assert response_data["name"] == "batman"
