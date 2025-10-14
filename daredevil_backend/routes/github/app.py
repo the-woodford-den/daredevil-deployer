@@ -1,14 +1,14 @@
 import logfire
 from fastapi import APIRouter, Depends, HTTPException
 from httpx import AsyncClient, HTTPStatusError
-from rich import inspect
+from rich import inspect, print
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from configs import GithubAppLib
 from dbs import get_async_session
 from models import User
-from models.github import (AppRecord, AppRecordResponse,
+from models.github import (AppRecord, AppRecordResponse, InstallationRecord,
                            InstallationRecordResponse)
 
 api = APIRouter(prefix="/github/app")
@@ -38,7 +38,6 @@ async def search_apps(
             statement = select(AppRecord).where(
                 AppRecord.github_app_id == github_app_obj.id
             )
-            inspect(github_app_obj)
 
             github_app = (await session.execute(statement)).one_or_none()
             if github_app is None:
@@ -73,7 +72,7 @@ async def search_apps(
     "/installation/search/{username}", response_model=InstallationRecordResponse
 )
 async def search_installations(
-    *, username: str, async_session: AsyncSession = Depends(get_async_session)
+    *, username: str, session: AsyncSession = Depends(get_async_session)
 ):
     """This GET request searches Github Api for Github App Installations."""
     """It searches by username and needs a jwt for authorization."""
@@ -81,8 +80,12 @@ async def search_installations(
     """From the list, it compares and pulls from the db by the App slug"""
 
     statement = select(AppRecord).where(AppRecord.slug == "daredevil-deployer")
-    github_app = (await async_session.exec(statement)).first()
+    github_app = (await session.execute(statement)).scalar_one_or_none()
+    if github_app is None:
+        logfire.error("No Client Id means no JWT")
+        raise Exception("No Client Id means no JWT")
 
+    logfire.info(f"AppRecord Found with client_id: {github_app.client_id}")
     gha_lib = GithubAppLib()
     app_jwt = gha_lib.create_jwt(client_id=github_app.client_id)
 
@@ -97,25 +100,53 @@ async def search_installations(
         try:
             async with AsyncClient() as client:
                 response = await client.get(url=endpoint, headers=header)
-                logfire.info(f"installations list response: {response.json()}")
-
                 response.raise_for_status()
                 install_responses = response.json()
 
+            logfire.info("checking returned list of installations...")
             for app_install in install_responses:
                 if app_install["account"]["login"] == username:
                     install_obj = InstallationRecordResponse.model_validate(
                         app_install
                     )
+                    logfire.info(
+                        "username matched, checked database existance of record..."
+                    )
+                    statement = select(InstallationRecord).where(
+                        InstallationRecord.installation_id == install_obj.id
+                    )
+                    github_install_record = (
+                        await session.execute(statement)
+                    ).one_or_none()
+                    if github_install_record is None:
+                        logfire.info(
+                            f"Installation record doesn't exist, adding it now {install_obj}"
+                        )
+                        github_install_record = (
+                            InstallationRecordResponse.model_dump(install_obj)
+                        )
+                        github_install_record["installation_id"] = (
+                            install_obj.id
+                        )
+                        del github_install_record["id"]
+                        github_install_obj = InstallationRecord.model_validate(
+                            github_install_record
+                        )
+                        session.add(github_install_obj)
+                        await session.commit()
+                        await session.refresh(github_install_obj)
+                        logfire.info(
+                            f"DB item returning as Installation Response Record...{install_obj}"
+                        )
+
                     return install_obj
 
             response.raise_for_status()
         except HTTPStatusError as e:
-            logfire.error(f"HTTP Status Error: {e.response.status_code}")
-
+            logfire.error(f"Internal Error: {e}")
             raise HTTPException(
-                status_code=e.response.status_code,
-                detail=f"GitHub API error: {e.response.text}",
+                status_code=e,
+                detail=f"Internal Error: {e}",
             )
 
 
