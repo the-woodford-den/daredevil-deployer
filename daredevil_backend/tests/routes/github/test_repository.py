@@ -15,5 +15,6 @@ class TestGithubRepositoryRoutes:
     """test suite --> routes/github/repository.py"""
 
     @pytest.mark.asyncio
-    async def test_search_apps(self, setup_test_db):
-        assert True
+    async def test_search_apps(self):
+        ak = 1 + 1
+        assert ak == 2

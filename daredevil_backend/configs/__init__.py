@@ -1,4 +1,4 @@
-from .github_app_lib import GithubAppLib
+from .github_library import GithubLibrary
 from .settings import get_settings
 
-__all__ = ["GithubAppLib", "get_settings"]
+__all__ = ["GithubLibrary", "get_settings"]

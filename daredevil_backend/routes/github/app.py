@@ -8,7 +8,7 @@ from sqlalchemy import text
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from configs import GithubAppLib
+from configs import GithubLibrary
 from dbs import get_async_session
 from models import User
 from models.github import (AppRecord, AppRecordResponse,
@@ -89,7 +89,7 @@ async def authenticated_access_app(
         logfire.error("No Client Id means no JWT")
         raise Exception("No Client Id means no JWT")
 
-    jwt = GithubAppLib().create_jwt(client_id=client_id)
+    jwt = GithubLibrary().create_jwt(client_id=client_id)
     endpoint = "https://api.github.com/app"
     headers = {
         "Accept": "application/vnd.github+json",
@@ -177,7 +177,7 @@ async def search_installations(
         raise Exception("No Client Id means no JWT")
 
     logfire.info(f"Found user with client_id: {github_user.client_id}")
-    github_app_library = GithubAppLib()
+    github_app_library = GithubLibrary()
     app_jwt = github_app_library.create_jwt(client_id=github_user.client_id)
 
     endpoint = "https://api.github.com/app/installations"
@@ -270,7 +270,7 @@ async def installation_access_tokens(
 
     client_id = results[-1].client_id
     logfire.info(f"Found Installation with client_id: {client_id}")
-    github_app_library = GithubAppLib()
+    github_app_library = GithubLibrary()
     app_jwt = github_app_library.create_jwt(client_id=client_id)
 
     endpoint = f"https://api.github.com/app/installations/{str(install_id)}/access_tokens"
@@ -333,7 +333,7 @@ async def installation_access_tokens(
 #         if g_app is None:
 #             return {"status_code": 404, "message": "Not Found."}
 #
-#     app_jwt = GithubAppLib.create_jwt(g_app.client_id)
+#     app_jwt = GithubLibrary.create_jwt(g_app.client_id)
 #
 #     url = f"https://api.github.com/app/installations/{g_app.github_app_id}/access_tokens"
 #     headers = {
@@ -468,7 +468,7 @@ async def installation_access_tokens(
 #             logfire.info("GitHub OAuth polling closed")
 #             await manager.send_update("GitHub OAuth polling closed.", websocket)
 #             manager.disconnect(websocket)
-# gha_lib = GithubAppLib()
+# gha_lib = GithubLibrary()
 # app_jwt = gha_lib.create_jwt(client_id=client_id)
 #     "Authorization": f"Bearer {app_jwt}",
 # url = f"https://api.github.com/users/{username}/installation"
