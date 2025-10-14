@@ -2,15 +2,13 @@
 
 from unittest.mock import mock_open
 
-from pytest_mock import mocker
-
 from configs import GithubLibrary
 
 
 class TestGithubLibrary:
     """test suite --> GithubLibrary"""
 
-    def test_create_jwt(self, mocker: mocker):
+    def test_create_jwt(self, mocker):
         """Test create_jwt creates a JWT with the correct payload"""
         # Mock the settings
         mock_settings = mocker.MagicMock()

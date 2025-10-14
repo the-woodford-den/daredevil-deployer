@@ -31,6 +31,9 @@ dev = [
     "ruff>=0.13.0",
 ]
 
+[pytest]
+mock_use_standalone_module = true
+
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
