@@ -43,7 +43,7 @@ async def get_all_repositories(
                     repo_obj = RepositoryResponse.model_validate(
                         repository_dict
                     )
-                    responses.push(repo_obj)
+                    responses.append(repo_obj)
 
                     statement = select(Repository).where(
                         Repository.github_repository_id == repo_obj.id
@@ -61,7 +61,7 @@ async def get_all_repositories(
                         await session.commit()
                         await session.refresh(repository)
 
-            return repo_list
+            return responses
 
         except HTTPException as e:
             logfire.error("Error Message {msg=}", msg=e)
