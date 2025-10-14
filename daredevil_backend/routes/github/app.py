@@ -69,6 +69,89 @@ async def search_apps(
 
 
 @api.get(
+    "/access/{client_id}",
+    response_model=AppRecordResponse,
+    response_model_exclude_unset=True,
+)
+async def authenticated_access_app(
+    *, client_id: str, session: AsyncSession = Depends(get_async_session)
+):
+    """This GET request searches Github Api for the Github App"""
+    """ That is Associated with the client_id, pem key ... which creates """
+    """the JWT that's required with the Api call. The other /apps/{slug} call"""
+    """ does not need a JWT but can only grab public data ..."""
+
+    if client_id is None:
+        logfire.error("No Client Id means no JWT")
+        raise Exception("No Client Id means no JWT")
+
+    jwt = GithubAppLib().create_jwt(client_id=client_id)
+    endpoint = "https://api.github.com/app"
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Authorization": f"Bearer {jwt}",
+    }
+
+    try:
+        async with AsyncClient() as viper:
+            response = await viper.get(url=endpoint, headers=headers)
+            data = response.json()
+            github_app_obj = AppRecordResponse.model_validate(data)
+
+            app_search = select(AppRecord).where(
+                AppRecord.github_app_id == github_app_obj.id
+            )
+            app_owner_obj = github_app_obj.owner
+            user_search = select(User).where(User.github_id == app_owner_obj.id)
+            user_record = (await session.execute(user_search)).one_or_none()
+            app_record = (await session.execute(app_search)).one_or_none()
+
+            if app_record is None:
+                app_id = app_record.id
+                app_dict = AppRecordResponse.model_dump(github_app_obj)
+                app_dict["github_app_id"] = app_id
+                del app_dict["id"]
+                app_obj = AppRecord.model_validate(app_dict)
+                session.add(app_obj)
+                await session.commit()
+                await session.refresh(app_obj)
+                logfire.info(f"GitHub App in DB, {app_dict}")
+            else:
+                logfire.info("GitHub App Exists in DB")
+
+            if user_record is None:
+                user_id = app_owner_obj.id
+                app_owner_obj = data["owner"]
+                app_owner_obj["github_id"] = user_id
+                del app_owner_obj["id"]
+                user_obj = User.model_validate(app_owner_obj)
+                session.add(user_obj)
+                await session.commit()
+                await session.refresh(user_obj)
+                logfire.info(f"GitHub User in DB, {user_obj}")
+            else:
+                logfire.info("Github User Exists in DB")
+
+            logfire.info(
+                f"App Record Response has been returned ...{github_app_obj}"
+            )
+            return github_app_obj
+
+        response.raise_for_status()
+    except HTTPStatusError as e:
+        logfire.error(f"HTTP Status Error: {e}")
+        raise HTTPException(
+            status_code=e.response.status_code,
+            detail=f"GitHub API error: {e}",
+        )
+
+    except Exception as e:
+        logfire.error(f"App Error in get_authenticated_app: {e}:{e}")
+        raise Exception(f"App Error in get_authenticated_app: {e}:{e}")
+
+
+@api.get(
     "/installation/search/{username}", response_model=InstallationRecordResponse
 )
 async def search_installations(
@@ -79,15 +162,19 @@ async def search_installations(
     """A Github App client_id is required to create the jwt."""
     """From the list, it compares and pulls from the db by the App slug"""
 
-    statement = select(AppRecord).where(AppRecord.slug == "daredevil-deployer")
-    github_app = (await session.execute(statement)).scalar_one_or_none()
-    if github_app is None:
+    statement = select(User).where(User.login == username)
+    github_user = (await session.execute(statement)).scalar_one_or_none()
+
+    if github_user is None:
+        logfire.error("No Client Id means no JWT")
+        raise Exception("No Client Id means no JWT")
+    elif github_user.client_id is None:
         logfire.error("No Client Id means no JWT")
         raise Exception("No Client Id means no JWT")
 
-    logfire.info(f"AppRecord Found with client_id: {github_app.client_id}")
-    gha_lib = GithubAppLib()
-    app_jwt = gha_lib.create_jwt(client_id=github_app.client_id)
+    logfire.info(f"Found user with client_id: {github_user.client_id}")
+    github_app_library = GithubAppLib()
+    app_jwt = github_app_library.create_jwt(client_id=github_user.client_id)
 
     endpoint = "https://api.github.com/app/installations"
     header = {
@@ -148,67 +235,6 @@ async def search_installations(
                 status_code=e,
                 detail=f"Internal Error: {e}",
             )
-
-
-@api.get("/user/{client_id}")
-async def search_apps_users(
-    *, client_id: str, async_session: AsyncSession = Depends(get_async_session)
-):
-    """With the App's client_id, this route returns its data."""
-    """Then, we check the database to see if the App or User / Owner """
-    """exist. We then add / do nothing, then return the data."""
-    """This route requires a jwt."""
-
-    jwt = GithubAppLib.create_jwt(client_id)
-
-    endpoint = "https://api.github.com/app"
-    headers = {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "Authorization": f"Bearer {jwt}",
-    }
-
-    with logfire.span("asking github api for user access..."):
-        try:
-            async with AsyncClient() as viper:
-                response = await viper.get(url=endpoint, headers=headers)
-                auth_response = response.json()
-
-            statement = select(User).where(
-                User.github_id == auth_response["owner"]["id"]
-            )
-            user = (await async_session.exec(statement)).one_or_none()
-            if user is None:
-                github_id_value = auth_response["owner"]["id"]
-                auth_response["owner"]["github_id"] = github_id_value
-                del auth_response["owner"]["id"]
-                create_user = auth_response["owner"]
-                user_obj = User.model_validate(create_user)
-                async_session.add(user_obj)
-                await async_session.commit()
-                await async_session.refresh(user_obj)
-                user = user_obj
-                logfire.info(f"User {user_obj} created!")
-
-            del auth_response["owner"]
-            statement = select(AppRecord).where(
-                AppRecord.github_app_id == auth_response["id"]
-            )
-            github_app = (await async_session.exec(statement)).one_or_none()
-            if github_app is None:
-                app_id_value = auth_response["id"]
-                del auth_response["id"]
-                auth_response["github_app_id"] = app_id_value
-                create_github_app = auth_response
-                app_obj = AppRecord.model_validate(create_github_app)
-                async_session.add(app_obj)
-                await async_session.commit()
-                await async_session.refresh(app_obj)
-                logfire.info(f"Github App {app_obj.slug} created!")
-
-            return auth_response
-        except Exception as e:
-            logfire.error("error message: {msg=}", msg=e)
 
 
 # # Get the Authenticated GitHub App

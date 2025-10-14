@@ -1,5 +1,6 @@
 from .app import api as app_api
-from .github import ConnectionManager, api as github_api
+from .github import ConnectionManager
+from .github import api as github_api
 from .repository import api as repository_api
 
 __all__ = [
