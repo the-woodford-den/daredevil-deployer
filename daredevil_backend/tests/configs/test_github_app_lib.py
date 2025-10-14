@@ -2,25 +2,26 @@
 
 from unittest.mock import mock_open
 
+from pytest_mock import mocker
+
 from configs import GithubLibrary
 
 
 class TestGithubLibrary:
     """test suite --> GithubLibrary"""
 
-    def test_create_jwt(self, mocker):
+    def test_create_jwt(self, mocker: mocker):
         """Test create_jwt creates a JWT with the correct payload"""
         # Mock the settings
         mock_settings = mocker.MagicMock()
         mock_settings.gha_private_key = "test_key.pem"
-        mocker.patch("configs.github_library.get_settings", return_value=mock_settings)
+        mocker.patch(
+            "configs.github_library.get_settings", return_value=mock_settings
+        )
 
         # Mock the file reading
         fake_private_key = b"fake_private_key_content"
-        mocker.patch(
-            "builtins.open",
-            mock_open(read_data=fake_private_key)
-        )
+        mocker.patch("builtins.open", mock_open(read_data=fake_private_key))
 
         # Mock jwt.encode to return a known token
         mock_jwt = "mock_jwt_token"
