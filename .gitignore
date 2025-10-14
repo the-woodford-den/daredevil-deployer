@@ -20,9 +20,13 @@
 */.coverage
 #---End Backend---
 
-#---Frontend--- 
+#---Frontend---
 */telerik-license.txt
 */.env
+*/.env.dev
+*/.env.test
+*/.env.local
+*/.env.*.local
 */logs
 *.log
 */npm-debug.log*
