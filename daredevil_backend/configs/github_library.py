@@ -8,8 +8,8 @@ from rich import inspect
 from .settings import get_settings
 
 
-class GithubAppLib:
-    """The Github App Library for Configuring Authentication"""
+class GithubLibrary:
+    """The Github Library for Configurations, Tokens"""
 
     def __init__(self):
         self.settings = get_settings()

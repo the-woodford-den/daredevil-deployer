@@ -1,58 +1,87 @@
-import logfire
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlmodel import SQLModel
+import contextlib
+from typing import AsyncIterator, Optional, Type
+
+from pydantic import ConfigDict
+from sqlalchemy.ext.asyncio import (AsyncConnection, AsyncEngine,
+                                    async_sessionmaker, create_async_engine)
+from sqlalchemy.pool import AsyncAdaptedQueuePool
+from sqlmodel import Field, SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from configs import get_settings
-from models import User
-from models.github import AppRecord, InstallationRecord, Repository
+
+
+class DataStoreProps(SQLModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    echo: Optional[bool] = Field(default=True)
+    future: Optional[bool] = Field(default=True)
+    poolclass: Optional[Type[AsyncAdaptedQueuePool]] = Field(default=None)
+    pool_size: Optional[int] = Field(default=10)
+    max_overflow: Optional[int] = Field(default=5)
+    pool_recycle: Optional[int] = Field(default=3600)
+
+
+class DataStore:
+    def __init__(self, host: str, engine_kwargs: DataStoreProps):
+        self._engine: Optional[AsyncEngine] = None
+        self._async_sessionmaker: Optional[async_sessionmaker] = None
+        self._engine_kwargs: DataStoreProps = engine_kwargs
+        self._host: str = host
+
+    def init(self, host: str):
+        props = DataStoreProps.model_dump(self._engine_kwargs)
+        self._engine = create_async_engine(host, **props)
+        self._async_sessionmaker = async_sessionmaker(
+            autocommit=False, bind=self._engine
+        )
+
+    async def close(self):
+        if self._engine is None:
+            raise Exception("DataStore is down")
+        await self._engine.dispose()
+        self._engine = None
+        self._async_sessionmaker = None
+
+    @contextlib.asynccontextmanager
+    async def connect(self) -> AsyncIterator[AsyncConnection]:
+        if self._engine is None:
+            raise Exception("DataStore is down")
+
+        async with self._engine.begin() as connection:
+            try:
+                yield connection
+            except Exception:
+                await connection.rollback()
+                raise
+
+    @contextlib.asynccontextmanager
+    async def session(self) -> AsyncIterator[AsyncSession]:
+        if self._async_sessionmaker is None:
+            raise Exception("DataStore is down")
+
+        session = self._async_sessionmaker()
+        try:
+            yield session
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
 
 settings = get_settings()
-
-if settings.environment == "test":
-    db_url = settings.db_url.rsplit("/", 1)[0] + "/daredevil_test"
-else:
-    db_url = settings.db_url
-
-_engine = create_async_engine(url=db_url, echo=True, future=True)
-
-
-async def check_and_create_database():
-    """Checks if database exists, if false -> creates database"""
-
-    db_name = (
-        "daredevil_test" if settings.environment == "test" else settings.db_name
-    )
-
-    postgres_url = settings.db_url.rsplit("/", 1)[0] + "/postgres"
-    temp_engine = create_async_engine(postgres_url)
-
-    try:
-        async with temp_engine.begin() as connection:
-            result = await connection.execute(
-                text("SELECT 1 FROM pg_database WHERE datname = :db_name"),
-                {"db_name": db_name},
-            )
-
-            if not result.fetchone():
-                await connection.execute(text("COMMIT"))
-                await connection.execute(text(f"CREATE DATABASE {db_name}"))
-                logfire.info(f"Database {db_name} created")
-            else:
-                logfire.info(f"Database {db_name} already exists")
-    finally:
-        await temp_engine.dispose()
+data_store_props = DataStoreProps(
+    echo=True,
+    future=True,
+    poolclass=AsyncAdaptedQueuePool,
+    pool_size=10,
+    max_overflow=5,
+    pool_recycle=3600,
+)
+data_store = DataStore(settings.db_url, data_store_props)
 
 
-async def init_db():
-    """Initializes database, creates schema if necessary"""
-    await check_and_create_database()
-    async with _engine.begin() as connection:
-        await connection.run_sync(SQLModel.metadata.create_all)
-
-
-async def get_async_session() -> AsyncSession:
-    """Creates and returns an asynchronous database session"""
-    _async_session_depot = AsyncSession(_engine)
-    return _async_session_depot
+async def get_async_session() -> AsyncIterator[AsyncSession]:
+    """Creates and yields an asynchronous database session"""
+    async with data_store.session() as session:
+        yield session

@@ -1,61 +1,79 @@
 """Test fixtures for routes/github tests."""
 
-import os
 from typing import AsyncGenerator
 
 import pytest_asyncio
-from sqlalchemy import text
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.orm import sessionmaker
+from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from configs import get_settings
-from dbs import get_async_session, init_db
-from models.github import AppRecord
+from dbs import get_async_session
+from main import app
+from models.github import AppRecord, InstallationRecord, Repository
+from models.user import User
+
+settings = get_settings()
+
+"""testing database"""
+engine = create_async_engine(url=settings.db_url)
+test_session = sessionmaker(
+    bind=engine, class_=AsyncSession, expire_on_commit=False
+)
 
 
-@pytest_asyncio.fixture(scope="function")
-async def setup_test_db():
-    """Setup test database for each test."""
-    os.environ["ENVIRONMENT"] = "test"
-    await init_db()
-    yield
+async def get_session_override() -> AsyncGenerator[AsyncSession, None]:
+    """async test session for db activities - used for dependency override"""
+    async with test_session() as session:
+        yield session
 
 
 @pytest_asyncio.fixture
 async def async_test_session() -> AsyncGenerator[AsyncSession, None]:
-    """async test session for db activities"""
-    session = await get_async_session()
-    try:
+    """async test session fixture for direct use in tests"""
+    async with test_session() as session:
         yield session
-    finally:
-        await session.rollback()
-        await session.close()
 
 
-@pytest_asyncio.fixture(autouse=False)
-async def cleanup_tables():
-    """Remove tables after each test for isolation."""
+@pytest_asyncio.fixture
+async def client():
+    async with AsyncClient(
+        transport=ASGITransport(app),
+        base_url="http://test",
+    ) as client:
+        yield client
+
+
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def setup_and_tear_down_test_db():
+    """Setup test database once for all tests in this session."""
+    """Tear it down after all tests complete."""
+    settings = get_settings()
+
+    if settings.environment != "test":
+        raise Exception("STOP, wrong environment, set it up again please...")
+
+    app.dependency_overrides[get_async_session] = get_session_override
+
+    async with engine.begin() as connection:
+        await connection.run_sync(SQLModel.metadata.create_all)
+
+    # Dispose of all connections so new ones are created per test on correct event loop
+    await engine.dispose()
+
     yield
 
-    settings = get_settings()
-    db_url = settings.db_url.rsplit("/", 1)[0] + "/daredevil_test"
-    cleanup_engine = create_async_engine(db_url)
-
+    # Clean up - wrap in try/except to handle event loop issues on teardown
     try:
-        async with cleanup_engine.begin() as connection:
-            await connection.execute(
-                text(
-                    """
-                    TRUNCATE TABLE github_app_records,
-                                   github_installation_records,
-                                   github_repositories,
-                                   users
-                    RESTART IDENTITY CASCADE
-                    """
-                )
-            )
-    finally:
-        await cleanup_engine.dispose()
+        async with engine.begin() as connection:
+            await connection.run_sync(SQLModel.metadata.drop_all)
+    except Exception:
+        pass  # Ignore errors during teardown cleanup
+
+    app.dependency_overrides.clear()
+    await engine.dispose()
 
 
 @pytest_asyncio.fixture
@@ -71,7 +89,9 @@ async def sample_app_record(async_test_session: AsyncSession) -> AppRecord:
         external_url="https://batman.batman",
         html_url="https://github.com/apps/batman",
     )
-    async_test_session.add(app_record)
-    await async_test_session.commit()
-    await async_test_session.refresh(app_record)
-    return app_record
+    async with test_session() as session:
+        session.add(app_record)
+        await session.commit()
+        await session.refresh(app_record)
+
+        return app_record

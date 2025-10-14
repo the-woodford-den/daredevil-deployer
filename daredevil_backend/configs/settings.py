@@ -1,7 +1,6 @@
-from functools import lru_cache
 from typing import Optional
 
-from pydantic import Field
+from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,26 +13,27 @@ class Settings(BaseSettings):
         extra="allow",
         case_sensitive=False,
     )
-    # Environment
-    environment: str = Field(default="dev")
-    # Database
+    allowed_origins: str
+
+    @computed_field
+    @property
+    def allowed_origins_list(self) -> list[str]:
+        return [origin.strip() for origin in self.allowed_origins.split(",")]
+
+    app_title: str = Field(default=None)
     db_host: str = Field()
     db_name: str = Field()
     db_port: str = Field()
-    db_user: str = Field()
     db_url: str = Field()
-    # GitHub App
-    gha_client_id: Optional[str] = Field(default=None)
-    gh_username: Optional[str] = Field(default=None)
-    gha_id: Optional[str] = Field(default=None)
+    db_user: str = Field()
+    environment: str = Field(default="test")
+    github_app_secret: str = Field()
     gha_private_key: Optional[str] = Field(default=None)
-    # Logfire
     logfire_token: Optional[str] = Field(default=None)
 
     def __getattr__(self, name: str):
         return None
 
 
-@lru_cache
 def get_settings() -> Settings:
     return Settings()

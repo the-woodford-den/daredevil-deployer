@@ -14,7 +14,7 @@ class TestGithubAppRoutes:
     """test suite --> routes/github/app.py"""
 
     @pytest.mark.asyncio
-    async def test_search_apps(self, setup_test_db):
+    async def test_search_apps(self, client: AsyncClient):
         """Test searching for a GitHub app by slug - mocks GitHub API"""
         test_slug = "batman"
 

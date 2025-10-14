@@ -27,10 +27,19 @@
 
 <p><code>cd daredevil_backend</code></p>
 <p><code>source .venv/bin/activate</code></p>
-<p><code>uv run fastapi dev</code></p>
-
-<p><code>http://127.0.0.1:8000/</code></p>
-<p><code>http://127.0.0.1:8000/docs</code></p>
+<p><code>uv run alembic init -t async alembic</code></p>
+<p><code>uv run alembic upgrade head</code></p>
+<p><code>uv run hypercorn main:app --config ./hypercorn.toml --workers 5 --access-logfile '-' -k 'asyncio' --reload</code></p>
+<p><code>http://127.0.0.1:4000/</code></p>
+<p><code>http://127.0.0.1:4000/docs</code></p>
+<p><code>For github route tests</code></p>
+<p><code>ENVIRONMENT=test uv run pytest tests/routes/github/ -v</code></p>
+<p><code>For config tests</code></p>
+<p><code>ENVIRONMENT=test uv run pytest tests/configs/ -v</code></p>
+<p><code>All tests</code></p>
+<p><code>ENVIRONMENT=test uv run pytest -v</code></p>
+<p><code>And some coverage output to HTML</code></p>
+<p><code>ENVIRONMENT=test pytest --cov=. --cov-report=html .</code></p>
 
 ---
 
