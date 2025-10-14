@@ -6,56 +6,62 @@ from typing import AsyncGenerator
 import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
+from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from configs import get_settings
-from dbs import get_async_session, init_db
-from models.github import AppRecord
+from dbs import get_async_session
+from main import app
+from models.github import AppRecord, InstallationRecord, Repository
+from models.user import User
 
-
-@pytest_asyncio.fixture(scope="function")
-async def setup_test_db():
-    """Setup test database for each test."""
-    os.environ["ENVIRONMENT"] = "test"
-    await init_db()
-    yield
+"""testing database"""
+engine = create_async_engine(url = settings.db_url)
+test_session = sessionmaker(
+    bind=engine. class_=AsyncSession, expire_on_commit=False
+)
 
 
 @pytest_asyncio.fixture
-async def async_test_session() -> AsyncGenerator[AsyncSession, None]:
+async def get_session_override() -> AsyncGenerator[AsyncSession, None]:
     """async test session for db activities"""
-    session = await get_async_session()
-    try:
+    async with test_session() as session:
         yield session
-    finally:
-        await session.rollback()
-        await session.close()
 
 
-@pytest_asyncio.fixture(autouse=False)
-async def cleanup_tables():
-    """Remove tables after each test for isolation."""
-    yield
+@pytest_asyncio.fixture(scope="session")
+async def client():
+    async with AsyncClient(
+        transport=ASGITransport(app),
+        base_url="http://test",            
+        ) as client:
+        yield client
+
+
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def setup_and_tear_down_test_db():
+    """Setup test database for each test."""
+    """and tear it down tear it down after """
+    """each test for isolation."""
 
     settings = get_settings()
-    db_url = settings.db_url.rsplit("/", 1)[0] + "/daredevil_test"
-    cleanup_engine = create_async_engine(db_url)
+    if settings.env != "test":
+        raise Exception("STOP, wrong environment, set it up again please...")
 
-    try:
-        async with cleanup_engine.begin() as connection:
-            await connection.execute(
-                text(
-                    """
-                    TRUNCATE TABLE github_app_records,
-                                   github_installation_records,
-                                   github_repositories,
-                                   users
-                    RESTART IDENTITY CASCADE
-                    """
-                )
-            )
-    finally:
-        await cleanup_engine.dispose()
+    app.dependency_overrides[get_async_session] = get_session_override
+
+    async with engine.begin() as connection:
+        await connection.run_sync(SQLModel.metadata.create_all)
+
+    async with test_session() as session:
+        await sample_app_record(session)
+
+    yield
+
+    async with cleanup_engine.begin() as connection:
+        await connection.run_sync(SQLModel.metadata.drop_all)
+
+    app.dependency_overrides.clear()
 
 
 @pytest_asyncio.fixture
@@ -71,7 +77,9 @@ async def sample_app_record(async_test_session: AsyncSession) -> AppRecord:
         external_url="https://batman.batman",
         html_url="https://github.com/apps/batman",
     )
-    async_test_session.add(app_record)
-    await async_test_session.commit()
-    await async_test_session.refresh(app_record)
-    return app_record
+    async with test_session() as session:
+        session.add(app_record)
+        await session.commit()
+        await session.refresh(app_record)
+
+        return app_record
