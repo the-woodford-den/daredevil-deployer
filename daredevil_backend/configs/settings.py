@@ -30,6 +30,8 @@ class Settings(BaseSettings):
     github_app_secret: str = Field()
     gha_private_key: Optional[str] = Field(default=None)
     logfire_token: Optional[str] = Field(default=None)
+    redis_port: int = Field()
+    redis_host: str = Field()
 
     def __getattr__(self, name: str):
         return None
