@@ -59,23 +59,24 @@ export const findAppItem = (slug: string): ResultAsync<AppItemResponse, ApiError
           };
         }
         const appResponse = await response.json();
-        const appObject = {
-          id: appResponse.id,
-          clientId: appResponse.client_id,
-          nodeId: appResponse.node_id,
-          owner: appResponse.owner,
-          name: appResponse.name,
-          description: appResponse.description,
-          externalUrl: appResponse.external_url,
-          htmlUrl: appResponse.html_url,
-          createdAt: appResponse.created_at,
-          updatedAt: appResponse.updated_at,
-          permissions: appResponse.permissions,
-          events: appResponse.events,
-          token: appResponse.token,
-          expires_at: appResponse.expires_at
-        } as AppItemResponse;
+        const appObject = appResponse as AppItemResponse;
 
+        //   {
+        //   id: appResponse.id,
+        //   clientId: appResponse.client_id,
+        //   nodeId: appResponse.node_id,
+        //   owner: appResponse.owner,
+        //   name: appResponse.name,
+        //   description: appResponse.description,
+        //   externalUrl: appResponse.external_url,
+        //   htmlUrl: appResponse.html_url,
+        //   createdAt: appResponse.created_at,
+        //   updatedAt: appResponse.updated_at,
+        //   permissions: appResponse.permissions,
+        //   events: appResponse.events,
+        //   token: appResponse.token,
+        //   expires_at: appResponse.expires_at
+        // }
         console.log(appObject);
         return appObject;
       }

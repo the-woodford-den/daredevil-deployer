@@ -17,6 +17,21 @@ class AppRecordBase(SQLModel):
     external_url: str = Field()
     html_url: str = Field()
 
+    # id: appResponse.id,
+    # clientId: appResponse.client_id,
+    # nodeId: appResponse.node_id,
+    # owner: appResponse.owner,
+    # name: appResponse.name,
+    # description: appResponse.description,
+    # externalUrl: appResponse.external_url,
+    # htmlUrl: appResponse.html_url,
+    # createdAt: appResponse.created_at,
+    # updatedAt: appResponse.updated_at,
+    # permissions: appResponse.permissions,
+    # events: appResponse.events,
+    # token: appResponse.token,
+    # expires_at: appResponse.expires_at
+
 
 class AppRecordOwnerResponse(SQLModel):
     id: int

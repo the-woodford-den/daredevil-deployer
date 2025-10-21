@@ -166,7 +166,7 @@ export function Root() {
               w="65%"
             >
               {installRecord ? (
-                <div>
+                <>
                   <Text textStyle="xl">{`Installation ID: ${installRecord.id}`}</Text>
                   <Text textStyle="xl">{`Access Tokens Url: ${installRecord.accessTokensUrl}`}</Text>
                   <Text textStyle="xl">{`App ID: ${installRecord.appId}`}</Text>
@@ -181,7 +181,7 @@ export function Root() {
                   </HStack>
                   <Text textStyle="lg">{`App Slug: ${installRecord.appSlug}`}</Text>
                   <Text textStyle="xl">{`Install HTML Url ${installRecord.htmlUrl}`}</Text>
-                </div>
+                </>
               ) : (
                 <form ref={ref} action={async (formData) => { await handleFindInstallRecord(formData) }}>
                   <InstallRecordForm />
