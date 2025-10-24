@@ -8,14 +8,14 @@ import {
 
 // TODO Fix Routing
 // Routing does not match backend
-export const findInstallRecord = (username: string): ResultAsync<InstallRecordResponse, ApiError> => {
+export const searchAppInstallations = (username: string): ResultAsync<InstallRecordResponse, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const params = new URLSearchParams({
     username: username
   });
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/github/access?${params}`).then(async (response) => {
+    fetch(`${backendUrl}/github/app/installations/search?${params}`).then(async (response) => {
       if (!response.ok) {
         throw {
           type: 'NETWORK_ERROR', message: 'No Tokens....'
@@ -25,7 +25,7 @@ export const findInstallRecord = (username: string): ResultAsync<InstallRecordRe
       const installResponse = await response.json();
       const installObject = installResponse as InstallRecordResponse;
 
-      console.log(installObject);
+      console.log(installResponse);
       return installObject;
     }),
     (error) => {
@@ -37,14 +37,14 @@ export const findInstallRecord = (username: string): ResultAsync<InstallRecordRe
   );
 };
 
-export const findAppItem = (slug: string): ResultAsync<AppItemResponse, ApiError> => {
+export const searchAppRecord = (slug: string): ResultAsync<AppItemResponse, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const params = new URLSearchParams({
     slug: slug,
   });
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/github/search?${params}`)
+    fetch(`${backendUrl}/github/app/search?${params}`)
       .then(async (response) => {
         if (!response.ok) {
           throw {
@@ -53,6 +53,8 @@ export const findAppItem = (slug: string): ResultAsync<AppItemResponse, ApiError
         }
         const appResponse = await response.json();
         const appObject = appResponse as AppItemResponse;
+
+        console.log(appResponse);
         return appObject;
       }),
     (error) => {

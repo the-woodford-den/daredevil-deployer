@@ -156,7 +156,8 @@ async def authenticated_access_app(
 
 
 @api.get(
-    "/installation/search/{username}", response_model=InstallationRecordResponse
+    "/installations/search/{username}",
+    response_model=InstallationRecordResponse,
 )
 async def search_installations(
     *, username: str, session: AsyncSession = Depends(get_async_session)
@@ -170,8 +171,8 @@ async def search_installations(
     github_user = (await session.execute(statement)).scalar_one_or_none()
 
     if github_user is None:
-        logfire.error("No Client Id means no JWT")
-        raise Exception("No Client Id means no JWT")
+        logfire.error("No User means no JWT")
+        raise Exception("No User means no JWT")
     elif github_user.client_id is None:
         logfire.error("No Client Id means no JWT")
         raise Exception("No Client Id means no JWT")

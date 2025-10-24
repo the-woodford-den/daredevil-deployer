@@ -1,6 +1,6 @@
 // Github Response Types 
 
-export interface AppItemResponse {
+export interface App {
   id: string;
   clientId: string;
   nodeId: string;
@@ -23,7 +23,7 @@ interface InstallRecordAccount {
 }
 
 
-export interface InstallRecordResponse {
+export interface Installation {
   id: number;
   account: InstallRecordAccount;
   events: string[];
