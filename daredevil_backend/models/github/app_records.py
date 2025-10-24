@@ -38,23 +38,25 @@ class AppRecordOwnerResponse(SQLModel):
     name: Optional[str] = Field(default=None)
     email: Optional[EmailStr] = Field(default=None)
     login: str
-    node_id: str
-    avatar_url: str
-    gravatar_id: Optional[str] = Field(default=None)
+    node_id: str = Field(serialized_alias="nodeId")
+    avatar_url: str = Field(serialized_alias="avatarUrl")
+    gravatar_id: Optional[str] = Field(
+        default=None, serialized_alias="gravatarId"
+    )
+    html_url: str = Field(serialized_alias="htmlUrl")
+    followers_url: str = Field(serialized_alias="followersUrl")
+    following_url: str = Field(serialized_alias="followingUrl")
+    gists_url: str = Field(serialized_alias="gistsUrl")
+    starred_url: str = Field(serialized_alias="starredUrl")
+    subscriptions_url: str = Field(serialized_alias="subscriptionsUrl")
+    organizations_url: str = Field(serialized_alias="organizationsUrl")
+    repos_url: str = Field(serialized_alias="reposUrl")
+    events_url: str = Field(serialized_alias="eventsUrl")
+    received_events_url: str = Field(serialized_alias="receivedEventsUrl")
+    user_view_type: str = Field(serialized_alias="userViewType")
+    site_admin: bool = Field(default=False, serialized_alias="siteAdmin")
     url: str = Field()
-    html_url: str = Field()
-    followers_url: str = Field()
-    following_url: str = Field()
-    gists_url: str = Field()
-    starred_url: str = Field()
-    subscriptions_url: str = Field()
-    organizations_url: str = Field()
-    repos_url: str = Field()
-    events_url: str = Field()
-    received_events_url: str = Field()
     type: str = Field()
-    user_view_type: str = Field()
-    site_admin: bool = Field(default=False)
 
 
 class AppRecordPermissionsResponse(SQLModel):
