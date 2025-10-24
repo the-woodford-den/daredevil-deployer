@@ -8,7 +8,8 @@ import {
   type ApiError,
   type App,
   type Installation,
-  type WebLinks
+  type WebLinks,
+  type EventItem
 } from '@/data';
 import rubyUrl from '~/ruby.svg';
 import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
@@ -55,11 +56,6 @@ const icons = {
   metroid: <GiMetroid />,
   ram: <GiRam />,
 };
-
-interface EventItem {
-  id: string;
-  event: string;
-}
 
 
 export function Root() {

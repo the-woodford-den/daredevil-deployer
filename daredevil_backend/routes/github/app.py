@@ -1,10 +1,7 @@
-from typing import Optional
-
 import logfire
 from fastapi import APIRouter, Depends, HTTPException
 from httpx import AsyncClient, HTTPStatusError
 from rich import inspect, print
-from sqlalchemy import text
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
