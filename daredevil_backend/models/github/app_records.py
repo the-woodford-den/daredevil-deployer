@@ -10,27 +10,12 @@ from models import IDModel, TSModel
 
 class AppRecordBase(SQLModel):
     slug: str = Field()
-    node_id: str = Field()
-    client_id: str = Field()
+    node_id: str = Field(alias="nodeId")
+    client_id: str = Field(alias="clientId")
     name: str = Field()
     description: Optional[str] = Field(default=None)
-    external_url: str = Field()
-    html_url: str = Field()
-
-    # id: appResponse.id,
-    # clientId: appResponse.client_id,
-    # nodeId: appResponse.node_id,
-    # owner: appResponse.owner,
-    # name: appResponse.name,
-    # description: appResponse.description,
-    # externalUrl: appResponse.external_url,
-    # htmlUrl: appResponse.html_url,
-    # createdAt: appResponse.created_at,
-    # updatedAt: appResponse.updated_at,
-    # permissions: appResponse.permissions,
-    # events: appResponse.events,
-    # token: appResponse.token,
-    # expires_at: appResponse.expires_at
+    external_url: str = Field(alias="externalUrl")
+    html_url: str = Field(alias="htmlUrl")
 
 
 class AppRecordOwnerResponse(SQLModel):
@@ -38,23 +23,21 @@ class AppRecordOwnerResponse(SQLModel):
     name: Optional[str] = Field(default=None)
     email: Optional[EmailStr] = Field(default=None)
     login: str
-    node_id: str = Field(serialized_alias="nodeId")
-    avatar_url: str = Field(serialized_alias="avatarUrl")
-    gravatar_id: Optional[str] = Field(
-        default=None, serialized_alias="gravatarId"
-    )
-    html_url: str = Field(serialized_alias="htmlUrl")
-    followers_url: str = Field(serialized_alias="followersUrl")
-    following_url: str = Field(serialized_alias="followingUrl")
-    gists_url: str = Field(serialized_alias="gistsUrl")
-    starred_url: str = Field(serialized_alias="starredUrl")
-    subscriptions_url: str = Field(serialized_alias="subscriptionsUrl")
-    organizations_url: str = Field(serialized_alias="organizationsUrl")
-    repos_url: str = Field(serialized_alias="reposUrl")
-    events_url: str = Field(serialized_alias="eventsUrl")
-    received_events_url: str = Field(serialized_alias="receivedEventsUrl")
-    user_view_type: str = Field(serialized_alias="userViewType")
-    site_admin: bool = Field(default=False, serialized_alias="siteAdmin")
+    node_id: str = Field(alias="nodeId")
+    avatar_url: str = Field(alias="avatarUrl")
+    gravatar_id: Optional[str] = Field(default=None, alias="gravatarId")
+    html_url: str = Field(alias="htmlUrl")
+    followers_url: str = Field(alias="followersUrl")
+    following_url: str = Field(alias="followingUrl")
+    gists_url: str = Field(alias="gistsUrl")
+    starred_url: str = Field(alias="starredUrl")
+    subscriptions_url: str = Field(alias="subscriptionsUrl")
+    organizations_url: str = Field(alias="organizationsUrl")
+    repos_url: str = Field(alias="reposUrl")
+    events_url: str = Field(alias="eventsUrl")
+    received_events_url: str = Field(alias="receivedEventsUrl")
+    user_view_type: str = Field(alias="userViewType")
+    site_admin: bool = Field(default=False, alias="siteAdmin")
     url: str = Field()
     type: str = Field()
 
@@ -76,14 +59,14 @@ class AppRecordResponse(AppRecordBase):
 
 class AppRecord(AppRecordBase, IDModel, TSModel, table=True):
     __tablename__ = "github_app_records"
-    github_app_id: int
+    github_app_id: int = Field(alias="githubAppId")
     token: Optional[str] = Field(default=None)
-    expires_at: Optional[str] = Field(default=None)
+    expires_at: Optional[str] = Field(default=None, alias="expiresAt")
 
 
 class AppRecordTokenResponse(SQLModel):
     token: str = Field()
-    expires_at: str = Field()
+    expires_at: str = Field(alias="expiresAt")
 
 
 # class AppPermissionsBase(SQLModel):

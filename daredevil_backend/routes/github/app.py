@@ -231,8 +231,8 @@ async def search_installations(
                         )
 
                     return install_obj
-
             response.raise_for_status()
+
         except HTTPStatusError as e:
             logfire.error(f"Internal Error: {e}")
             raise HTTPException(

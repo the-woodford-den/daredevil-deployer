@@ -13,8 +13,10 @@ class TSModel(SQLModel):
     created_at: datetime = Field(
         default_factory=datetime.now,
         sa_column_kwargs={"server_default": func.now()},
+        alias="createdAt",
     )
     updated_at: datetime = Field(
         default_factory=datetime.now,
         sa_column_kwargs={"server_default": func.now(), "onupdate": func.now()},
+        alias="updatedAt",
     )
