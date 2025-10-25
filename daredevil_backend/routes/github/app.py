@@ -15,7 +15,10 @@ from models.github import (AppRecord, AppRecordResponse,
 api = APIRouter(prefix="/github/app")
 
 
-@api.get("/search/{slug}", response_model=AppRecordResponse)
+@api.get(
+    "/search/{slug}",
+    response_model=AppRecordResponse,
+)
 async def search_apps(
     *, slug: str, session: AsyncSession = Depends(get_async_session)
 ):
