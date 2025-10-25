@@ -10,13 +10,9 @@ from models import IDModel, TSModel
 
 def serialize(field_name):
     keys = field_name.split("_")
-    counter = 0
-    field = keys[0]
-    for x in keys:
-        counter += 1
-        if counter <= len(keys) - 1:
-            field += keys[counter].capitalize()
-    return field
+    new_field_name = keys[0] + "".join(x.title() for x in keys[1:])
+
+    return new_field_name
 
 
 class AppRecordBase(SQLModel):
