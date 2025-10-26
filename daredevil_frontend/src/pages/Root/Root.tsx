@@ -1,8 +1,11 @@
 import { useRef, useState } from 'react';
-import { searchAppRecord, searchAppInstallations } from '@/api/github';
+import {
+  createInstallationToken,
+  searchAppRecord,
+  searchAppInstallations
+} from '@/api/github';
 import { Alarm } from '@/components/Alarm';
 import { Note } from '@/components/Note';
-import { CreateInstallationTokenForm } from '@/components/CreateInstallationTokenForm';
 import { SearchAppsForm } from '@/components/SearchAppsForm';
 import { SearchInstallationsForm } from '@/components/SearchInstallationsForm';
 import {
@@ -99,6 +102,9 @@ export function Root() {
 
   const handleCreateInstallationToken = async (event: any) => {
     event.preventDefault();
+    if (!installation) {
+      throw Error;
+    }
     const result = await createInstallationToken(installation.id);
     result.match(
       (tokenObject) => setToken(tokenObject),
@@ -248,17 +254,15 @@ export function Root() {
                     <IconButton
                       variant="outline"
                       size="lg"
+                      disabled={installation ? true : false}
                       asChild={true}
                     >
-                      <button onClick={handleCreateInstallationToken}>
+                      <a href="#" onClick={handleCreateInstallationToken}>
                         {icons['metroid']}
-                      </button>
+                      </a>
                     </IconButton>
                     <Text textStyle="sm"> grab {installation.appSlug} token</Text>
                   </VStack>
-                  <form ref={ref} action={async (formData) => { await handleCreateInstallationToken(formData) }}>
-                    <CreateInstallationTokenForm />
-                  </form>
                 </>
               ) : (
                 <>

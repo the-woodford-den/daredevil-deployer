@@ -1,8 +1,8 @@
 from .app_records import AppRecord, AppRecordResponse, AppRecordTokenResponse
 from .github import CreateTokenResponse, OAuthAccessTokenResponse, UserResponse
-from .installation_records import (InstallationAccessTokenResponse,
-                                   InstallationRecord,
-                                   InstallationRecordResponse)
+from .installation_records import (InstallationRecord,
+                                   InstallationRecordResponse,
+                                   InstallationTokenResponse)
 from .repositories import Repository, RepositoryResponse
 
 __all__ = [
@@ -10,7 +10,7 @@ __all__ = [
     "AppRecordResponse",
     "AppRecordTokenResponse",
     "CreateTokenResponse",
-    "InstallationAccessTokenResponse",
+    "InstallationTokenResponse",
     "InstallationRecord",
     "InstallationRecordResponse",
     "OAuthAccessTokenResponse",

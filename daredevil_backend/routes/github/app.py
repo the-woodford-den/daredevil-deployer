@@ -8,9 +8,9 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from configs import GithubLibrary
 from dbs import get_async_session
 from models import User
-from models.github import (AppRecord, AppRecordResponse,
-                           InstallationAccessTokenResponse, InstallationRecord,
-                           InstallationRecordResponse)
+from models.github import (AppRecord, AppRecordResponse, InstallationRecord,
+                           InstallationRecordResponse,
+                           InstallationTokenResponse)
 
 api = APIRouter(prefix="/github/app")
 
@@ -18,6 +18,7 @@ api = APIRouter(prefix="/github/app")
 @api.get(
     "/search/{slug}",
     response_model=AppRecordResponse,
+    response_model_exclude_unset=True,
 )
 async def search_apps(
     *, slug: str, session: AsyncSession = Depends(get_async_session)
@@ -243,11 +244,11 @@ async def search_installations(
 
 
 @api.post(
-    "/installation/access-tokens/{install_id}",
-    response_model=InstallationAccessTokenResponse,
+    "/installation/token",
+    response_model=InstallationTokenResponse,
 )
-async def installation_access_tokens(
-    *, install_id: int, session: AsyncSession = Depends(get_async_session)
+async def installation_token(
+    *, id: int, session: AsyncSession = Depends(get_async_session)
 ):
     """This post request will provide a response that will include an installation"""
     """access token, the time that the token expires, the permissions that the token has, """
@@ -261,7 +262,7 @@ async def installation_access_tokens(
             AppRecord.client_id,
         )
         .where(InstallationRecord.app_id == AppRecord.github_app_id)
-        .where(InstallationRecord.installation_id == install_id)
+        .where(InstallationRecord.installation_id == id)
     )
     results = (await session.execute(statement)).all()
 
@@ -274,7 +275,9 @@ async def installation_access_tokens(
     github_app_library = GithubLibrary()
     app_jwt = github_app_library.create_jwt(client_id=client_id)
 
-    endpoint = f"https://api.github.com/app/installations/{str(install_id)}/access_tokens"
+    endpoint = (
+        f"https://api.github.com/app/installations/{str(id)}/access_tokens"
+    )
     header = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
@@ -286,15 +289,13 @@ async def installation_access_tokens(
             async with AsyncClient() as client:
                 response = await client.post(url=endpoint, headers=header)
                 response.raise_for_status()
-                access_token_json = response.json()
+                token_json = response.json()
 
-            logfire.info(f"validating access token ...{access_token_json}")
-            access_token_obj = InstallationAccessTokenResponse.model_validate(
-                access_token_json
-            )
+            logfire.info(f"validating access token ...{token_json}")
+            token_obj = InstallationTokenResponse.model_validate(token_json)
 
             logfire.info("Responding with token ...")
-            return access_token_obj
+            return token_obj
 
         except HTTPStatusError as e:
             logfire.error(f"Internal Error: {e}")

@@ -10,7 +10,7 @@ from models import IDModel, TSModel
 from .repositories import RepositoryResponse
 
 
-class InstallationAccessTokenResponse(SQLModel):
+class InstallationTokenResponse(SQLModel):
     token: str = Field()
     expires_at: str = Field()
     permissions: dict[str, str] = Field(default=dict[:])

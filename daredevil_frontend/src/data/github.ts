@@ -34,9 +34,7 @@ export interface Installation {
   repositoriesUrl: string;
 }
 
-export interface TokenItemResponse {
-  clientId?: string;
-  installId?: string;
+export interface Token {
   token: string;
-  expires_at: string;
+  expiresAt: string;
 }
