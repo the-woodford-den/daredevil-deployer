@@ -2,14 +2,16 @@ import { useRef, useState } from 'react';
 import { searchAppRecord, searchAppInstallations } from '@/api/github';
 import { Alarm } from '@/components/Alarm';
 import { Note } from '@/components/Note';
+import { CreateInstallationTokenForm } from '@/components/CreateInstallationTokenForm';
 import { SearchAppsForm } from '@/components/SearchAppsForm';
 import { SearchInstallationsForm } from '@/components/SearchInstallationsForm';
 import {
   type ApiError,
   type App,
+  type EventItem,
   type Installation,
+  type Token,
   type WebLinks,
-  type EventItem
 } from '@/data';
 import rubyUrl from '~/ruby.svg';
 import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
@@ -62,6 +64,7 @@ export function Root() {
   const [jsonData] = useState<WebLinks[]>(items);
   const [eventData, setEventData] = useState<EventItem[] | undefined>(undefined);
   const [app, setApp] = useState<App>();
+  const [token, setToken] = useState<Token>();
   const [installation, setInstallation] = useState<Installation>();
   const [error, setError] = useState<ApiError | null>(null);
   const ref = useRef<HTMLFormElement>(null);
@@ -91,6 +94,17 @@ export function Root() {
       setEventData(events);
     }
     console.log(installation);
+    ref.current?.reset();
+  };
+
+  const handleCreateInstallationToken = async (event: any) => {
+    event.preventDefault();
+    const result = await createInstallationToken(installation.id);
+    result.match(
+      (tokenObject) => setToken(tokenObject),
+      (err) => setError(err)
+    );
+    console.log(token);
     ref.current?.reset();
   };
 
@@ -214,6 +228,63 @@ export function Root() {
                   <SearchAppsForm />
                 </form>
               )}
+            </Box>
+          </Flex>
+        </GridItem>
+        <GridItem pt="6" pb="8" colSpan={2}>
+          <Flex
+            w="full"
+            justify="right"
+          >
+            <Box
+              background="black"
+              p="2rem"
+              color="white"
+              w="65%"
+            >
+              {installation ? (
+                <>
+                  <VStack key={installation.id}>
+                    <IconButton
+                      variant="outline"
+                      size="lg"
+                      asChild={true}
+                    >
+                      <button onClick={handleCreateInstallationToken}>
+                        {icons['metroid']}
+                      </button>
+                    </IconButton>
+                    <Text textStyle="sm"> grab {installation.appSlug} token</Text>
+                  </VStack>
+                  <form ref={ref} action={async (formData) => { await handleCreateInstallationToken(formData) }}>
+                    <CreateInstallationTokenForm />
+                  </form>
+                </>
+              ) : (
+                <>
+                  <Text textStyle="xl">No Installation ID</Text>
+                  <Text textStyle="xl">Therefore ...</Text>
+                  <Text textStyle="xl">No Access Token</Text>
+                </>
+              )}
+            </Box>
+          </Flex>
+        </GridItem>
+        <GridItem pt="6" pb="8" colSpan={2}>
+          <Flex
+            w="full"
+            justify="right"
+          >
+            <Box
+              background="black"
+              p="2rem"
+              color="white"
+              w="65%"
+            >
+              <>
+                <Text textStyle="xl">We will ...</Text>
+                <Text textStyle="xl">... do something with a token</Text>
+              </>
             </Box>
           </Flex>
         </GridItem>

@@ -1,14 +1,12 @@
 import { ResultAsync } from "neverthrow";
 import {
   type ApiError,
-  type AppItemResponse,
-  type InstallRecordResponse
+  type App,
+  type Installation
 } from "@/data";
 
 
-// TODO Fix Routing
-// Routing does not match backend
-export const searchAppInstallations = (username: string): ResultAsync<InstallRecordResponse, ApiError> => {
+export const searchAppInstallations = (username: string): ResultAsync<Installation, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const params = new URLSearchParams({
     username: username
@@ -23,7 +21,7 @@ export const searchAppInstallations = (username: string): ResultAsync<InstallRec
       }
 
       const installResponse = await response.json();
-      const installObject = installResponse as InstallRecordResponse;
+      const installObject = installResponse as Installation;
 
       console.log(installResponse);
       return installObject;
@@ -37,7 +35,7 @@ export const searchAppInstallations = (username: string): ResultAsync<InstallRec
   );
 };
 
-export const searchAppRecord = (slug: string): ResultAsync<AppItemResponse, ApiError> => {
+export const searchAppRecord = (slug: string): ResultAsync<App, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   return ResultAsync.fromPromise(
@@ -49,7 +47,7 @@ export const searchAppRecord = (slug: string): ResultAsync<AppItemResponse, ApiE
           };
         }
         const appResponse = await response.json();
-        const appObject = appResponse as AppItemResponse;
+        const appObject = appResponse as App;
 
         console.log(appResponse);
         return appObject;
