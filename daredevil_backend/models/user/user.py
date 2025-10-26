@@ -1,12 +1,11 @@
 from typing import Optional
 
-from sqlmodel import Field
+from sqlmodel import Field, SQLModel
 
 from .base import IDModel, TSModel
 
 
-class User(IDModel, TSModel, table=True):
-    __tablename__ = "users"
+class UserBase(SQLModel):
     access_token: Optional[str] = Field(default=None)
     avatar_url: str = Field()
     client_id: Optional[str] = Field(default=None)
@@ -16,7 +15,6 @@ class User(IDModel, TSModel, table=True):
     followers_url: str = Field()
     following_url: str = Field()
     gists_url: str = Field()
-    github_id: int = Field()
     gravatar_id: Optional[str] = Field(default=None)
     html_url: str = Field()
     interval: Optional[int] = Field(default=None)
@@ -33,3 +31,16 @@ class User(IDModel, TSModel, table=True):
     user_code: Optional[str] = Field(default=None)
     user_view_type: str = Field()
     verification_uri: Optional[str] = Field(default=None)
+
+
+class UserCreate(UserBase):
+    id: int = Field()
+
+
+class UserUpdate(UserBase):
+    github_id: int = Field()
+
+
+class User(UserBase, IDModel, TSModel, table=True):
+    __tablename__ = "users"
+    github_id: int = Field()
