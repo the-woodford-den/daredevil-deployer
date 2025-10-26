@@ -2,7 +2,7 @@ from typing import Optional
 
 from sqlmodel import Field, SQLModel
 
-from .base import IDModel, TSModel
+from models import IDModel, TSModel
 
 
 class UserBase(SQLModel):

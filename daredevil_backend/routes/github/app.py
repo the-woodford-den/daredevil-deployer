@@ -7,10 +7,10 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from configs import GithubLibrary
 from dbs import get_async_session
-from models import User
 from models.github import (AppRecord, AppRecordResponse, InstallationRecord,
                            InstallationRecordResponse,
                            InstallationTokenResponse)
+from models.user import User
 
 api = APIRouter(prefix="/github/app")
 
