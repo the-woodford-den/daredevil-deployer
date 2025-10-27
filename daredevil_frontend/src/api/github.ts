@@ -14,7 +14,7 @@ export const searchAppInstallations = (username: string): ResultAsync<Installati
   });
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/github/app/installations/search?${params}`).then(async (response) => {
+    fetch(`${backendUrl}/github/app/installations/search/${params}`).then(async (response) => {
       if (!response.ok) {
         throw {
           type: 'NETWORK_ERROR', message: 'No Tokens....'
