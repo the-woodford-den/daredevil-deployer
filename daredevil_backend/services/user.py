@@ -14,14 +14,14 @@ class UserService:
         return user
 
     async def add(self, user_create: UserCreate) -> User:
-        user_id = user_create.id
-        new_user_obj = user_create.model_dump(exclude="id")
-        new_user_obj["github_id"] = user_id
-        user = User.model_validate(new_user_obj)
-        self.session.add(user)
+        new_user = User(
+            **user_create.model_dump(exclude="id"),
+            github_id=user_create.id,
+        )
+        self.session.add(new_user)
         await self.session.commit()
-        await self.session.refresh(user)
-        return user
+        await self.session.refresh(new_user)
+        return new_user
 
     def update(self, user_update: UserUpdate) -> User:
         pass

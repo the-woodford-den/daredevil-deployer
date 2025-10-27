@@ -15,14 +15,13 @@ class AppService:
         return app
 
     async def add(self, app_create: AppRecordResponse) -> AppRecord:
-        github_app_id = app_create.id
-        new_app_obj = app_create.model_dump(exclude="id")
-        new_app_obj["github_app_id"] = github_app_id
-        app = AppRecord.model_validate(new_app_obj)
-        self.session.add(app)
+        new_app = AppRecord(
+            **app_create.model_dump(exclude="id"), github_app_id=app_create.id
+        )
+        self.session.add(new_app)
         await self.session.commit()
-        await self.session.refresh(app)
-        return app
+        await self.session.refresh(new_app)
+        return new_app
 
     def update(self, app_update: AppRecordResponse) -> AppRecord:
         pass
