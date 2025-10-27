@@ -196,13 +196,13 @@ async def search_installations(
             async with AsyncClient() as client:
                 response = await client.get(url=endpoint, headers=header)
                 response.raise_for_status()
-                install_responses = response.json()
+                installation_responses = response.json()
 
             logfire.info("checking returned list of installations...")
-            for app_install in install_responses:
-                if app_install["account"]["login"] == username:
+            for installation in installation_responses:
+                if installation["account"]["login"] == username:
                     install_obj = InstallationRecordResponse.model_validate(
-                        app_install
+                        installation
                     )
                     logfire.info(
                         "username matched, checked database existance of record..."
