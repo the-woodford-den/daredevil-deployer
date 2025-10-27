@@ -10,7 +10,9 @@ from dbs import get_async_session
 from models.github import (AppRecord, AppRecordResponse, InstallationRecord,
                            InstallationRecordResponse,
                            InstallationTokenResponse)
-from models.user import User
+from models.user import User, UserCreate
+from services import UserService
+from services.github import AppService
 
 api = APIRouter(prefix="/github/app")
 
@@ -20,9 +22,7 @@ api = APIRouter(prefix="/github/app")
     response_model=AppRecordResponse,
     response_model_exclude_unset=True,
 )
-async def search_apps(
-    *, slug: str, session: AsyncSession = Depends(get_async_session)
-):
+async def search_apps(*, slug: str):
     """This GET request searches Github Api for a Github App."""
     """It uses a slug to search, only works if you have the App installed on your """
     """github user account. We then check the database and add if it don't exist."""
@@ -37,30 +37,29 @@ async def search_apps(
     try:
         async with AsyncClient() as viper:
             response = await viper.get(url=url, headers=headers)
+            response.raise_for_status()
             data = response.json()
+            app_service = AppService()
+
             github_app_obj = AppRecordResponse.model_validate(data)
-
-            statement = select(AppRecord).where(
-                AppRecord.github_app_id == github_app_obj.id
-            )
-
-            github_app = (await session.execute(statement)).one_or_none()
+            github_app = app_service.get(id=github_app_obj.id)
             if github_app is None:
-                gha_id = github_app_obj.id
-                app_dict = AppRecordResponse.model_dump(github_app_obj)
-                del app_dict["id"]
-                app_dict["github_app_id"] = gha_id
-                app_obj = AppRecord.model_validate(app_dict)
-                session.add(app_obj)
-                await session.commit()
-                await session.refresh(app_obj)
+                github_app = app_service.create(app_create=github_app_obj)
                 logfire.info("GitHub App Validated & Stored in DB")
             else:
                 logfire.info("GitHub App Exists in DB")
 
+            user_service = UserService()
+            user_obj = UserCreate.model_validate(data["owner"])
+            user = user_service.get(id=user_obj.id)
+            if user is None:
+                user = user_service.create(user_create=user_obj)
+                logfire.info("User Validated & Stored in DB")
+            else:
+                logfire.info("User Exists in DB")
+
         return github_app_obj
 
-        response.raise_for_status()
     except HTTPStatusError as e:
         logfire.error(f"HTTP Status Error: {e}")
 
