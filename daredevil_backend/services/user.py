@@ -10,7 +10,7 @@ class UserService:
 
     async def get(self, id: int):
         query = select(User).where(User.github_id == id)
-        user = (await self.session.execute(query)).one_or_none()
+        user = (await self.session.execute(query)).scalar_one_or_none()
         return user
 
     async def add(self, user_create: UserCreate) -> User:

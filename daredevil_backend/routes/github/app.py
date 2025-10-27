@@ -52,6 +52,7 @@ async def search_apps(
                 logfire.info("GitHub App Exists in DB")
 
             user_service = UserService(session=session)
+            data["owner"]["client_id"] = github_app.client_id
             user_obj = UserCreate.model_validate(data["owner"])
             user = await user_service.get(id=user_obj.id)
             if user is None:

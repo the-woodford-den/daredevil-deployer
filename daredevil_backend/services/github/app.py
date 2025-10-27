@@ -11,7 +11,7 @@ class AppService:
 
     async def get(self, id: int) -> AppRecord | None:
         query = select(AppRecord).where(AppRecord.github_app_id == id)
-        app = (await self.session.execute(query)).one_or_none()
+        app = (await self.session.execute(query)).scalar_one_or_none()
         return app
 
     async def add(self, app_create: AppRecordResponse) -> AppRecord:

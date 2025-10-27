@@ -18,7 +18,7 @@ def serialize(field_name):
 class AppRecordBase(SQLModel):
     slug: str = Field()
     node_id: str = Field()
-    client_id: str = Field()
+    client_id: Optional[str] = Field(default=None)
     name: str = Field()
     description: Optional[str] = Field(default=None)
     external_url: str = Field()
