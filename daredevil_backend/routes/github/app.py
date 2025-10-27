@@ -39,7 +39,7 @@ async def search_apps(
     try:
         async with AsyncClient() as viper:
             response = await viper.get(url=url, headers=headers)
-            await response.raise_for_status()
+            response.raise_for_status()
             data = response.json()
             app_service = AppService(session=session)
 
