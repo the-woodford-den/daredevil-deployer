@@ -1,6 +1,7 @@
 """Feature tests for routes/github/app.py"""
 
 from unittest.mock import AsyncMock, patch
+from uuid import UUID
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -19,7 +20,7 @@ class TestGithubAppRoutes:
         test_slug = "batman"
 
         mock_github_response = {
-            "id": 777247,
+            "id": 4567,
             "slug": "batman",
             "node_id": "19020",
             "client_id": "1e43tf3",
@@ -46,7 +47,7 @@ class TestGithubAppRoutes:
                 "type": "Organization",
                 "url": "http://test.com",
                 "user_view_type": "public",
-                "id": 215,
+                "id": 1234,
             },
             "events": [],
             "permissions": None,
@@ -56,8 +57,12 @@ class TestGithubAppRoutes:
             mock_client = MockAsyncClient.return_value.__aenter__.return_value
             mock_app_service = AsyncMock()
             mock_user_service = AsyncMock()
-            mock_user_service.get = AsyncMock(id=1)
-            mock_app_service.get = AsyncMock(id=1)
+            mock_user_service.get = AsyncMock(
+                id=UUID("12345678123456781234567812345678")
+            )
+            mock_app_service.get = AsyncMock(
+                id=UUID("12345678123456781234567812345678")
+            )
 
             mock_response = AsyncMock()
             mock_response.json = lambda: mock_github_response
@@ -72,5 +77,5 @@ class TestGithubAppRoutes:
                 assert response.status_code == 200
                 response_data = response.json()
                 assert response_data["slug"] == "batman"
-                assert response_data["id"] == 777247
+                assert response_data["id"] == 4567
                 assert response_data["name"] == "batman"

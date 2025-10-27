@@ -22,7 +22,9 @@ api = APIRouter(prefix="/github/app")
     response_model=AppRecordResponse,
     response_model_exclude_unset=True,
 )
-async def search_apps(*, slug: str):
+async def search_apps(
+    *, slug: str, session: AsyncSession = Depends(get_async_session)
+):
     """This GET request searches Github Api for a Github App."""
     """It uses a slug to search, only works if you have the App installed on your """
     """github user account. We then check the database and add if it don't exist."""
@@ -37,23 +39,23 @@ async def search_apps(*, slug: str):
     try:
         async with AsyncClient() as viper:
             response = await viper.get(url=url, headers=headers)
-            response.raise_for_status()
+            await response.raise_for_status()
             data = response.json()
-            app_service = AppService()
+            app_service = AppService(session=session)
 
             github_app_obj = AppRecordResponse.model_validate(data)
-            github_app = app_service.get(id=github_app_obj.id)
+            github_app = await app_service.get(id=github_app_obj.id)
             if github_app is None:
-                github_app = app_service.create(app_create=github_app_obj)
+                github_app = await app_service.add(app_create=github_app_obj)
                 logfire.info("GitHub App Validated & Stored in DB")
             else:
                 logfire.info("GitHub App Exists in DB")
 
-            user_service = UserService()
+            user_service = UserService(session=session)
             user_obj = UserCreate.model_validate(data["owner"])
-            user = user_service.get(id=user_obj.id)
+            user = await user_service.get(id=user_obj.id)
             if user is None:
-                user = user_service.create(user_create=user_obj)
+                user = await user_service.add(user_create=user_obj)
                 logfire.info("User Validated & Stored in DB")
             else:
                 logfire.info("User Exists in DB")
