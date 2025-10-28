@@ -7,14 +7,14 @@ import {
 } from "@/data";
 
 
-export const searchAppInstallations = (username: string): ResultAsync<Installation, ApiError> => {
+export const searchGitInstalls = (username: string): ResultAsync<Installation, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const params = new URLSearchParams({
     username: username
   });
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/github/app/installations/search/${params}`).then(async (response) => {
+    fetch(`${backendUrl}/git/app/installs/search/${username}`).then(async (response) => {
       if (!response.ok) {
         throw {
           type: 'NETWORK_ERROR', message: 'No Tokens....'
@@ -36,11 +36,11 @@ export const searchAppInstallations = (username: string): ResultAsync<Installati
   );
 };
 
-export const searchAppRecord = (slug: string): ResultAsync<App, ApiError> => {
+export const searchGitApps = (slug: string): ResultAsync<App, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/github/app/search/${slug}`)
+    fetch(`${backendUrl}/git/app/search/${slug}`)
       .then(async (response) => {
         if (!response.ok) {
           throw {
@@ -62,12 +62,12 @@ export const searchAppRecord = (slug: string): ResultAsync<App, ApiError> => {
   );
 };
 
-export const createInstallationToken = (id: number): ResultAsync<Token, ApiError> => {
+export const createGitInstallToken = (id: number): ResultAsync<Token, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const params = JSON.stringify({ id });
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/github/app/installation/token`, {
+    fetch(`${backendUrl}/git/app/install/token`, {
       method: 'POST',
       body: params,
       headers: { 'Content-Type': 'application/json' }

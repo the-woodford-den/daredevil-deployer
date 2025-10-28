@@ -158,8 +158,8 @@ async def authenticated_access_app(
 
 
 @api.get(
-    "/installations/search/{username}",
-    response_model=GitInstallResponse,
+    "/installs/search/{username}",
+    response_model=GitInstall,
 )
 async def search_installations(
     *, username: str, session: AsyncSession = Depends(get_async_session)
@@ -170,7 +170,8 @@ async def search_installations(
     """From the list, it compares and pulls from the db by the App slug"""
 
     user_service = UserService(session)
-    user = user_service.get_by_username(username)
+    user = await user_service.get_by_username(username)
+    inspect(user)
 
     if user is None:
         logfire.error("No User means no JWT")
@@ -201,15 +202,15 @@ async def search_installations(
             for i_response in i_responses:
                 installation_service = GitInstallService(session)
                 if i_response["account"]["login"] == username:
-                    installation_obj = GitInstallResponse.model_validate(
-                        i_response
-                    )
+                    install_obj = GitInstallResponse.model_validate(i_response)
                     logfire.info("username matched, checking db record...")
-                    installation = installation_service.get(installation_obj.id)
+                    installation = await installation_service.get(
+                        install_obj.id
+                    )
                     if installation is None:
-                        logfire.info(f"Adding GitInstall: {installation_obj}")
-                        installation = installation_service.add(
-                            installation_obj
+                        logfire.info(f"Adding GitInstall: {install_obj}")
+                        installation = await installation_service.add(
+                            install_obj
                         )
                     return installation
 
@@ -222,7 +223,7 @@ async def search_installations(
 
 
 @api.post(
-    "/installation/token",
+    "/install/token",
     response_model=GitInstallTokenResponse,
 )
 async def installation_token(

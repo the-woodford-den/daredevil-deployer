@@ -1,18 +1,18 @@
 import { useRef, useState } from 'react';
 import {
-  createInstallationToken,
-  searchAppRecord,
-  searchAppInstallations
-} from '@/api/github';
+  createGitInstallToken,
+  searchGitApps,
+  searchGitInstalls
+} from '@/api/git';
 import { Alarm } from '@/components/Alarm';
 import { Note } from '@/components/Note';
 import { SearchAppsForm } from '@/components/SearchAppsForm';
 import { SearchInstallationsForm } from '@/components/SearchInstallationsForm';
 import {
   type ApiError,
-  type App,
+  type GitApp,
   type EventItem,
-  type Installation,
+  type GitInstall,
   type Token,
   type WebLinks,
 } from '@/data';
@@ -66,16 +66,16 @@ const icons = {
 export function Root() {
   const [jsonData] = useState<WebLinks[]>(items);
   const [eventData, setEventData] = useState<EventItem[] | undefined>(undefined);
-  const [app, setApp] = useState<App>();
+  const [app, setApp] = useState<GitApp>();
   const [token, setToken] = useState<Token>();
-  const [installation, setInstallation] = useState<Installation>();
+  const [installation, setInstallation] = useState<GitInstall>();
   const [error, setError] = useState<ApiError | null>(null);
   const ref = useRef<HTMLFormElement>(null);
 
 
   const handleSearchApps = async (data: FormData) => {
     const slug = data.get("slug") as string;
-    const result = await searchAppRecord(slug);
+    const result = await searchGitApps(slug);
     result.match(
       (app) => setApp(app),
       (err) => setError(err)
@@ -86,7 +86,7 @@ export function Root() {
 
   const handleSearchInstallations = async (data: FormData) => {
     const username = data.get("username") as string;
-    const result = await searchAppInstallations(username);
+    const result = await searchGitInstalls(username);
     result.match(
       (installObject) => setInstallation(installObject),
       (err) => setError(err)
@@ -105,7 +105,7 @@ export function Root() {
     if (!installation) {
       throw Error;
     }
-    const result = await createInstallationToken(installation.id);
+    const result = await createGitInstallToken(installation.id);
     result.match(
       (tokenObject) => setToken(tokenObject),
       (err) => setError(err)

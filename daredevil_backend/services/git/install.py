@@ -17,7 +17,7 @@ class GitInstallService:
 
     async def add(self, create_installation: GitInstallResponse) -> GitInstall:
         new_installation = GitInstall(
-            **create_installation(exclude="id"),
+            **create_installation.model_dump(exclude="id"),
             git_id=create_installation.id,
         )
         self.session.add(new_installation)

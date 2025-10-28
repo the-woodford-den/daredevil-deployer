@@ -1,6 +1,7 @@
 """Github App Installation Typed Record Models"""
 
 from typing import Optional
+from uuid import UUID
 
 from pydantic import ConfigDict, EmailStr
 from sqlmodel import Field, SQLModel

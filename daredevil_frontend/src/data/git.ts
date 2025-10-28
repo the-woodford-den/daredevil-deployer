@@ -1,6 +1,6 @@
 // Github Response Types 
 
-export interface App {
+export interface GitApp {
   id: string;
   clientId: string;
   nodeId: string;
@@ -15,7 +15,7 @@ export interface App {
   events: string[];
 }
 
-interface InstallRecordAccount {
+interface GitInstallAccount {
   name?: string;
   email?: string;
   login: string;
@@ -23,9 +23,9 @@ interface InstallRecordAccount {
 }
 
 
-export interface Installation {
+export interface GitInstall {
   id: number;
-  account: InstallRecordAccount;
+  account: GitInstallAccount;
   events: string[];
   appId: number;
   appSlug: string;
