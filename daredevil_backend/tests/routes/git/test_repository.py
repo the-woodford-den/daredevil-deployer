@@ -1,4 +1,4 @@
-"""Feature tests for routes/github/repository.py"""
+"""Feature tests for routes/git/repository.py"""
 
 # from unittest.mock import AsyncMock, patch
 
@@ -8,11 +8,11 @@ import pytest
 
 # from main import app
 
-api = "/github/repository"
+api = "/git/repository"
 
 
 class TestGithubRepositoryRoutes:
-    """test suite --> routes/github/repository.py"""
+    """test suite --> routes/git/repository.py"""
 
     @pytest.mark.asyncio
     async def test_search_apps(self):

@@ -15,7 +15,7 @@ def serialize(field_name):
     return new_field_name
 
 
-class AppRecordBase(SQLModel):
+class GitAppBase(SQLModel):
     slug: str = Field()
     node_id: str = Field()
     client_id: Optional[str] = Field(default=None)
@@ -25,7 +25,7 @@ class AppRecordBase(SQLModel):
     html_url: str = Field()
 
 
-class AppRecordOwnerResponse(SQLModel):
+class GitAppOwnerResponse(SQLModel):
     id: int
     name: Optional[str] = Field(default=None)
     email: Optional[EmailStr] = Field(default=None)
@@ -49,7 +49,7 @@ class AppRecordOwnerResponse(SQLModel):
     type: str = Field()
 
 
-class AppRecordPermissionsResponse(SQLModel):
+class GitAppPermissionsResponse(SQLModel):
     issues: Optional[str] = Field(default=None)
     checks: Optional[str] = Field(default=None)
     contents: Optional[str] = Field(default=None)
@@ -57,7 +57,7 @@ class AppRecordPermissionsResponse(SQLModel):
     additionalProperties: Optional[str] = Field(default=None)
 
 
-class AppRecordResponse(AppRecordBase):
+class GitAppResponse(GitAppBase):
     model_config = ConfigDict(
         alias_generator=AliasGenerator(
             serialization_alias=lambda field_name: (serialize(field_name))
@@ -65,19 +65,19 @@ class AppRecordResponse(AppRecordBase):
     )
 
     id: int = Field()
-    owner: Optional[AppRecordOwnerResponse] = Field(default=None)
+    owner: Optional[GitAppOwnerResponse] = Field(default=None)
     events: list[Optional[str]] = Field(default_factory=list)
-    permissions: Optional[AppRecordPermissionsResponse] = Field(default=None)
+    permissions: Optional[GitAppPermissionsResponse] = Field(default=None)
 
 
-class AppRecord(AppRecordBase, IDModel, TSModel, table=True):
-    __tablename__ = "github_app_records"
-    github_app_id: int = Field(alias="githubAppId")
+class GitApp(GitAppBase, IDModel, TSModel, table=True):
+    __tablename__ = "git_apps"
+    git_id: int = Field(alias="gitId")
     token: Optional[str] = Field(default=None)
     expires_at: Optional[str] = Field(default=None, alias="expiresAt")
 
 
-class AppRecordTokenResponse(SQLModel):
+class GitAppTokenResponse(SQLModel):
     token: str = Field()
     expires_at: str = Field(alias="expiresAt")
 

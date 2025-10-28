@@ -38,9 +38,9 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(UserBase):
-    github_id: int = Field()
+    git_id: int = Field()
 
 
 class User(UserBase, IDModel, TSModel, table=True):
     __tablename__ = "users"
-    github_id: int = Field()
+    git_id: int = Field()

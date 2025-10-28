@@ -1,4 +1,4 @@
-"""Test fixtures for routes/github tests."""
+"""Test fixtures for routes/git tests."""
 
 from typing import AsyncGenerator
 
@@ -12,7 +12,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from configs import get_settings
 from dbs import get_async_session
 from main import app
-from models.github import AppRecord, InstallationRecord, Repository
+from models.git import GitApp, GitInstall, Repository
 from models.user import User
 
 settings = get_settings()
@@ -77,9 +77,9 @@ async def setup_and_tear_down_test_db():
 
 
 @pytest_asyncio.fixture
-async def sample_app_record(async_test_session: AsyncSession) -> AppRecord:
-    """Create test AppRecord in the test database."""
-    app_record = AppRecord(
+async def sample_app_record(async_test_session: AsyncSession) -> GitApp:
+    """Create test GitApp in the test database."""
+    git_app = GitApp(
         github_app_id=777247,
         slug="batman",
         node_id="19020",
@@ -90,8 +90,8 @@ async def sample_app_record(async_test_session: AsyncSession) -> AppRecord:
         html_url="https://github.com/apps/batman",
     )
     async with test_session() as session:
-        session.add(app_record)
+        session.add(git_app)
         await session.commit()
-        await session.refresh(app_record)
+        await session.refresh(git_app)
 
-        return app_record
+        return app

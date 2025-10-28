@@ -8,15 +8,20 @@ class UserService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get(self, id: int):
-        query = select(User).where(User.github_id == id)
+    async def get(self, id: int) -> User | None:
+        query = select(User).where(User.git_id == id)
+        user = (await self.session.execute(query)).scalar_one_or_none()
+        return user
+
+    async def get_by_username(self, username: str) -> User | None:
+        query = select(User).where(User.login == username)
         user = (await self.session.execute(query)).scalar_one_or_none()
         return user
 
     async def add(self, user_create: UserCreate) -> User:
         new_user = User(
             **user_create.model_dump(exclude="id"),
-            github_id=user_create.id,
+            git_id=user_create.id,
         )
         self.session.add(new_user)
         await self.session.commit()

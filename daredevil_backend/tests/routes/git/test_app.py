@@ -1,4 +1,4 @@
-"""Feature tests for routes/github/app.py"""
+"""Feature tests for routes/git/app.py"""
 
 from unittest.mock import AsyncMock, patch
 from uuid import UUID
@@ -8,11 +8,11 @@ from httpx import ASGITransport, AsyncClient
 
 from main import app
 
-api = "/github/app"
+api = "/git/app"
 
 
 class TestGithubAppRoutes:
-    """test suite --> routes/github/app.py"""
+    """test suite --> routes/git/app.py"""
 
     @pytest.mark.asyncio
     async def test_search_apps(self, client: AsyncClient):
@@ -53,7 +53,7 @@ class TestGithubAppRoutes:
             "permissions": None,
         }
 
-        with patch("routes.github.app.AsyncClient") as MockAsyncClient:
+        with patch("routes.git.app.AsyncClient") as MockAsyncClient:
             mock_client = MockAsyncClient.return_value.__aenter__.return_value
             mock_app_service = AsyncMock()
             mock_user_service = AsyncMock()

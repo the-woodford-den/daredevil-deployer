@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from configs import get_settings
 from dbs import data_store
-from routes.github import app_api, github_api, repository_api
+from routes.git import app_api, git_api, repository_api
 
 settings = get_settings()
 
@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan, title=settings.app_title)
-app.include_router(github_api)
+app.include_router(git_api)
 app.include_router(app_api)
 app.include_router(repository_api)
 app.add_middleware(

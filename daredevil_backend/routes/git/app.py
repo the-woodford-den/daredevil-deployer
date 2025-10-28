@@ -7,19 +7,18 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from configs import GithubLibrary
 from dbs import get_async_session
-from models.github import (AppRecord, AppRecordResponse, InstallationRecord,
-                           InstallationRecordResponse,
-                           InstallationTokenResponse)
+from models.git import (GitApp, GitAppResponse, GitInstall, GitInstallResponse,
+                        GitInstallTokenResponse)
 from models.user import User, UserCreate
 from services import UserService
-from services.github import AppService
+from services.git import GitAppService, GitInstallService
 
-api = APIRouter(prefix="/github/app")
+api = APIRouter(prefix="/git/app")
 
 
 @api.get(
     "/search/{slug}",
-    response_model=AppRecordResponse,
+    response_model=GitAppResponse,
     response_model_exclude_unset=True,
 )
 async def search_apps(
@@ -41,9 +40,9 @@ async def search_apps(
             response = await viper.get(url=url, headers=headers)
             response.raise_for_status()
             data = response.json()
-            app_service = AppService(session=session)
+            app_service = GitAppService(session=session)
 
-            github_app_obj = AppRecordResponse.model_validate(data)
+            github_app_obj = GitAppResponse.model_validate(data)
             github_app = await app_service.get(id=github_app_obj.id)
             if github_app is None:
                 github_app = await app_service.add(app_create=github_app_obj)
@@ -77,7 +76,7 @@ async def search_apps(
 
 @api.get(
     "/access/{client_id}",
-    response_model=AppRecordResponse,
+    response_model=GitAppResponse,
     response_model_exclude_unset=True,
 )
 async def authenticated_access_app(
@@ -104,22 +103,22 @@ async def authenticated_access_app(
         async with AsyncClient() as viper:
             response = await viper.get(url=endpoint, headers=headers)
             data = response.json()
-            github_app_obj = AppRecordResponse.model_validate(data)
+            github_app_obj = GitAppResponse.model_validate(data)
 
-            app_search = select(AppRecord).where(
-                AppRecord.github_app_id == github_app_obj.id
+            app_search = select(GitApp).where(
+                GitApp.github_app_id == github_app_obj.id
             )
             app_owner_obj = github_app_obj.owner
-            user_search = select(User).where(User.github_id == app_owner_obj.id)
+            user_search = select(User).where(User.git_id == app_owner_obj.id)
             user_record = (await session.execute(user_search)).one_or_none()
             app_record = (await session.execute(app_search)).one_or_none()
 
             if app_record is None:
                 app_id = app_record.id
-                app_dict = AppRecordResponse.model_dump(github_app_obj)
+                app_dict = GitAppResponse.model_dump(github_app_obj)
                 app_dict["github_app_id"] = app_id
                 del app_dict["id"]
-                app_obj = AppRecord.model_validate(app_dict)
+                app_obj = GitApp.model_validate(app_dict)
                 session.add(app_obj)
                 await session.commit()
                 await session.refresh(app_obj)
@@ -130,7 +129,7 @@ async def authenticated_access_app(
             if user_record is None:
                 user_id = app_owner_obj.id
                 app_owner_obj = data["owner"]
-                app_owner_obj["github_id"] = user_id
+                app_owner_obj["git_id"] = user_id
                 del app_owner_obj["id"]
                 user_obj = User.model_validate(app_owner_obj)
                 session.add(user_obj)
@@ -160,82 +159,59 @@ async def authenticated_access_app(
 
 @api.get(
     "/installations/search/{username}",
-    response_model=InstallationRecordResponse,
+    response_model=GitInstallResponse,
 )
 async def search_installations(
     *, username: str, session: AsyncSession = Depends(get_async_session)
 ):
-    """This GET request searches Github Api for Github App Installations."""
+    """This GET request searches Github Api for Github App GitInstalls."""
     """It searches by username and needs a jwt for authorization."""
     """A Github App client_id is required to create the jwt."""
     """From the list, it compares and pulls from the db by the App slug"""
 
-    statement = select(User).where(User.login == username)
-    github_user = (await session.execute(statement)).scalar_one_or_none()
+    user_service = UserService(session)
+    user = user_service.get_by_username(username)
 
-    if github_user is None:
+    if user is None:
         logfire.error("No User means no JWT")
         raise Exception("No User means no JWT")
-    elif github_user.client_id is None:
+    elif user.client_id is None:
         logfire.error("No Client Id means no JWT")
         raise Exception("No Client Id means no JWT")
+    logfire.info("Found user with client_id ...")
 
-    logfire.info(f"Found user with client_id: {github_user.client_id}")
-    github_app_library = GithubLibrary()
-    app_jwt = github_app_library.create_jwt(client_id=github_user.client_id)
+    github_library = GithubLibrary()
+    jwt = github_library.create_jwt(client_id=user.client_id)
 
     endpoint = "https://api.github.com/app/installations"
     header = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
-        "Authorization": f"Bearer {app_jwt}",
+        "Authorization": f"Bearer {jwt}",
     }
 
     with logfire.span("Sending request for app installations list"):
         try:
-            async with AsyncClient() as client:
-                response = await client.get(url=endpoint, headers=header)
+            async with AsyncClient() as viper:
+                response = await viper.get(url=endpoint, headers=header)
                 response.raise_for_status()
-                installation_responses = response.json()
+                i_responses = response.json()
 
             logfire.info("checking returned list of installations...")
-            for installation in installation_responses:
-                if installation["account"]["login"] == username:
-                    install_obj = InstallationRecordResponse.model_validate(
-                        installation
+            for i_response in i_responses:
+                installation_service = GitInstallService(session)
+                if i_response["account"]["login"] == username:
+                    installation_obj = GitInstallResponse.model_validate(
+                        i_response
                     )
-                    logfire.info(
-                        "username matched, checked database existance of record..."
-                    )
-                    statement = select(InstallationRecord).where(
-                        InstallationRecord.installation_id == install_obj.id
-                    )
-                    github_install_record = (
-                        await session.execute(statement)
-                    ).one_or_none()
-                    if github_install_record is None:
-                        logfire.info(
-                            f"Installation record doesn't exist, adding it now {install_obj}"
+                    logfire.info("username matched, checking db record...")
+                    installation = installation_service.get(installation_obj.id)
+                    if installation is None:
+                        logfire.info(f"Adding GitInstall: {installation_obj}")
+                        installation = installation_service.add(
+                            installation_obj
                         )
-                        github_install_record = (
-                            InstallationRecordResponse.model_dump(install_obj)
-                        )
-                        github_install_record["installation_id"] = (
-                            install_obj.id
-                        )
-                        del github_install_record["id"]
-                        github_install_obj = InstallationRecord.model_validate(
-                            github_install_record
-                        )
-                        session.add(github_install_obj)
-                        await session.commit()
-                        await session.refresh(github_install_obj)
-                        logfire.info(
-                            f"DB item returning as Installation Response Record...{install_obj}"
-                        )
-
-                    return install_obj
-            response.raise_for_status()
+                    return installation
 
         except HTTPStatusError as e:
             logfire.error(f"Internal Error: {e}")
@@ -247,7 +223,7 @@ async def search_installations(
 
 @api.post(
     "/installation/token",
-    response_model=InstallationTokenResponse,
+    response_model=GitInstallTokenResponse,
 )
 async def installation_token(
     *, id: int, session: AsyncSession = Depends(get_async_session)
@@ -259,21 +235,21 @@ async def installation_token(
 
     statement = (
         select(
-            InstallationRecord.app_id,
-            AppRecord.github_app_id,
-            AppRecord.client_id,
+            GitInstall.app_id,
+            GitApp.git_id,
+            GitApp.client_id,
         )
-        .where(InstallationRecord.app_id == AppRecord.github_app_id)
-        .where(InstallationRecord.installation_id == id)
+        .where(GitInstall.app_id == GitApp.git_id)
+        .where(GitInstall.git_id == id)
     )
     results = (await session.execute(statement)).all()
 
     if not results:
         logfire.error("No installation found with that install_id")
-        raise HTTPException(status_code=404, detail="Installation not found")
+        raise HTTPException(status_code=404, detail="GitInstall not found")
 
     client_id = results[-1].client_id
-    logfire.info(f"Found Installation with client_id: {client_id}")
+    logfire.info(f"Found GitInstall with client_id: {client_id}")
     github_app_library = GithubLibrary()
     app_jwt = github_app_library.create_jwt(client_id=client_id)
 
@@ -294,7 +270,7 @@ async def installation_token(
                 token_json = response.json()
 
             logfire.info(f"validating access token ...{token_json}")
-            token_obj = InstallationTokenResponse.model_validate(token_json)
+            token_obj = GitInstallTokenResponse.model_validate(token_json)
 
             logfire.info("Responding with token ...")
             return token_obj
@@ -310,11 +286,11 @@ async def installation_token(
     # results = (await session.execute(query_string)).all()
 
     # results = session.exec(statement)
-    # query_alpha = select(InstallationRecord.app_id).where(
-    #     InstallationRecord.installation_id == install_id
+    # query_alpha = select(GitInstall.app_id).where(
+    #     GitInstall.installation_id == install_id
     # )
-    # query_omega = select(AppRecord.client_id).where(
-    #     AppRecord.github_app_id == InstallationRecord.app_id
+    # query_omega = select(GitApp.client_id).where(
+    #     GitApp.github_app_id == GitInstall.app_id
     # )
     # # union_sigma = query_alpha.union_all(query_omega)
 
@@ -356,7 +332,7 @@ async def installation_token(
 #
 #         return gh_app_token_obj
 #     except Exception as e:
-#         logfire.error(f"GHA Installation Get Error: {e.status_code}")
+#         logfire.error(f"GHA GitInstall Get Error: {e.status_code}")
 #         raise Exception(f"Error: {e.status_code}")
 #
 #

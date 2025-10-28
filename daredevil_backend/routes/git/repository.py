@@ -8,9 +8,9 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from dbs import get_async_session
-from models.github import Repository, RepositoryResponse
+from models.git import Repository, RepositoryResponse
 
-api = APIRouter(prefix="/github/repository")
+api = APIRouter(prefix="/git/repository")
 
 
 @api.get("/all", response_model=List[RepositoryResponse])

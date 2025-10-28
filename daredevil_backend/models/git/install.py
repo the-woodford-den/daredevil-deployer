@@ -10,14 +10,14 @@ from models import IDModel, TSModel
 from .repositories import RepositoryResponse
 
 
-class InstallationTokenResponse(SQLModel):
+class GitInstallTokenResponse(SQLModel):
     token: str = Field()
     expires_at: str = Field()
     permissions: dict[str, str] = Field(default=dict[:])
     repositories: Optional[Optional[RepositoryResponse]] = Field(default=[])
 
 
-class InstallationRecordBase(SQLModel):
+class GitInstallBase(SQLModel):
     app_id: Optional[int] = Field(default=None)
     app_slug: Optional[str] = Field(default=None)
     access_tokens_url: Optional[str] = Field(default=None)
@@ -25,21 +25,21 @@ class InstallationRecordBase(SQLModel):
     repositories_url: Optional[str] = Field(default=None)
 
 
-class InstallationRecordAccountResponse(SQLModel):
+class GitInstallAccountResponse(SQLModel):
     name: Optional[str] = Field(default=None)
     email: Optional[EmailStr] = Field(default=None)
     login: Optional[str] = Field(default=None)
     id: Optional[int] = Field(default=None)
 
 
-class InstallationRecordResponse(InstallationRecordBase):
+class GitInstallResponse(GitInstallBase):
     model_config = ConfigDict(extra="ignore")
 
     id: Optional[int] = Field(default=None)
-    account: Optional[InstallationRecordAccountResponse] = Field(default=None)
+    account: Optional[GitInstallAccountResponse] = Field(default=None)
     events: Optional[list[str]] = Field(default=[])
 
 
-class InstallationRecord(InstallationRecordBase, IDModel, TSModel, table=True):
-    __tablename__ = "github_installation_records"
-    installation_id: Optional[int] = Field()
+class GitInstall(GitInstallBase, IDModel, TSModel, table=True):
+    __tablename__ = "git_installs"
+    git_id: Optional[int] = Field()
