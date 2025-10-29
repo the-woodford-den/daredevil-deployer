@@ -25,6 +25,7 @@ interface GitInstallAccount {
 
 export interface GitInstall {
   id: number;
+  gitId: number;
   account: GitInstallAccount;
   events: string[];
   appId: number;

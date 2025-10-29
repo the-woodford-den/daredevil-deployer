@@ -1,3 +1,4 @@
+import debugpy
 import logfire
 from fastapi import APIRouter, Depends, HTTPException
 from httpx import AsyncClient, HTTPStatusError
@@ -7,7 +8,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from configs import GithubLibrary
 from dbs import get_async_session
-from models.git import (GitApp, GitAppResponse, GitInstall, GitInstallResponse,
+from models.git import (CreateGitInstallToken, GitApp, GitAppResponse,
+                        GitInstall, GitInstallResponse,
                         GitInstallTokenResponse)
 from models.user import User, UserCreate
 from services import UserService
@@ -201,18 +203,22 @@ async def search_installations(
             logfire.info("checking returned list of installations...")
             for i_response in i_responses:
                 installation_service = GitInstallService(session)
-                if i_response["account"]["login"] == username:
+                inspect(i_response)
+                if i_response["account"]["login"] == "woodFordR":
                     install_obj = GitInstallResponse.model_validate(i_response)
                     logfire.info("username matched, checking db record...")
                     installation = await installation_service.get(
                         install_obj.id
                     )
+                    inspect(installation)
                     if installation is None:
                         logfire.info(f"Adding GitInstall: {install_obj}")
                         installation = await installation_service.add(
                             install_obj
                         )
                     return installation
+                else:
+                    return {"status_code": 404, "msg": "No Installation Found"}
 
         except HTTPStatusError as e:
             logfire.error(f"Internal Error: {e}")
@@ -227,12 +233,27 @@ async def search_installations(
     response_model=GitInstallTokenResponse,
 )
 async def installation_token(
-    *, id: int, session: AsyncSession = Depends(get_async_session)
+    *,
+    params: CreateGitInstallToken,
+    session: AsyncSession = Depends(get_async_session),
 ):
     """This post request will provide a response that will include an installation"""
     """access token, the time that the token expires, the permissions that the token has, """
     """and the repositories that the token can access, if applicable. The installation access """
     """ token will expire after 1 hour."""
+
+    inspect(params)
+
+    # # Start debugpy server if not already listening
+    # try:
+    #     debugpy.listen(("0.0.0.0", 5678))
+    #     logfire.info("Debugpy server started on port 5678")
+    # except RuntimeError:
+    #     pass  # Already listening
+    #
+    # logfire.info("Waiting for debugger to attach...")
+    # debugpy.wait_for_client()  # Pauses here until debugger connects
+    # debugpy.breakpoint()
 
     statement = (
         select(
@@ -241,7 +262,7 @@ async def installation_token(
             GitApp.client_id,
         )
         .where(GitInstall.app_id == GitApp.git_id)
-        .where(GitInstall.git_id == id)
+        .where(GitInstall.git_id == params.git_id)
     )
     results = (await session.execute(statement)).all()
 
@@ -254,9 +275,7 @@ async def installation_token(
     github_app_library = GithubLibrary()
     app_jwt = github_app_library.create_jwt(client_id=client_id)
 
-    endpoint = (
-        f"https://api.github.com/app/installations/{str(id)}/access_tokens"
-    )
+    endpoint = f"https://api.github.com/app/installations/{str(params.git_id)}/access_tokens"
     header = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",

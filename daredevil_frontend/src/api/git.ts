@@ -64,7 +64,7 @@ export const searchGitApps = (slug: string): ResultAsync<App, ApiError> => {
 
 export const createGitInstallToken = (id: number): ResultAsync<Token, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const params = JSON.stringify({ id });
+  const params = JSON.stringify({ git_id: id });
 
   return ResultAsync.fromPromise(
     fetch(`${backendUrl}/git/app/install/token`, {

@@ -105,7 +105,7 @@ export function Root() {
     if (!installation) {
       throw Error;
     }
-    const result = await createGitInstallToken(installation.id);
+    const result = await createGitInstallToken(installation.gitId);
     result.match(
       (tokenObject) => setToken(tokenObject),
       (err) => setError(err)
