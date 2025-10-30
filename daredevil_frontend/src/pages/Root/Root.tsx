@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   createGitInstallToken,
   searchGitApps,
@@ -254,7 +255,6 @@ export function Root() {
                     <IconButton
                       variant="outline"
                       size="lg"
-                      disabled={installation ? true : false}
                       asChild={true}
                     >
                       <a href="#" onClick={handleCreateInstallationToken}>
@@ -285,10 +285,28 @@ export function Root() {
               color="white"
               w="65%"
             >
-              <>
-                <Text textStyle="xl">We will ...</Text>
-                <Text textStyle="xl">... do something with a token</Text>
-              </>
+              {token ? (
+                <>
+                  <VStack key="token">
+                    <IconButton
+                      variant="outline"
+                      size="lg"
+                      asChild={true}
+                    >
+                      <Link to="/dashboard">
+                        <GiCapybara />
+                      </Link>
+                    </IconButton>
+                    <Text textStyle="md" className="t-font"> dashboard ~ token granted</Text>
+                  </VStack>
+                </>
+              ) : (
+                <>
+                  <Text textStyle="xl">No Installation ID</Text>
+                  <Text textStyle="xl">Therefore ...</Text>
+                  <Text textStyle="xl">No Access Token</Text>
+                </>
+              )}
             </Box>
           </Flex>
         </GridItem>

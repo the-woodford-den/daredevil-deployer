@@ -8,8 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "coverage": "vitest run --coverage",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.27.0",
