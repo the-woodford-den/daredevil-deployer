@@ -29,6 +29,7 @@ jobs:
       - name: Use node ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
+          working-directory: ./daredevil_frontend 
           node-version: '22'
           cache: 'npm'
 
