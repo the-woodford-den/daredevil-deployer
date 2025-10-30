@@ -1,0 +1,46 @@
+# This workflow will do a clean installation of node dependencies,
+# cache/restore them, build the source code 
+
+name: React.JS / Vite
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v4
+
+      - name: cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          working-directory: ./daredevil_frontend 
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: install dep
+        working-directory: ./daredevil_frontend 
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: vite tests
+        working-directory: ./daredevil_frontend 
+        run: npm test

@@ -22,6 +22,9 @@
       ],
       "@/state/*": [
         "./src/state/*"
+      ],
+      "!/*": [
+        "./tests/*"
       ]
     },
     "noUncheckedSideEffectImports": true,

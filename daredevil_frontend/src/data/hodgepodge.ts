@@ -8,3 +8,8 @@ export interface WebLinks {
   url?: string;
 }
 
+export interface EventItem {
+  id: string;
+  event: string;
+}
+

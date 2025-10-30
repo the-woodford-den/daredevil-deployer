@@ -1,14 +1,21 @@
 import { useRef, useState } from 'react';
-import { findAppItem, findInstallRecord } from '@/api/github';
+import { Link } from 'react-router-dom';
+import {
+  createGitInstallToken,
+  searchGitApps,
+  searchGitInstalls
+} from '@/api/git';
 import { Alarm } from '@/components/Alarm';
 import { Note } from '@/components/Note';
-import { AppItemForm } from '@/components/AppItemForm';
-import { InstallRecordForm } from '@/components/InstallRecordForm';
+import { SearchAppsForm } from '@/components/SearchAppsForm';
+import { SearchInstallationsForm } from '@/components/SearchInstallationsForm';
 import {
   type ApiError,
-  type AppItemResponse,
-  type InstallRecordResponse,
-  type WebLinks
+  type GitApp,
+  type EventItem,
+  type GitInstall,
+  type Token,
+  type WebLinks,
 } from '@/data';
 import rubyUrl from '~/ruby.svg';
 import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
@@ -59,37 +66,52 @@ const icons = {
 
 export function Root() {
   const [jsonData] = useState<WebLinks[]>(items);
-  const [eventData, setEventData] = useState<T[] | undefined>(undefined);
-  const [appItem, setAppItem] = useState<AppItemResponse>();
-  const [installRecord, setInstallRecord] = useState<InstallRecordResponse>();
+  const [eventData, setEventData] = useState<EventItem[] | undefined>(undefined);
+  const [app, setApp] = useState<GitApp>();
+  const [token, setToken] = useState<Token>();
+  const [installation, setInstallation] = useState<GitInstall>();
   const [error, setError] = useState<ApiError | null>(null);
   const ref = useRef<HTMLFormElement>(null);
 
 
-  const handleFindAppItem = async (data: FormData) => {
+  const handleSearchApps = async (data: FormData) => {
     const slug = data.get("slug") as string;
-    const result = await findAppItem(slug);
+    const result = await searchGitApps(slug);
     result.match(
-      (app) => setAppItem(app),
+      (app) => setApp(app),
       (err) => setError(err)
     );
-    console.log(appItem);
+    console.log(app);
     ref.current?.reset();
   };
 
-  const handleFindInstallRecord = async (data: FormData) => {
+  const handleSearchInstallations = async (data: FormData) => {
     const username = data.get("username") as string;
-    const result = await findInstallRecord(username);
+    const result = await searchGitInstalls(username);
     result.match(
-      (installObject) => setInstallRecord(installObject),
+      (installObject) => setInstallation(installObject),
       (err) => setError(err)
     );
-    let events: T[] = [];
-    if (installRecord) {
-      installRecord.events.map((event) => (events.push({ id: event, item: event })));
+    let events: EventItem[] = [];
+    if (installation) {
+      installation.events.map((event) => (events.push({ id: event, event: event })));
       setEventData(events);
     }
-    console.log(installRecord);
+    console.log(installation);
+    ref.current?.reset();
+  };
+
+  const handleCreateInstallationToken = async (event: any) => {
+    event.preventDefault();
+    if (!installation) {
+      throw Error;
+    }
+    const result = await createGitInstallToken(installation.gitId);
+    result.match(
+      (tokenObject) => setToken(tokenObject),
+      (err) => setError(err)
+    );
+    console.log(token);
     ref.current?.reset();
   };
 
@@ -165,11 +187,11 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {installRecord ? (
-                <div>
-                  <Text textStyle="xl">{`Installation ID: ${installRecord.id}`}</Text>
-                  <Text textStyle="xl">{`Access Tokens Url: ${installRecord.accessTokensUrl}`}</Text>
-                  <Text textStyle="xl">{`App ID: ${installRecord.appId}`}</Text>
+              {installation ? (
+                <>
+                  <Text textStyle="xl">{`Installation ID: ${installation.id}`}</Text>
+                  <Text textStyle="xl">{`Access Tokens Url: ${installation.accessTokensUrl}`}</Text>
+                  <Text textStyle="xl">{`App ID: ${installation.appId}`}</Text>
                   <HStack gap="6" wrap="wrap">
                     <For each={eventData}>
                       {(item) => (
@@ -179,12 +201,12 @@ export function Root() {
                       )}
                     </For>
                   </HStack>
-                  <Text textStyle="lg">{`App Slug: ${installRecord.appSlug}`}</Text>
-                  <Text textStyle="xl">{`Install HTML Url ${installRecord.htmlUrl}`}</Text>
-                </div>
+                  <Text textStyle="lg">{`App Slug: ${installation.appSlug}`}</Text>
+                  <Text textStyle="xl">{`Install HTML Url ${installation.htmlUrl}`}</Text>
+                </>
               ) : (
-                <form ref={ref} action={async (formData) => { await handleFindInstallRecord(formData) }}>
-                  <InstallRecordForm />
+                <form ref={ref} action={async (formData) => { await handleSearchInstallations(formData) }}>
+                  <SearchInstallationsForm />
                 </form>
               )
               }
@@ -202,16 +224,88 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {appItem ? (
+              {app ? (
                 <div>
-                  <Text textStyle="md">{`App Name: ${appItem.name}`}</Text>
-                  <Text textStyle="md">{`App ID: ${appItem.id}`}</Text>
-                  <Text textStyle="md">{`Client ID: ${appItem.clientId}`}</Text>
+                  <Text textStyle="md">{`App Name: ${app.name}`}</Text>
+                  <Text textStyle="md">{`App ID: ${app.id}`}</Text>
+                  <Text textStyle="md">{`Client ID: ${app.clientId}`}</Text>
                 </div>
               ) : (
-                <form ref={ref} action={async (formData) => { await handleFindAppItem(formData) }}>
-                  <AppItemForm />
+                <form ref={ref} action={async (formData) => { await handleSearchApps(formData) }}>
+                  <SearchAppsForm />
                 </form>
+              )}
+            </Box>
+          </Flex>
+        </GridItem>
+        <GridItem pt="6" pb="8" colSpan={2}>
+          <Flex
+            w="full"
+            justify="right"
+          >
+            <Box
+              background="black"
+              p="2rem"
+              color="white"
+              w="65%"
+            >
+              {installation ? (
+                <>
+                  <VStack key={installation.id}>
+                    <IconButton
+                      variant="outline"
+                      size="lg"
+                      asChild={true}
+                    >
+                      <a href="#" onClick={handleCreateInstallationToken}>
+                        {icons['metroid']}
+                      </a>
+                    </IconButton>
+                    <Text textStyle="sm"> grab {installation.appSlug} token</Text>
+                  </VStack>
+                </>
+              ) : (
+                <>
+                  <Text textStyle="xl">No Installation ID</Text>
+                  <Text textStyle="xl">Therefore ...</Text>
+                  <Text textStyle="xl">No Access Token</Text>
+                </>
+              )}
+            </Box>
+          </Flex>
+        </GridItem>
+        <GridItem pt="6" pb="8" colSpan={2}>
+          <Flex
+            w="full"
+            justify="right"
+          >
+            <Box
+              background="black"
+              p="2rem"
+              color="white"
+              w="65%"
+            >
+              {token ? (
+                <>
+                  <VStack key="token">
+                    <IconButton
+                      variant="outline"
+                      size="lg"
+                      asChild={true}
+                    >
+                      <Link to="/dashboard">
+                        <GiCapybara />
+                      </Link>
+                    </IconButton>
+                    <Text textStyle="md" className="t-font"> dashboard ~ token granted</Text>
+                  </VStack>
+                </>
+              ) : (
+                <>
+                  <Text textStyle="xl">No Installation ID</Text>
+                  <Text textStyle="xl">Therefore ...</Text>
+                  <Text textStyle="xl">No Access Token</Text>
+                </>
               )}
             </Box>
           </Flex>

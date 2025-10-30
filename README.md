@@ -37,7 +37,7 @@
 <p><code>For config tests</code></p>
 <p><code>ENVIRONMENT=test uv run pytest tests/configs/ -v</code></p>
 <p><code>All tests</code></p>
-<p><code>ENVIRONMENT=test uv run pytest -v</code></p>
+<p><code>LOGFIRE_IGNORE_NO_CONFIG=1 ENVIRONMENT=test pytest --config-file .env.test -v</code></p>
 <p><code>And some coverage output to HTML</code></p>
 <p><code>ENVIRONMENT=test pytest --cov=. --cov-report=html .</code></p>
 

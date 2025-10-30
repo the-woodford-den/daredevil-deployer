@@ -8,8 +8,8 @@ from sqlmodel import SQLModel
 
 from alembic import context
 from configs import get_settings
-from models import User
-from models.github import AppRecord, InstallationRecord, Repository
+from models.git import GitApp, GitInstall, Repository
+from models.user import User
 
 settings = get_settings()
 # this is the Alembic Config object, which provides

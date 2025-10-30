@@ -25,7 +25,7 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: postgresql
+          POSTGRES_USER: woodfords_dev
           POSTGRES_DB: daredevil_test
           POSTGRES_HOST_AUTH_METHOD: trust
         ports:
@@ -58,6 +58,10 @@ jobs:
       working-directory: ./daredevil_backend 
       run: |
         pip install -r requirements.txt
+    - name: Migrate DB Tables
+      working-directory: ./daredevil_backend 
+      run: |
+        DB_ENV='.env.test' alembic upgrade head
     - name: Lint with Ruff
       working-directory: ./daredevil_backend 
       run: |

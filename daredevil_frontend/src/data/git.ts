@@ -1,0 +1,41 @@
+// Github Response Types 
+
+export interface GitApp {
+  id: string;
+  clientId: string;
+  nodeId: string;
+  owner: {};
+  name: string;
+  description: string;
+  externalUrl: string;
+  htmlUrl: string;
+  createdAt: string;
+  updatedAt: string;
+  permissions: {};
+  events: string[];
+}
+
+interface GitInstallAccount {
+  name?: string;
+  email?: string;
+  login: string;
+  id: number;
+}
+
+
+export interface GitInstall {
+  id: number;
+  gitId: number;
+  account: GitInstallAccount;
+  events: string[];
+  appId: number;
+  appSlug: string;
+  accessTokensUrl: string;
+  htmlUrl: string;
+  repositoriesUrl: string;
+}
+
+export interface Token {
+  token: string;
+  expiresAt: string;
+}
