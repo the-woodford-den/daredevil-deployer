@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 from pydantic import Field, computed_field
@@ -8,7 +9,7 @@ class Settings(BaseSettings):
     """Provides application settings for each environment"""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=os.getenv("DB_ENV", ".env.dev"),
         env_file_encoding="utf-8",
         extra="allow",
         case_sensitive=False,

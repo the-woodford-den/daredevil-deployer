@@ -80,19 +80,3 @@ class GitApp(GitAppBase, IDModel, TSModel, table=True):
 class GitAppTokenResponse(SQLModel):
     token: str = Field()
     expires_at: str = Field(alias="expiresAt")
-
-
-# class AppPermissionsBase(SQLModel):
-#     actions: Optional[str] = Field(default=None)
-#     actions_variables: Optional[str] = Field(default=None)
-#     administration: Optional[str] = Field(default=None)
-#     attestations: Optional[str] = Field(default=None)
-#     checks: Optional[str] = Field(default=None)
-#     contents: Optional[str] = Field(default=None)
-#     dependabot_secrets: Optional[str] = Field(default=None)
-#     deployments: Optional[str] = Field(default=None)
-#     discussions: Optional[str] = Field(default=None)
-#     emails: Optional[str] = Field(default=None)
-#     environments: Optional[str] = Field(default=None)
-#     followers: Optional[str] = Field(default=None)
-#     issues: Optional[str] = Field(default=None)

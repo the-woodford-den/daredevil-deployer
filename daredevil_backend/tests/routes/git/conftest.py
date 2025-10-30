@@ -1,6 +1,10 @@
 """Test fixtures for routes/git tests."""
 
+import os
 from typing import AsyncGenerator
+
+# Set DB_ENV to test BEFORE any imports that use settings
+os.environ["DB_ENV"] = ".env.test"
 
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient

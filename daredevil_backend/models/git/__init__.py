@@ -1,5 +1,5 @@
 from .app import GitApp, GitAppResponse, GitAppTokenResponse
-from .github import GitCreateTokenResponse, GitTokenResponse
+from .git import GitCreateTokenResponse, GitTokenResponse
 from .install import (CreateGitInstallToken, GitInstall, GitInstallResponse,
                       GitInstallTokenResponse)
 from .repositories import Repository, RepositoryResponse
