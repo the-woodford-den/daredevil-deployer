@@ -21,18 +21,32 @@ jobs:
     strategy:
       matrix:
         node-version: [22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        working-directory: ./daredevil_frontend 
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - name: run tests
-      working-directory: ./daredevil_frontend 
-      run: |
-        npm run test
+      - name: code checkout
+        uses: actions/checkout@v4
 
+      - name: Use node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          working-directory: ./daredevil_frontend 
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: install dep
+        working-directory: ./daredevil_frontend 
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: vite tests
+        working-directory: ./daredevil_frontend 
+        run: npm test
