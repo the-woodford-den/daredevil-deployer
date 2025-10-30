@@ -59,6 +59,7 @@ jobs:
       run: |
         pip install -r requirements.txt
     - name: Migrate DB Tables
+      working-directory: ./daredevil_backend 
       run: |
         alembic upgrade head
     - name: Lint with Ruff
