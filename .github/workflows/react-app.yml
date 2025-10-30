@@ -26,13 +26,6 @@ jobs:
       - name: code checkout
         uses: actions/checkout@v4
 
-      - name: Use node ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          working-directory: ./daredevil_frontend 
-          node-version: '22'
-          cache: 'npm'
-
       - name: cache node modules
         id: cache-node-modules
         uses: actions/cache@v4
