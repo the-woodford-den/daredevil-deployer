@@ -1,3 +1,18 @@
+import { render } from "!/utils";
+import { screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { Root } from "./Root";
+
+describe(Root, () => {
+  it('should be in the document', async () => {
+    const { getByText } = render(<Root />);
+
+    const element = getByText(/Daredevil Deployer/i);
+    expect(element).toBeInTheDocument();
+
+  });
+});
+
 
 {/* <GridItem colSpan={4} pt="3"> */ }
 {/*   <Flex direction="column"> */ }
