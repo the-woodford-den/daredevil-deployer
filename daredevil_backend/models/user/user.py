@@ -7,34 +7,35 @@ from models import IDModel, TSModel
 
 class UserBase(SQLModel):
     access_token: Optional[str] = Field(default=None)
-    avatar_url: str = Field()
+    avatar_url: Optional[str] = Field()
     client_id: Optional[str] = Field(default=None)
     device_code: Optional[str] = Field(default=None)
-    events_url: str = Field()
+    events_url: Optional[str] = Field()
     expires_in: Optional[str] = Field(default=None)
-    followers_url: str = Field()
-    following_url: str = Field()
-    gists_url: str = Field()
+    followers_url: Optional[str] = Field()
+    following_url: Optional[str] = Field()
+    gists_url: Optional[str] = Field()
     gravatar_id: Optional[str] = Field(default=None)
-    html_url: str = Field()
+    html_url: Optional[str] = Field()
     interval: Optional[int] = Field(default=None)
-    login: str = Field()
-    node_id: str = Field()
-    organizations_url: str = Field()
-    received_events_url: str = Field()
-    repos_url: str = Field()
-    site_admin: bool = Field(default=False)
-    starred_url: str = Field()
-    subscriptions_url: str = Field()
-    type: str = Field()
-    url: str = Field()
+    login: Optional[str] = Field()
+    node_id: Optional[str] = Field()
+    organizations_url: Optional[str] = Field()
+    received_events_url: Optional[str] = Field()
+    repos_url: Optional[str] = Field()
+    site_admin: Optional[bool] = Field(default=False)
+    starred_url: Optional[str] = Field()
+    subscriptions_url: Optional[str] = Field()
+    type: Optional[str] = Field()
+    url: Optional[str] = Field()
     user_code: Optional[str] = Field(default=None)
-    user_view_type: str = Field()
+    user_view_type: Optional[str] = Field()
     verification_uri: Optional[str] = Field(default=None)
 
 
 class UserCreate(UserBase):
-    id: int = Field()
+    username: str = Field()
+    password: str = Field()
 
 
 class UserUpdate(UserBase):
@@ -43,4 +44,5 @@ class UserUpdate(UserBase):
 
 class User(UserBase, IDModel, TSModel, table=True):
     __tablename__ = "users"
-    git_id: int = Field()
+    username: str = Field()
+    password_hash: str = Field()

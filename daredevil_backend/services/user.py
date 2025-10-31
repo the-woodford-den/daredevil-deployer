@@ -1,7 +1,10 @@
+from passlib.context import CryptContext
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from models.user import User, UserCreate, UserUpdate
+
+password_context = CryptContext(schemes=["sha256_crypt"])
 
 
 class UserService:
@@ -20,8 +23,8 @@ class UserService:
 
     async def add(self, user_create: UserCreate) -> User:
         new_user = User(
-            **user_create.model_dump(exclude="id"),
-            git_id=user_create.id,
+            **user_create.model_dump(exclude=["password", "id"]),
+            password_hash=password_context.hash(user_create.password),
         )
         self.session.add(new_user)
         await self.session.commit()

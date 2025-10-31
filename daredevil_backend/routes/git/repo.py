@@ -10,7 +10,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from dbs import get_async_session
 from models.git import Repository, RepositoryResponse
 
-api = APIRouter(prefix="/git/repository")
+api = APIRouter(prefix="/git/repo")
 
 
 @api.get("/all", response_model=List[RepositoryResponse])

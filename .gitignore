@@ -24,7 +24,7 @@
 */telerik-license.txt
 */.env
 */.env.dev
-*/.env.dev.new
+*/.env.prod
 */.env.test
 */.env.local
 */.env.*.local
