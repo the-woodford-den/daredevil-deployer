@@ -159,6 +159,8 @@ packaging==25.0
     # via
     #   opentelemetry-instrumentation
     #   pytest
+passlib==1.7.4
+    # via daredevil-backend (pyproject.toml)
 pluggy==1.6.0
     # via
     #   pytest
