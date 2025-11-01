@@ -4,14 +4,11 @@ import {
   type User
 } from "@/data";
 
-export const createToken = (clientId: string): ResultAsync<User, ApiError> => {
+export const createUser = (): ResultAsync<User, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const params = new URLSearchParams({
-    client_id: clientId
-  });
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/github/create-token?${params}`, {
+    fetch(`${backendUrl}/user/create`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     }).then(async (response) => {
