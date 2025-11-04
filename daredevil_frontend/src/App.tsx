@@ -6,6 +6,7 @@ import { Provider } from '@/components/ui/provider';
 import { Error404 } from '@/pages/error';
 import { Layout } from '@/pages/Layout';
 import { Root } from '@/pages/Root';
+import { Register } from '@/pages/Register';
 import { Dashboard, Repositories } from '@/pages/user';
 import './index.css';
 
@@ -17,6 +18,11 @@ const router = createBrowserRouter([
       { index: true, element: <Root /> },
       { path: '/dashboard', element: <Dashboard /> },
       { path: '/repositories', element: <Repositories /> },
+      {
+        path: '/user', children: [
+          { path: '/create', element: <Register /> },
+        ],
+      },
       { path: '*', element: <Error404 /> },
     ],
   },
