@@ -5,6 +5,14 @@ from models.git import GitApp, GitAppResponse
 
 
 class GitAppService:
+    """The GitAppService handles database actions for creating, searching,
+    updating, and deleting git_apps.
+    get() finds user by app_id
+    add() creates an app (application made for 1 app)
+    update() updates an app
+    delete() deletes an app
+    """
+
     def __init__(self, session: AsyncSession):
         self.session = session
 

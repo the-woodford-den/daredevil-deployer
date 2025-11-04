@@ -5,6 +5,14 @@ from models.git import GitInstall, GitInstallResponse
 
 
 class GitInstallService:
+    """The GitInstallService handles database actions for creating, searching,
+    updating, and deleting git_installs of a git app.
+    get() finds user by id
+    add() creates an installation (application made for many installations)
+    update() updates an installation
+    delete() deletes an installation
+    """
+
     def __init__(self, session: AsyncSession):
         self.session = session
 

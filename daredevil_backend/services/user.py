@@ -8,6 +8,15 @@ password_context = CryptContext(schemes=["sha256_crypt"])
 
 
 class UserService:
+    """The UserService handles database actions for creating, searching,
+    updating, and deleting users.
+    get() finds user by id
+    get_by_username() finds user by username
+    add() creates a user
+    update() updates a user
+    delete() deletes a user
+    """
+
     def __init__(self, session: AsyncSession):
         self.session = session
 
