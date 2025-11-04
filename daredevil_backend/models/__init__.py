@@ -1,3 +1,4 @@
 from .base import IDModel, TSModel
+from .dbs_engine import DataStoreProps
 
-__all__ = ["IDModel", "TSModel"]
+__all__ = ["DataStoreProps", "IDModel", "TSModel"]

@@ -1,24 +1,13 @@
 import contextlib
-from typing import AsyncIterator, Optional, Type
+from typing import AsyncIterator, Optional
 
-from pydantic import ConfigDict
 from sqlalchemy.ext.asyncio import (AsyncConnection, AsyncEngine,
                                     async_sessionmaker, create_async_engine)
 from sqlalchemy.pool import AsyncAdaptedQueuePool
-from sqlmodel import Field, SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from configs import get_settings
-
-
-class DataStoreProps(SQLModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-    echo: Optional[bool] = Field(default=True)
-    future: Optional[bool] = Field(default=True)
-    poolclass: Optional[Type[AsyncAdaptedQueuePool]] = Field(default=None)
-    pool_size: Optional[int] = Field(default=10)
-    max_overflow: Optional[int] = Field(default=5)
-    pool_recycle: Optional[int] = Field(default=3600)
+from models import DataStoreProps
 
 
 class DataStore:

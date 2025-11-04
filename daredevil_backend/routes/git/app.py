@@ -1,5 +1,6 @@
 import debugpy
 import logfire
+from depends import SessionDepend
 from fastapi import APIRouter, Depends, HTTPException
 from httpx import AsyncClient, HTTPStatusError
 from rich import inspect, print
@@ -23,9 +24,7 @@ api = APIRouter(prefix="/git/app")
     response_model=GitAppResponse,
     response_model_exclude_unset=True,
 )
-async def search_apps(
-    *, slug: str, session: AsyncSession = Depends(get_async_session)
-):
+async def search_apps(*, slug: str, session: SessionDepend):
     """This GET request searches Github Api for a Github App without a token."""
     """It uses a slug to search."""
     """Checks the database, adds &&|| returns App"""
