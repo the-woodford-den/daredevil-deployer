@@ -1,6 +1,5 @@
 import debugpy
 import logfire
-from depends import SessionDepend
 from fastapi import APIRouter, Depends, HTTPException
 from httpx import AsyncClient, HTTPStatusError
 from rich import inspect, print
@@ -9,6 +8,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from configs import GithubLibrary
 from dbs import get_async_session
+from depends import SessionDepend
 from models.git import (CreateGitInstallToken, GitApp, GitAppResponse,
                         GitInstall, GitInstallResponse,
                         GitInstallTokenResponse)

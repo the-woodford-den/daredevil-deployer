@@ -17,6 +17,8 @@ asyncpg==0.30.0
     # via daredevil-backend (pyproject.toml)
 authlib==1.6.5
     # via daredevil-backend (pyproject.toml)
+bcrypt==5.0.0
+    # via daredevil-backend (pyproject.toml)
 certifi==2025.10.5
     # via
     #   httpcore

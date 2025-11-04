@@ -33,7 +33,7 @@ app.add_middleware(
 
 logfire.configure(
     token=settings.logfire_token,
-    environment=settings.environment,
+    environment=settings.env,
     service_name=settings.logfire_name,
 )
 logfire.instrument_fastapi(app, capture_headers=True)

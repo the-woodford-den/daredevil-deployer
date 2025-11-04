@@ -5,6 +5,7 @@ name: Python application
 
 env:
   LOGFIRE_IGNORE_NO_CONFIG: 1
+  ENVFILE: ".env.test"
 
 on:
   push:
@@ -45,7 +46,7 @@ jobs:
     - name: Copy .env.test 
       working-directory: ./daredevil_backend 
       run: |
-        cp .env.test .env
+        cp .env.test .
     - name: Install Pip
       working-directory: ./daredevil_backend 
       run: |

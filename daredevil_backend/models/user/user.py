@@ -5,6 +5,11 @@ from sqlmodel import Field, SQLModel
 from models import IDModel, TSModel
 
 
+class UserLogin(SQLModel):
+    access_token: str = Field()
+    type: str = Field()
+
+
 class UserBase(SQLModel):
     access_token: Optional[str] = Field(default=None)
     avatar_url: Optional[str] = Field()

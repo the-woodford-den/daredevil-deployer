@@ -1,10 +1,15 @@
+from datetime import datetime, timedelta
+
+import jwt
 from passlib.context import CryptContext
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from configs import get_settings
 from models.user import User, UserCreate, UserUpdate
 
-password_context = CryptContext(schemes=["sha256_crypt"])
+settings = get_settings()
+password_context = CryptContext(schemes=[settings.cc_alg], deprecated="auto")
 
 
 class UserService:
@@ -26,7 +31,7 @@ class UserService:
         return user
 
     async def get_by_username(self, username: str) -> User | None:
-        query = select(User).where(User.login == username)
+        query = select(User).where(User.username == username)
         user = (await self.session.execute(query)).scalar_one_or_none()
         return user
 
@@ -45,3 +50,25 @@ class UserService:
 
     def delete(self, id: int) -> None:
         pass
+
+    async def login(self, username, password) -> str:
+        user = await self.session.get_by_username(UserService, username)
+
+        if user is None or password_context.verify(
+            password,
+            user.password_hash,
+        ):
+            return None
+
+        token = jwt.encode(
+            payload={
+                "user": {
+                    "username": user.username,
+                },
+                "exp": datetime.now() + timedelta(days=1),
+            },
+            algorithm=settings.jwt_alg,
+            key=settings.app_secret,
+        )
+
+        return token
