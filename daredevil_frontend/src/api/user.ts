@@ -6,10 +6,15 @@ import {
 
 export const createUser = (): ResultAsync<User, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const params = JSON.stringify({
+    username: username,
+    password: password
+  });
 
   return ResultAsync.fromPromise(
     fetch(`${backendUrl}/user/create`, {
       method: 'POST',
+      body: params,
       headers: { 'Content-Type': 'application/json' }
     }).then(async (response) => {
       if (!response.ok) {
