@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import jwt
+from fastapi import HTTPException, status
 from passlib.context import CryptContext
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -53,12 +54,21 @@ class UserService:
 
     async def login(self, username, password) -> str:
         user = await self.session.get_by_username(UserService, username)
-
-        if user is None or password_context.verify(
+        password_correct = password_context.verify(
             password,
             user.password_hash,
-        ):
-            return None
+        )
+
+        if user is None:
+            raise HTTPException(
+                message=f"User '{username}' not found.",
+                status_code=status.HTTP_404_NOT_FOUND,
+            )
+        if not password_correct:
+            raise HTTPException(
+                message="Password is incorrect.",
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
 
         token = jwt.encode(
             payload={

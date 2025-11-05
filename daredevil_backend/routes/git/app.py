@@ -1,18 +1,19 @@
+from typing import Annotated
+
 import debugpy
 import logfire
 from fastapi import APIRouter, Depends, HTTPException
 from httpx import AsyncClient, HTTPStatusError
 from rich import inspect, print
 from sqlmodel import select
-from sqlmodel.ext.asyncio.session import AsyncSession
 
 from configs import GithubLibrary
-from dbs import get_async_session
-from depends import SessionDepend
+from dependency import SessionDependency
 from models.git import (CreateGitInstallToken, GitApp, GitAppResponse,
                         GitInstall, GitInstallResponse,
                         GitInstallTokenResponse)
 from models.user import User, UserCreate
+from security import user_auth
 from services import UserService
 from services.git import GitAppService, GitInstallService
 
@@ -24,7 +25,12 @@ api = APIRouter(prefix="/git/app")
     response_model=GitAppResponse,
     response_model_exclude_unset=True,
 )
-async def search_apps(*, slug: str, session: SessionDepend):
+async def search_apps(
+    *,
+    slug: str,
+    session: SessionDependency,
+    token: Annotated[str, Depends(user_auth)],
+):
     """This GET request searches Github Api for a Github App without a token."""
     """It uses a slug to search."""
     """Checks the database, adds &&|| returns App"""
@@ -81,7 +87,10 @@ async def search_apps(*, slug: str, session: SessionDepend):
     response_model_exclude_unset=True,
 )
 async def authenticated_access_app(
-    *, client_id: str, session: AsyncSession = Depends(get_async_session)
+    *,
+    client_id: str,
+    session: SessionDependency,
+    token: Annotated[str, Depends(user_auth)],
 ):
     """This GET request searches Github Api for a Github App with a token."""
     """In addition to returning App, it returns installations_count."""
@@ -162,7 +171,10 @@ async def authenticated_access_app(
     response_model=GitInstall,
 )
 async def search_installations(
-    *, username: str, session: AsyncSession = Depends(get_async_session)
+    *,
+    username: str,
+    session: SessionDependency,
+    token: Annotated[str, Depends(user_auth)],
 ):
     """This GET request searches Github Api for Github App Installations."""
     """Searches by username, token required"""
@@ -229,7 +241,8 @@ async def search_installations(
 async def installation_token(
     *,
     params: CreateGitInstallToken,
-    session: AsyncSession = Depends(get_async_session),
+    session: SessionDependency,
+    token: Annotated[str, Depends(user_auth)],
 ):
     """This POST request creates an access token on behalf of the Github App"""
     """Searches db by user installation id."""
@@ -279,6 +292,6 @@ async def installation_token(
         except HTTPStatusError as e:
             logfire.error(f"Internal Error: {e}")
             raise HTTPException(
-                status_code=e,
+                status_code=e.status_code,
                 detail=f"Internal Error: {e}",
             )

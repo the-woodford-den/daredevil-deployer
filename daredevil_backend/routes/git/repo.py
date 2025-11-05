@@ -1,14 +1,14 @@
-from typing import List
+from typing import Annotated, List
 
 import logfire
 from fastapi import APIRouter, Depends, HTTPException
 from httpx import AsyncClient
 from rich import inspect
 from sqlmodel import select
-from sqlmodel.ext.asyncio.session import AsyncSession
 
-from dbs import get_async_session
+from dependency import SessionDependency
 from models.git import Repository, RepositoryResponse
+from security import user_auth
 
 api = APIRouter(prefix="/git/repo")
 
@@ -16,8 +16,8 @@ api = APIRouter(prefix="/git/repo")
 @api.get("/all", response_model=List[RepositoryResponse])
 async def get_all_repositories(
     *,
-    token: str,
-    session: AsyncSession = Depends(get_async_session),
+    session: SessionDependency,
+    token: Annotated[str, Depends(user_auth)],
 ):
     """Searches the Github Api and returns the Github App's associated Repositories."""
     """This includes the organization and other users who installed the App."""

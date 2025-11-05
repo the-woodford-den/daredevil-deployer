@@ -1,9 +1,10 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+import logfire
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
-from depends import SessionDepend
+from dependency import SessionDependency
 from models.user import User, UserCreate, UserLogin
 from services import UserService
 
@@ -14,7 +15,7 @@ api = APIRouter(prefix="/user")
 async def create_user(
     *,
     create_user: UserCreate,
-    session: SessionDepend,
+    session: SessionDependency,
 ):
     """Creates a user with a username & password"""
 
@@ -26,11 +27,15 @@ async def create_user(
 async def login_user(
     *,
     form: Annotated[OAuth2PasswordRequestForm, Depends()],
-    session: SessionDepend,
+    session: SessionDependency,
 ):
     """Validates username & password, then returns a jwt token"""
 
-    user_service = UserService(session=session)
-    token = await user_service(form.username, form.password)
+    try:
+        user_service = UserService(session=session)
+        token = await user_service(form.username, form.password)
 
-    return {"access_token": token, "type": "jwt"}
+        return {"access_token": token, "type": "jwt"}
+
+    except HTTPException as e:
+        logfire.error(f"HTTP Error {e.status}: {e.message}")
