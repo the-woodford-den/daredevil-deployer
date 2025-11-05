@@ -2,7 +2,7 @@ from typing import Annotated
 
 import debugpy
 import logfire
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from httpx import AsyncClient, HTTPStatusError
 from rich import inspect, print
 from sqlmodel import select
@@ -16,6 +16,7 @@ from models.user import User, UserCreate
 from security import user_auth
 from services import UserService
 from services.git import GitAppService, GitInstallService
+from utility import decode_user_token
 
 api = APIRouter(prefix="/git/app")
 
@@ -34,6 +35,13 @@ async def search_apps(
     """This GET request searches Github Api for a Github App without a token."""
     """It uses a slug to search."""
     """Checks the database, adds &&|| returns App"""
+
+    auth = decode_user_token(token)
+    if auth is None:
+        raise HTTPException(
+            status=status.HTTP_401_UNAUTHORIZED,
+            message="Incorrect user token.",
+        )
 
     url = f"https://api.github.com/apps/{slug}"
     headers = {

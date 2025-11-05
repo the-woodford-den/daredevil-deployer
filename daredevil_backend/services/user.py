@@ -8,6 +8,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from configs import get_settings
 from models.user import User, UserCreate, UserUpdate
+from utility import decode_user_token, encode_user_token
 
 settings = get_settings()
 password_context = CryptContext(schemes=[settings.cc_alg], deprecated="auto")
@@ -70,15 +71,6 @@ class UserService:
                 status_code=status.HTTP_401_UNAUTHORIZED,
             )
 
-        token = jwt.encode(
-            payload={
-                "user": {
-                    "username": user.username,
-                },
-                "exp": datetime.now() + timedelta(days=1),
-            },
-            algorithm=settings.jwt_alg,
-            key=settings.app_secret,
-        )
+        token = encode_user_token(data={"user": {"username": user.username}})
 
         return token
