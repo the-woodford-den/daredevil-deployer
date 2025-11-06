@@ -1,14 +1,9 @@
 import { useRef, useState } from 'react';
+import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
 import { Link } from 'react-router-dom';
-import {
-  createGitToken,
-  findApp,
-  findInstallation
-} from '@/api/git';
-import { Alarm } from '@/components/Alarm';
-import { Note } from '@/components/Note';
-import { SearchAppsForm } from '@/components/SearchAppsForm';
-import { SearchInstallationsForm } from '@/components/SearchInstallationsForm';
+import { createGitToken, findApp, findInstallation } from '@/api/git';
+import { Alarm, Note, FindAppForm, FindInstallForm } from '@/components';
+import rubyUrl from '~/ruby.svg';
 import {
   type ApiError,
   type App,
@@ -17,8 +12,6 @@ import {
   type Token,
   type WebLinks,
 } from '@/tipos';
-import rubyUrl from '~/ruby.svg';
-import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
 import {
   Box,
   Container,
@@ -64,18 +57,20 @@ const icons = {
 };
 
 
-export function Root() {
+export function Lobby() {
   const [jsonData] = useState<WebLinks[]>(items);
   const [eventData, setEventData] = useState<EventItem[] | undefined>(undefined);
   const [app, setApp] = useState<App>();
-  const [token, setToken] = useState<Token>();
+  const [gitToken, setGitToken] = useState<Token>();
   const [installation, setInstallation] = useState<Installation>();
   const [error, setError] = useState<ApiError | null>(null);
   const ref = useRef<HTMLFormElement>(null);
 
 
-  const handleFindApp = async () => {
-    const result = await findApp();
+  const handleFindApp = async (data: FormData) => {
+    const username = data.get("username") as string;
+    const token = data.get("token") as string;
+    const result = await findApp(token, username);
     result.match(
       (app: App) => setApp(app),
       (err: ApiError) => setError(err)
@@ -86,14 +81,14 @@ export function Root() {
 
   const handleFindInstallation = async (data: FormData) => {
     const username = data.get("username") as string;
-    const result = await findInstallation(username);
+    const token = data.get("token") as string;
+    const result = await findInstallation(token, username);
     result.match(
       (install: Installation) => setInstallation(install),
       (err: ApiError) => setError(err)
     );
     let events: EventItem[] = [];
     if (installation) {
-      installation.events.map((event) => (events.push({ id: event, event: event })));
       setEventData(events);
     }
     console.log(installation);
@@ -105,12 +100,12 @@ export function Root() {
     if (!installation) {
       throw Error;
     }
-    const result = await createGitToken(installation.gitId);
+    const result = await createGitToken(installation.gitId.toString());
     result.match(
-      (token: Token) => setToken(token),
+      (token: Token) => setGitToken(token),
       (err: ApiError) => setError(err)
     );
-    console.log(token);
+    console.log(gitToken);
     ref.current?.reset();
   };
 
@@ -189,8 +184,9 @@ export function Root() {
               {installation ? (
                 <>
                   <Text textStyle="xl">{`Installation ID: ${installation.id}`}</Text>
-                  <Text textStyle="xl">{`Access Tokens Url: ${installation.accessTokensUrl}`}</Text>
-                  <Text textStyle="xl">{`App ID: ${installation.appId}`}</Text>
+                  <Text textStyle="xl">{`Access Tokens Url: ${installation.gitId}`}</Text>
+                  <Text textStyle="xl">{`App ID: ${installation.gitAppId}`}</Text>
+                  <Text textStyle="lg">{`App Slug: ${installation.appSlug}`}</Text>
                   <HStack gap="6" wrap="wrap">
                     <For each={eventData}>
                       {(item) => (
@@ -200,12 +196,10 @@ export function Root() {
                       )}
                     </For>
                   </HStack>
-                  <Text textStyle="lg">{`App Slug: ${installation.appSlug}`}</Text>
-                  <Text textStyle="xl">{`Install HTML Url ${installation.htmlUrl}`}</Text>
                 </>
               ) : (
                 <form ref={ref} action={async (formData) => { await handleFindInstallation(formData) }}>
-                  <SearchInstallationsForm />
+                  <FindInstallForm />
                 </form>
               )
               }
@@ -227,11 +221,11 @@ export function Root() {
                 <div>
                   <Text textStyle="md">{`App Name: ${app.name}`}</Text>
                   <Text textStyle="md">{`App ID: ${app.id}`}</Text>
-                  <Text textStyle="md">{`Client ID: ${app.clientId}`}</Text>
+                  <Text textStyle="md">{`Client ID: ${app.gitId}`}</Text>
                 </div>
               ) : (
                 <form ref={ref} action={async (formData) => { await handleFindApp(formData) }}>
-                  <SearchAppsForm />
+                  <FindAppForm />
                 </form>
               )}
             </Box>
@@ -284,7 +278,7 @@ export function Root() {
               color="white"
               w="65%"
             >
-              {token ? (
+              {gitToken ? (
                 <>
                   <VStack key="token">
                     <IconButton

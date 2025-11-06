@@ -1,18 +1,18 @@
 import { Container, Grid, GridItem, Text } from '@chakra-ui/react';
-import { RegisterForm } from '@/components/RegisterForm';
+import { LoginForm } from '@/components';
 
-export function Register() {
+export function Login() {
 
   return (
     <Container>
       <Grid>
         <GridItem>
           <Text>
-            Create Daredevil User
+            Welcome, Welcome, Welcome
           </Text>
         </GridItem>
         <GridItem>
-          <RegisterForm />
+          <LoginForm />
         </GridItem>
       </Grid>
     </Container>

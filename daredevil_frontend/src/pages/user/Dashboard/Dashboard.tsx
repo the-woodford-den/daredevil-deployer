@@ -1,5 +1,4 @@
-import { NetworkForm } from '@/components/NetworkForm';
-import { Note } from '@/components/Note';
+import { NetworkForm, Note } from '@/components';
 import {
   Box,
   Grid,

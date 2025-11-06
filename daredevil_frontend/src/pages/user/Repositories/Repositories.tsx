@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react';
+import { getRepositories } from '@/api/repositories';
+import { Alarm, Loading } from '@/components';
+import { type ApiError, type Repository } from '@/tipos';
 import {
   Box,
   Flex,
@@ -7,13 +10,6 @@ import {
   Stack,
   Text
 } from '@chakra-ui/react';
-import { getRepositories } from '@/api/repositories';
-import { Alarm } from '@/components/Alarm';
-import { Loading } from '@/components/Loading';
-import {
-  type ApiError,
-  type Repository
-} from '@/tipos';
 import './style.css';
 
 

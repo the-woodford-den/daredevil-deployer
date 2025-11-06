@@ -8,7 +8,7 @@ export function LoginForm() {
   return (
     <Stack gap="8" className="login-form">
       <Heading size="lg" className="t-font">
-        User Login
+        Daredevil Login
       </Heading>
       <Field.Root orientation="horizontal" required>
         <Field.Label>

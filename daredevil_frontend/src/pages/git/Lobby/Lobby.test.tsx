@@ -1,10 +1,10 @@
 import { render } from "!/utils";
 import { describe, it, expect } from 'vitest';
-import { Root } from "./Root";
+import { Lobby } from "./Lobby";
 
-describe(Root, () => {
+describe(Lobby, () => {
   it('should be in the document', async () => {
-    const { getByText } = render(<Root />);
+    const { getByText } = render(<Lobby />);
 
     const element = getByText(/Daredevil Deployer/i);
     expect(element).toBeInTheDocument();
