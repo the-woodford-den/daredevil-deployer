@@ -1,8 +1,15 @@
 from typing import Optional
 
+from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
 from models import IDModel, TSModel
+
+
+class UserCreate(SQLModel):
+    email: EmailStr = Field()
+    username: str = Field()
+    password: str = Field()
 
 
 class UserLogin(SQLModel):
@@ -38,16 +45,15 @@ class UserBase(SQLModel):
     verification_uri: Optional[str] = Field(default=None)
 
 
-class UserCreate(UserBase):
-    username: str = Field()
-    password: str = Field()
-
-
 class UserUpdate(UserBase):
-    git_id: int = Field()
+    email: Optional[EmailStr] = Field()
+    git_id: Optional[int] = Field()
+    username: Optional[str] = Field()
 
 
 class User(UserBase, IDModel, TSModel, table=True):
     __tablename__ = "users"
-    username: str = Field()
+    email: EmailStr = Field()
     password_hash: str = Field()
+    username: str = Field(index=True)
+    client_id: str = Field(default=None)

@@ -40,6 +40,7 @@ class UserService:
     async def add(self, user_create: UserCreate) -> User:
         new_user = User(
             **user_create.model_dump(exclude=["password", "id"]),
+            client_id=settings.client_id,
             password_hash=password_context.hash(user_create.password),
         )
         self.session.add(new_user)
@@ -71,6 +72,13 @@ class UserService:
                 status_code=status.HTTP_401_UNAUTHORIZED,
             )
 
-        token = encode_user_token(data={"user": {"username": user.username}})
+        token = encode_user_token(
+            data={
+                "user": {
+                    "username": user.username,
+                    "id": user.id,
+                }
+            }
+        )
 
         return token

@@ -1,19 +1,15 @@
-from .app import GitApp, GitAppResponse, GitAppTokenResponse
-from .git import GitCreateTokenResponse, GitTokenResponse
-from .install import (CreateGitInstallToken, GitInstall, GitInstallResponse,
-                      GitInstallTokenResponse)
+from .app import GitApp, GitAppResponse
+from .install import GitInstall, GitInstallResponse
 from .repositories import Repository, RepositoryResponse
+from .token import CreateGitAppToken, GitAppToken
 
 __all__ = [
-    "CreateGitInstallToken",
+    "CreateGitAppToken",
     "GitApp",
     "GitAppResponse",
-    "GitAppTokenResponse",
-    "GitCreateTokenResponse",
-    "GitInstallTokenResponse",
+    "GitAppToken",
     "GitInstall",
     "GitInstallResponse",
-    "GitTokenResponse",
     "Repository",
     "RepositoryResponse",
 ]

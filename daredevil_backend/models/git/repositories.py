@@ -6,6 +6,7 @@ from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
 from models import IDModel, TSModel
+from utility import serialize
 
 
 class RepositoryBase(SQLModel):

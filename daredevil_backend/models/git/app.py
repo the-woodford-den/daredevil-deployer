@@ -6,23 +6,16 @@ from pydantic import AliasGenerator, ConfigDict, EmailStr
 from sqlmodel import Field, SQLModel
 
 from models import IDModel, TSModel
-
-
-def serialize(field_name):
-    keys = field_name.split("_")
-    new_field_name = keys[0] + "".join(x.title() for x in keys[1:])
-
-    return new_field_name
+from utility import serialize
 
 
 class GitAppBase(SQLModel):
-    slug: str = Field()
-    node_id: str = Field()
-    client_id: Optional[str] = Field(default=None)
-    name: str = Field()
     description: Optional[str] = Field(default=None)
     external_url: str = Field()
     html_url: str = Field()
+    name: str = Field()
+    node_id: str = Field()
+    slug: str = Field()
 
 
 class GitAppOwnerResponse(SQLModel):
@@ -72,11 +65,4 @@ class GitAppResponse(GitAppBase):
 
 class GitApp(GitAppBase, IDModel, TSModel, table=True):
     __tablename__ = "git_apps"
-    git_id: int = Field(alias="gitId")
-    token: Optional[str] = Field(default=None)
-    expires_at: Optional[str] = Field(default=None, alias="expiresAt")
-
-
-class GitAppTokenResponse(SQLModel):
-    token: str = Field()
-    expires_at: str = Field(alias="expiresAt")
+    git_id: int = Field(alias="gitId", index=True)
