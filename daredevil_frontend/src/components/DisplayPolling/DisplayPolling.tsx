@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { List } from '@chakra-ui/react';
 import { LuSquirrel } from 'react-icons/lu';
-import { type UUID } from 'crypto';
+import { type UUID } from '@/tipos/utility';
 
 
 const icons = {

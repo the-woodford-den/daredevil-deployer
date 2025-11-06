@@ -2,7 +2,7 @@
 
 import { type ReactNode, useCallback, useState } from "react";
 import { UserContext } from './UserContext';
-import { signIn, signOut } from '@/data';
+import { signIn, signOut } from '@/tipos';
 
 export function UserProvider({
   children,

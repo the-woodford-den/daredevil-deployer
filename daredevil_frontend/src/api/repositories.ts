@@ -2,7 +2,7 @@ import { ResultAsync } from 'neverthrow';
 import {
   type Repository,
   type ApiError
-} from '@/data';
+} from '@/tipos';
 
 
 export const getRepositories = (token: string): ResultAsync<Repository[], ApiError> => {

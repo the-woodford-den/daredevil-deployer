@@ -2,7 +2,7 @@ import { ResultAsync } from "neverthrow";
 import {
   type ApiError,
   type User
-} from "@/data";
+} from "@/tipos";
 
 export const createUser = (): ResultAsync<User, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;

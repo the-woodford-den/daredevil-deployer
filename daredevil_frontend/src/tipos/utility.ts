@@ -1,5 +1,7 @@
 import { type ReactNode } from "react";
 
+export type UUID = string;
+
 export interface WebLinks {
   id: string;
   icon?: ReactNode;

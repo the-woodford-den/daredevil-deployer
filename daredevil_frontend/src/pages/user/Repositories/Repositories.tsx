@@ -13,7 +13,7 @@ import { Loading } from '@/components/Loading';
 import {
   type ApiError,
   type Repository
-} from '@/data';
+} from '@/tipos';
 import './style.css';
 
 

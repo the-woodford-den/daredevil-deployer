@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  createGitInstallToken,
-  searchGitApps,
-  searchGitInstalls
+  createGitToken,
+  findApp,
+  findInstallation
 } from '@/api/git';
 import { Alarm } from '@/components/Alarm';
 import { Note } from '@/components/Note';
@@ -11,12 +11,12 @@ import { SearchAppsForm } from '@/components/SearchAppsForm';
 import { SearchInstallationsForm } from '@/components/SearchInstallationsForm';
 import {
   type ApiError,
-  type GitApp,
+  type App,
   type EventItem,
-  type GitInstall,
+  type Installation,
   type Token,
   type WebLinks,
-} from '@/data';
+} from '@/tipos';
 import rubyUrl from '~/ruby.svg';
 import { GiMetroid, GiCapybara, GiRam } from 'react-icons/gi';
 import {
@@ -67,30 +67,29 @@ const icons = {
 export function Root() {
   const [jsonData] = useState<WebLinks[]>(items);
   const [eventData, setEventData] = useState<EventItem[] | undefined>(undefined);
-  const [app, setApp] = useState<GitApp>();
+  const [app, setApp] = useState<App>();
   const [token, setToken] = useState<Token>();
-  const [installation, setInstallation] = useState<GitInstall>();
+  const [installation, setInstallation] = useState<Installation>();
   const [error, setError] = useState<ApiError | null>(null);
   const ref = useRef<HTMLFormElement>(null);
 
 
-  const handleSearchApps = async (data: FormData) => {
-    const slug = data.get("slug") as string;
-    const result = await searchGitApps(slug);
+  const handleFindApp = async () => {
+    const result = await findApp();
     result.match(
-      (app) => setApp(app),
-      (err) => setError(err)
+      (app: App) => setApp(app),
+      (err: ApiError) => setError(err)
     );
     console.log(app);
     ref.current?.reset();
   };
 
-  const handleSearchInstallations = async (data: FormData) => {
+  const handleFindInstallation = async (data: FormData) => {
     const username = data.get("username") as string;
-    const result = await searchGitInstalls(username);
+    const result = await findInstallation(username);
     result.match(
-      (installObject) => setInstallation(installObject),
-      (err) => setError(err)
+      (install: Installation) => setInstallation(install),
+      (err: ApiError) => setError(err)
     );
     let events: EventItem[] = [];
     if (installation) {
@@ -101,15 +100,15 @@ export function Root() {
     ref.current?.reset();
   };
 
-  const handleCreateInstallationToken = async (event: any) => {
+  const handleGitToken = async (event: any) => {
     event.preventDefault();
     if (!installation) {
       throw Error;
     }
-    const result = await createGitInstallToken(installation.gitId);
+    const result = await createGitToken(installation.gitId);
     result.match(
-      (tokenObject) => setToken(tokenObject),
-      (err) => setError(err)
+      (token: Token) => setToken(token),
+      (err: ApiError) => setError(err)
     );
     console.log(token);
     ref.current?.reset();
@@ -205,7 +204,7 @@ export function Root() {
                   <Text textStyle="xl">{`Install HTML Url ${installation.htmlUrl}`}</Text>
                 </>
               ) : (
-                <form ref={ref} action={async (formData) => { await handleSearchInstallations(formData) }}>
+                <form ref={ref} action={async (formData) => { await handleFindInstallation(formData) }}>
                   <SearchInstallationsForm />
                 </form>
               )
@@ -231,7 +230,7 @@ export function Root() {
                   <Text textStyle="md">{`Client ID: ${app.clientId}`}</Text>
                 </div>
               ) : (
-                <form ref={ref} action={async (formData) => { await handleSearchApps(formData) }}>
+                <form ref={ref} action={async (formData) => { await handleFindApp(formData) }}>
                   <SearchAppsForm />
                 </form>
               )}
@@ -257,7 +256,7 @@ export function Root() {
                       size="lg"
                       asChild={true}
                     >
-                      <a href="#" onClick={handleCreateInstallationToken}>
+                      <a href="#" onClick={handleGitToken}>
                         {icons['metroid']}
                       </a>
                     </IconButton>

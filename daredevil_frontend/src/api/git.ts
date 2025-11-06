@@ -3,18 +3,16 @@ import {
   type ApiError,
   type App,
   type Installation,
-  type Token
-} from "@/data";
+  type Token,
+  type User,
+} from "@/tipos";
 
 
-export const searchGitInstalls = (username: string): ResultAsync<Installation, ApiError> => {
+export const findInstallation = (user: User): ResultAsync<Installation, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const params = new URLSearchParams({
-    username: username
-  });
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/git/app/installs/search/${username}`).then(async (response) => {
+    fetch(`${backendUrl}/git/app/installation`).then(async (response) => {
       if (!response.ok) {
         throw {
           type: 'NETWORK_ERROR', message: 'No Tokens....'
@@ -22,10 +20,10 @@ export const searchGitInstalls = (username: string): ResultAsync<Installation, A
       }
 
       const installResponse = await response.json();
-      const installObject = installResponse as Installation;
+      const installation = installResponse as Installation;
 
       console.log(installResponse);
-      return installObject;
+      return installation;
     }),
     (error) => {
       if (error && typeof error === 'object' && 'type' in error) {
@@ -36,11 +34,11 @@ export const searchGitInstalls = (username: string): ResultAsync<Installation, A
   );
 };
 
-export const searchGitApps = (slug: string): ResultAsync<App, ApiError> => {
+export const findApp = (user: User): ResultAsync<App, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/git/app/search/${slug}`)
+    fetch(`${backendUrl}/git/app`)
       .then(async (response) => {
         if (!response.ok) {
           throw {
@@ -48,10 +46,10 @@ export const searchGitApps = (slug: string): ResultAsync<App, ApiError> => {
           };
         }
         const appResponse = await response.json();
-        const appObject = appResponse as App;
+        const gitApp = appResponse as App;
 
         console.log(appResponse);
-        return appObject;
+        return gitApp;
       }),
     (error) => {
       if (error && typeof error === 'object' && 'type' in error) {
@@ -62,12 +60,12 @@ export const searchGitApps = (slug: string): ResultAsync<App, ApiError> => {
   );
 };
 
-export const createGitInstallToken = (id: number): ResultAsync<Token, ApiError> => {
+export const createGitToken = (user: User): ResultAsync<Token, ApiError> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const params = JSON.stringify({ git_id: id });
+  // const params = JSON.stringify({ git_id: user.git_id });
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/git/app/install/token`, {
+    fetch(`${backendUrl}/git/app/token`, {
       method: 'POST',
       body: params,
       headers: { 'Content-Type': 'application/json' }

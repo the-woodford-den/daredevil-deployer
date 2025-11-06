@@ -1,21 +1,20 @@
 'use server';
+import { type User } from './user';
+import { v4 as uuidv4 } from 'uuid';
 
 const DELAY = 1000;
-
-type User = {
-  id: string;
-  name: string;
-  permissions: string[];
-}
 
 export async function signIn(): Promise<User> {
   return new Promise((resolve) =>
     setTimeout(
       () =>
         resolve({
-          id: '1',
-          name: 'Adam',
-          permissions: ['admin'],
+          id: uuidv4(),
+          clientId: 'some-client-id',
+          email: 'adam@example.com',
+          gitId: 'some-git-id',
+          token: 'some-token',
+          username: 'Adam',
         }),
       DELAY,
     ),
