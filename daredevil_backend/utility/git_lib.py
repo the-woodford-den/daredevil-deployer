@@ -4,10 +4,10 @@ from pathlib import Path
 import jwt
 import logfire
 
-from .settings import get_settings
+from configs import get_settings
 
 
-class GithubLibrary:
+class GitLib:
     """The Github Library for Configurations, Tokens"""
 
     def __init__(self):

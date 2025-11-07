@@ -43,6 +43,7 @@ async def login_user(
         response.set_cookie(
             httponly=True,
             domain=settings.domain,
+            expires=token["expires_at"],
             path="/user/login",
             key="daredevil_token",
             value=token["token"],

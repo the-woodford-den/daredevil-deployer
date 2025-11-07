@@ -12,7 +12,7 @@ export const reposStore = create<ReposState>(
       results.match(
         (repos: Repository[]) => set({ repos: new Set(repos as Repository[]) }),
         (err: ErrorState) => set({ hasError: err.isError }),
-      )
+      );
     },
   })
 );

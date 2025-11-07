@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated
 
 import logfire
 from fastapi import APIRouter, Depends, HTTPException
@@ -6,11 +6,11 @@ from httpx import AsyncClient, HTTPStatusError
 from rich import inspect
 from sqlmodel import select
 
-from configs import GithubLibrary
 from dependency import SessionDependency, get_daredevil_token
 from models import User
-from models.git import Repository, RepositoryResponse
+from models.git import Repository
 from services import GitRepoService
+from utility import GitLib
 
 api = APIRouter(prefix="/git/repo")
 
@@ -24,7 +24,7 @@ async def get_repos(
     """Searches the Github Api and returns the Github App's associated Repositories.
     This includes the organization and other users who installed the App."""
     user = await session.get(User, token["user"]["id"])
-    gh_lib = GithubLibrary(session)
+    gh_lib = GitLib(session)
     jwt = gh_lib.create_jwt(client_id=user.client_id)
 
     endpoint = "https://api.github.com/user/repos"

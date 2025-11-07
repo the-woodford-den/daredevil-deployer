@@ -19,7 +19,7 @@ export const findInstallation = async (): Promise<ResultAsync<Installation, Erro
   return ResultAsync.fromPromise(
     fetch(`${backendUrl}/git/app/installation`, {
       credentials: 'include',
-      method: 'Get',
+      method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     })
       .then(async (response) => {

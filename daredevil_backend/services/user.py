@@ -80,4 +80,8 @@ class UserService:
             "username": username,
         }
         token = encode_user_token(data={**content})
+
         return {**content, "token": token}
+
+
+#

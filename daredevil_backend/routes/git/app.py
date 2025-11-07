@@ -7,11 +7,11 @@ from httpx import AsyncClient, HTTPStatusError
 from rich import inspect, print
 from sqlmodel import select
 
-from configs import GithubLibrary
 from dependency import SessionDependency, get_daredevil_token
 from models import CreateGitToken, GitToken, User
 from models.git import GitApp, GitAppResponse, GitInstall, GitInstallResponse
 from services.git import GitAppService, GitInstallService
+from utility import GitLib
 
 api = APIRouter(prefix="/git/app")
 
@@ -29,7 +29,7 @@ async def get_app(
     """This GET request searches Github Api for a Github App with a token.
     In addition to returning App, it returns installations_count with the App"""
 
-    github_library = GithubLibrary()
+    github_library = GitLib()
     jwt = github_library.create_jwt(client_id=token.client_id)
 
     endpoint = "https://api.github.com/app"
@@ -78,7 +78,7 @@ async def get_installation(
     Searches by username, token required
     Only returns if username matches an installation."""
 
-    github_library = GithubLibrary()
+    github_library = GitLib()
     jwt = github_library.create_jwt(client_id=token["client_id"])
 
     endpoint = "https://api.github.com/app/installations"
@@ -151,7 +151,7 @@ async def create_token(
         logfire.error(f"No installation found for user: {user.username}")
         raise HTTPException(status_code=404, detail="GitInstall not found")
 
-    gha_lib = GithubLibrary()
+    gha_lib = GitLib()
     app_jwt = gha_lib.create_jwt(client_id=user.client_id)
     id = str(user_install.git_id)
 
