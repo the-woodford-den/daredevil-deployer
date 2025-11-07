@@ -8,8 +8,9 @@ from rich import inspect, print
 from sqlmodel import select
 
 from dependency import SessionDependency, get_daredevil_token
-from models import CreateGitToken, GitToken, User
+from models import CreateGitToken, GitToken
 from models.git import GitApp, GitAppResponse, GitInstall, GitInstallResponse
+from models.user import User
 from services.git import GitAppService, GitInstallService
 from utility import GitLib
 

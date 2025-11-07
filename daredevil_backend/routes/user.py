@@ -2,7 +2,7 @@ from typing import Annotated
 
 import logfire
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.response import JSONResponse
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
 from configs import get_settings

@@ -6,12 +6,12 @@ import {
   Heading
 } from '@chakra-ui/react';
 
-export function Dashboard() {
+export function Console() {
   return (
     <Grid gap={12} mt="2" mb="2" templateColumns="repeat(3, 1fr)">
       <GridItem colSpan={3}>
-        <Heading size="5xl" mb="5" className="t-font">
-          User Dashboard
+        <Heading size="xl" mb="5" className="t-font">
+          Cloud Console
         </Heading>
       </GridItem>
       <GridItem colSpan={2}>
@@ -23,8 +23,8 @@ export function Dashboard() {
           background="olive"
           color="gold"
         >
-          <Heading size="2xl" mb="2" className="t-font">
-            We are thinking
+          <Heading size="xl" mb="2" className="t-font">
+            KubeCon 2025 November 10-13, 2025 in Atlanta!
           </Heading>
         </Box>
       </GridItem>

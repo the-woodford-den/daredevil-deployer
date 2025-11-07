@@ -32,7 +32,15 @@ export const signIn = async (username: string, password: string): Promise<Result
           status: 404, detail: 'Error Logging In!', isError: true,
         };
       }
+      const cookie = response.headers.get('Cookie')
+      const set_cookie = response.headers.get('Set-Cookie')
+      console.log(cookie)
+      console.log(set_cookie)
       const tokenResponse = await response.json();
+      const acookie = tokenResponse.headers.get('Cookie')
+      const aset_cookie = tokenResponse.headers.get('Set-Cookie')
+      console.log(acookie)
+      console.log(aset_cookie)
       const token = tokenResponse as Token;
 
       return token;

@@ -8,44 +8,39 @@ import { userStore } from '@/state/userStore';
 const ref = useRef<HTMLFormElement>(null);
 
 
-export function Main({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function Main() {
   // const loading = userStore(
   //   (state) => state.loading,
   // );
-  const username = userStore(
-    (state) => state.username,
-  );
+  // const username = userStore(
+  //   (state) => state.username,
+  // );
   const hasError = userStore(
     (state) => state.hasError
   );
-  const signIn = userStore(
-    (state) => state.handleSignIn,
-  );
-  const signOut = userStore(
-    (state) => state.handleSignOut,
-  );
+  // const signIn = userStore(
+  //   (state) => state.handleSignIn,
+  // );
+  // const signOut = userStore(
+  //   (state) => state.handleSignOut,
+  // );
   const error = errorStore(
     (state) => state
   );
 
 
   return (
-    <main>
-      <Flex justify="center" p="3">
-        {hasError ? (
-          <Alarm
-            status="error"
-            title={`${error.status} Error Status`}
-            width="60%"
-          >{error.detail}</Alarm>
-        ) : (
-          <></>
-        )}
-      </Flex>
-    </main>
+    <Flex justify="center" p="3">
+      {hasError ? (
+        <Alarm
+          status="error"
+          title={`${error.status} Error Status`}
+          width="60%"
+        >{error.detail}</Alarm>
+      ) : (
+        <></>
+      )}
+    </Flex>
   );
 };
+

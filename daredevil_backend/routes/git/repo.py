@@ -1,21 +1,20 @@
-from typing import Annotated
+from typing import Annotated, List
 
 import logfire
 from fastapi import APIRouter, Depends, HTTPException
 from httpx import AsyncClient, HTTPStatusError
 from rich import inspect
-from sqlmodel import select
 
 from dependency import SessionDependency, get_daredevil_token
-from models import User
 from models.git import Repository
-from services import GitRepoService
+from models.user import User
+from services.git import GitRepoService
 from utility import GitLib
 
 api = APIRouter(prefix="/git/repo")
 
 
-@api.get("/all", response_model=[Repository])
+@api.get("/all", response_model=List[Repository])
 async def get_repos(
     *,
     session: SessionDependency,
