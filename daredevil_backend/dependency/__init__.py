@@ -1,3 +1,3 @@
-from .session import SessionDepend, get_daredevil_token
+from .session import SessionDependency, get_daredevil_token
 
-__all__ = ["get_daredevil_token", "SessionDepend"]
+__all__ = ["get_daredevil_token", "SessionDependency"]

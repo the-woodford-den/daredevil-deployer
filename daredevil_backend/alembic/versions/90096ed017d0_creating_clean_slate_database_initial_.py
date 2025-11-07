@@ -1,8 +1,8 @@
 """creating clean slate database initial migration
 
-Revision ID: 231d2a5b48ef
+Revision ID: 90096ed017d0
 Revises:
-Create Date: 2025-10-29 10:43:53.397604
+Create Date: 2025-11-07 14:43:35.494724
 
 """
 
@@ -14,7 +14,7 @@ import sqlmodel
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "231d2a5b48ef"
+revision: str = "90096ed017d0"
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -38,14 +38,6 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("id", sa.Uuid(), nullable=False),
-        sa.Column("slug", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column(
-            "node_id", sqlmodel.sql.sqltypes.AutoString(), nullable=False
-        ),
-        sa.Column(
-            "client_id", sqlmodel.sql.sqltypes.AutoString(), nullable=True
-        ),
-        sa.Column("name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column(
             "description", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
@@ -55,12 +47,16 @@ def upgrade() -> None:
         sa.Column(
             "html_url", sqlmodel.sql.sqltypes.AutoString(), nullable=False
         ),
-        sa.Column("git_id", sa.Integer(), nullable=False),
-        sa.Column("token", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+        sa.Column("name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column(
-            "expires_at", sqlmodel.sql.sqltypes.AutoString(), nullable=True
+            "node_id", sqlmodel.sql.sqltypes.AutoString(), nullable=False
         ),
+        sa.Column("slug", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("git_id", sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_index(
+        op.f("ix_git_apps_git_id"), "git_apps", ["git_id"], unique=False
     )
     op.create_index(op.f("ix_git_apps_id"), "git_apps", ["id"], unique=False)
     op.create_table(
@@ -78,7 +74,6 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("id", sa.Uuid(), nullable=False),
-        sa.Column("app_id", sa.Integer(), nullable=False),
         sa.Column(
             "app_slug", sqlmodel.sql.sqltypes.AutoString(), nullable=False
         ),
@@ -95,14 +90,18 @@ def upgrade() -> None:
             sqlmodel.sql.sqltypes.AutoString(),
             nullable=True,
         ),
-        sa.Column("git_id", sa.Integer(), nullable=True),
+        sa.Column("git_app_id", sa.Integer(), nullable=False),
+        sa.Column("git_id", sa.Integer(), nullable=False),
+        sa.Column(
+            "username", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(
         op.f("ix_git_installs_id"), "git_installs", ["id"], unique=False
     )
     op.create_table(
-        "github_repositories",
+        "git_repos",
         sa.Column(
             "created_at", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
@@ -301,15 +300,10 @@ def upgrade() -> None:
         sa.Column("forks", sa.Integer(), nullable=True),
         sa.Column("open_issues", sa.Integer(), nullable=True),
         sa.Column("watchers", sa.Integer(), nullable=True),
-        sa.Column("github_repository_id", sa.Integer(), nullable=False),
+        sa.Column("git_id", sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        op.f("ix_github_repositories_id"),
-        "github_repositories",
-        ["id"],
-        unique=False,
-    )
+    op.create_index(op.f("ix_git_repos_id"), "git_repos", ["id"], unique=False)
     op.create_table(
         "users",
         sa.Column(
@@ -329,93 +323,101 @@ def upgrade() -> None:
             "access_token", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column(
-            "avatar_url", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+            "avatar_url", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column(
-            "client_id", sqlmodel.sql.sqltypes.AutoString(), nullable=True
+            "client_id", sqlmodel.sql.sqltypes.AutoString(), nullable=False
         ),
         sa.Column(
             "device_code", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column(
-            "events_url", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+            "events_url", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column(
             "expires_in", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column(
-            "followers_url", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+            "followers_url", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column(
-            "following_url", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+            "following_url", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column(
-            "gists_url", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+            "gists_url", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column(
             "gravatar_id", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column(
-            "html_url", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+            "html_url", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column("interval", sa.Integer(), nullable=True),
-        sa.Column("login", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column(
-            "node_id", sqlmodel.sql.sqltypes.AutoString(), nullable=False
-        ),
+        sa.Column("login", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+        sa.Column("node_id", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
         sa.Column(
             "organizations_url",
             sqlmodel.sql.sqltypes.AutoString(),
-            nullable=False,
+            nullable=True,
         ),
         sa.Column(
             "received_events_url",
             sqlmodel.sql.sqltypes.AutoString(),
-            nullable=False,
+            nullable=True,
         ),
         sa.Column(
-            "repos_url", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+            "repos_url", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
-        sa.Column("site_admin", sa.Boolean(), nullable=False),
+        sa.Column("site_admin", sa.Boolean(), nullable=True),
         sa.Column(
-            "starred_url", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+            "starred_url", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column(
             "subscriptions_url",
             sqlmodel.sql.sqltypes.AutoString(),
-            nullable=False,
+            nullable=True,
         ),
-        sa.Column("type", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column("url", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("type", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+        sa.Column("url", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
         sa.Column(
             "user_code", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column(
-            "user_view_type", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+            "user_view_type", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column(
             "verification_uri",
             sqlmodel.sql.sqltypes.AutoString(),
             nullable=True,
         ),
+        sa.Column("email", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("git_id", sa.Integer(), nullable=False),
+        sa.Column(
+            "password_hash", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+        ),
+        sa.Column(
+            "username", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_users_id"), "users", ["id"], unique=False)
+    op.create_index(
+        op.f("ix_users_username"), "users", ["username"], unique=False
+    )
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     """Downgrade schema."""
     # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_index(op.f("ix_users_username"), table_name="users")
     op.drop_index(op.f("ix_users_id"), table_name="users")
     op.drop_table("users")
-    op.drop_index(
-        op.f("ix_github_repositories_id"), table_name="github_repositories"
-    )
-    op.drop_table("github_repositories")
+    op.drop_index(op.f("ix_git_repos_id"), table_name="git_repos")
+    op.drop_table("git_repos")
     op.drop_index(op.f("ix_git_installs_id"), table_name="git_installs")
     op.drop_table("git_installs")
     op.drop_index(op.f("ix_git_apps_id"), table_name="git_apps")
+    op.drop_index(op.f("ix_git_apps_git_id"), table_name="git_apps")
     op.drop_table("git_apps")
     # ### end Alembic commands ###
