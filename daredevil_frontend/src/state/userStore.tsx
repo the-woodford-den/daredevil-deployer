@@ -1,23 +1,34 @@
-import { signIn, signOut } from '@/api/auth';
+import { signIn } from '@/api/auth/user';
 import { create } from 'zustand';
-import { type UserState } from '@/tipos';
+import type { ErrorState, Token, UserState } from '@/tipos';
 
-export const userStore = create<UserState>(
+type Action = {
+  updateUsername: (username: UserState['username']) => void;
+  updatePermissions: (permissions: UserState['permissions']) => void;
+  handleSignIn: (password: string, username: string) => Promise<void>;
+}
+
+export const userStore = create<UserState & Action>(
   (set) => ({
+    hasError: undefined,
     username: undefined,
     permissions: undefined,
     loading: false,
-    handleSignIn: async () => {
+    updateUsername: (username) => set(() => ({ username: username })),
+    updatePermissions: (permissions) => set(() => ({ permissions: permissions })),
+    handleSignIn: async (
+      password: string,
+      username: string,
+    ) => {
       set({ loading: true });
-      const user = await signIn();
-      set({
-        username: user.username,
-        permissions: user.permissions,
-        loading: false,
-      });
+      const result = await signIn(password, username);
+      result.match(
+        (token: Token) => set({ username: token.username }),
+        (err: ErrorState) => set({ hasError: err.isError }),
+      );
     },
     handleSignOut: async () => {
-      await signOut();
+      // await signOut();
       set({
         username: undefined,
         permissions: undefined,

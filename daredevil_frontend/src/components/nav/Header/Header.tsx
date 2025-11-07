@@ -1,24 +1,32 @@
-import { userStore } from '@/state/userStore';
+// import { userStore } from '@/state/userStore';
 import { Link } from 'react-router-dom';
 import { Breadcrumb, Flex, Text } from '@chakra-ui/react';
 import './style.css';
 
 export function Header() {
-  const username = userStore(
-    (state) => state.username,
-  );
-  const loading = userStore(
-    (state) => state.loading,
-  );
-  const handleSignIn = userStore(
-    (state) => state.handleSignIn,
-  );
-  const handleSignOut = userStore(
-    (state) => state.handleSignOut,
-  );
-  const togglePermissions = userStore(
-    (state) => state.togglePermissions,
-  );
+  // const username = userStore(
+  //   (state) => state.username,
+  // );
+  // const handleSignIn = userStore(
+  //   (state) => state.handleSignIn,
+  // );
+  // const signOut = userStore(
+  //   (state) => state.handleSignOut,
+  // );
+  // const togglePermissions = userStore(
+  //   (state) => state.togglePermissions,
+  // );
+  //
+
+  // const handleSignOut = async (
+  //   event: React.FormEvent<HTMLFormElement>,
+  // ) => {
+  //   event.preventDefault();
+  //   const result = signOut();
+  //
+  //   console.log(result);
+  //   ref.current?.reset();
+  // };
 
   return (
     <Flex direction="column">

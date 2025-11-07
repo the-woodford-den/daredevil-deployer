@@ -20,7 +20,3 @@ export interface Installation {
   username: string;
 }
 
-export interface Token {
-  token: string;
-  expiresAt: string;
-}

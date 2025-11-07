@@ -4,29 +4,33 @@ import { StrictMode } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Provider } from '@/components/ui/provider';
 import { Error404 } from '@/pages/error';
-import { Lobby } from '@/pages/git';
-import { Dashboard, Login, Register, Repositories } from '@/pages/user';
+import { Cloud, Console, Repos, Repository } from '@/pages/cloud';
+import { Login, Register } from '@/pages/user';
 import App from './App';
 import './index.css';
 
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <App />,
+    path: '/', element: <App />,
     children: [
       {
         path: '/user', children: [
           { index: true, path: '/login', element: <Login /> },
           { path: '/create', element: <Register /> },
-          { path: '/dashboard', element: <Dashboard /> },
-          { path: '/repositories', element: <Repositories /> },
         ],
       },
-      { path: '/lobby', element: <Lobby /> },
-      { path: '*', element: <Error404 /> },
     ],
   },
+  {
+    path: '/cloud', element: <Cloud />,
+    children: [
+      { path: '/console', element: <Console /> },
+      { path: '/repo', element: <Repository /> },
+      { path: '/repos', element: <Repos /> },
+    ],
+  },
+  { path: '*', element: <Error404 /> },
 ]);
 
 const container = document.getElementById('root')!

@@ -1,4 +1,10 @@
-import { type UUID } from './utility';
+import type { UUID } from './utility';
+
+export interface Token {
+  expiresAt: string;
+  token: string;
+  username: undefined | string;
+}
 
 export interface User {
   id: UUID;
@@ -10,10 +16,14 @@ export interface User {
 }
 
 export type UserState = {
+  hasError: undefined | boolean;
   username: undefined | string;
   permissions: undefined | string[];
   loading: boolean;
-  handleSignIn: () => Promise<void>;
+  handleSignIn: (
+    username: string,
+    password: string,
+  ) => Promise<void>;
   handleSignOut: () => Promise<void>;
   togglePermissions: () => void;
 }

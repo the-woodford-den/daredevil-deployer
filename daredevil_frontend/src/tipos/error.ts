@@ -4,3 +4,11 @@ export type ApiError =
   | { type: 'UNAUTHORIZED'; message: string }
   | { type: 'UNKNOWN_ERROR'; message: string };
 
+export type ErrorState = {
+  isError: boolean;
+  status: undefined | number;
+  detail: undefined | string;
+  setError: (error: ErrorState) => void;
+  unsetError: (error: ErrorState) => void;
+}
+
