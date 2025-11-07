@@ -1,5 +1,6 @@
-export * from './Dashboard';
+export * from './Console';
 export * from './Login';
 export * from './Register';
-export * from './Repositories';
+export * from './Repos';
+export * from './Repo';
 

@@ -1,8 +1,8 @@
-"""Github Repository Typed Models"""
+"""Git Repo Typed Models"""
 
 from typing import Optional
 
-from pydantic import EmailStr
+from pydantic import AliasGenerator, ConfigDict, EmailStr
 from sqlmodel import Field, SQLModel
 
 from models import IDModel, TSModel
@@ -15,7 +15,7 @@ class RepositoryBase(SQLModel):
     full_name: Optional[str]
     private: Optional[bool]
     html_url: Optional[str]
-    description: Optional[str] = Field(default=None)
+    description: Optional[str]
     fork: Optional[bool]
     url: Optional[str]
     archive_url: Optional[str]
@@ -119,10 +119,10 @@ class RepositoryOwnerResponse(SQLModel):
 
 class RepositoryPermissionsResponse(SQLModel):
     admin: bool = Field()
-    push: bool
-    pull: bool
-    maintain: bool
-    triage: bool
+    push: bool = Field()
+    pull: bool = Field()
+    maintain: bool = Field()
+    triage: bool = Field()
 
 
 class RepositoryLicenseResponse(SQLModel):
@@ -143,5 +143,13 @@ class RepositoryResponse(RepositoryBase):
 
 
 class Repository(RepositoryBase, IDModel, TSModel, table=True):
-    __tablename__ = "github_repositories"
-    github_repository_id: int = Field()
+    __tablename__ = "git_repos"
+    model_config = ConfigDict(
+        alias_generator=AliasGenerator(
+            serialization_alias=lambda field_name: (serialize(field_name))
+        )
+    )
+    git_id: int = Field()
+
+
+#

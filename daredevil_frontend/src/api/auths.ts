@@ -1,5 +1,5 @@
 import { ResultAsync } from "neverthrow";
-import { errorStore } from '@/state/errorStore';
+import { errorStore } from '@/state';
 import type {
   ErrorState,
   Token,
@@ -13,7 +13,7 @@ const errorHelper = {
 }
 
 
-export const signIn = (username: string, password: string): ResultAsync<Token, ErrorState> => {
+export const signIn = async (username: string, password: string): Promise<ResultAsync<Token, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const params = JSON.stringify({
     username: username,
@@ -33,7 +33,6 @@ export const signIn = (username: string, password: string): ResultAsync<Token, E
         };
       }
       const tokenResponse = await response.json();
-      console.log(tokenResponse);
       const token = tokenResponse as Token;
 
       return token;
@@ -60,16 +59,16 @@ export const signIn = (username: string, password: string): ResultAsync<Token, E
   );
 };
 
-export const signOut = (): ResultAsync<void, ErrorState> => {
+export const signOut = async (): Promise<ResultAsync<void, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   return ResultAsync.fromPromise(
     fetch(`${backendUrl}/user/logout`, {
-      method: 'POST',
+      credentials: 'include',
+      method: 'DELETE',
       headers: {
         "Accept": "application/json",
         'Content-Type': 'application/json',
-        "Authorization": `Bearer ${jwt}`,
       }
     }).then(async (response) => {
       if (!response.ok) {
@@ -78,7 +77,6 @@ export const signOut = (): ResultAsync<void, ErrorState> => {
         };
       }
       const tokenResponse = await response.json();
-      console.log(tokenResponse);
 
       return tokenResponse;
     }

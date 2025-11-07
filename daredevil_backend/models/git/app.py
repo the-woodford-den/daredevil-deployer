@@ -65,4 +65,12 @@ class GitAppResponse(GitAppBase):
 
 class GitApp(GitAppBase, IDModel, TSModel, table=True):
     __tablename__ = "git_apps"
+    model_config = ConfigDict(
+        alias_generator=AliasGenerator(
+            serialization_alias=lambda field_name: (serialize(field_name))
+        )
+    )
     git_id: int = Field(alias="gitId", index=True)
+
+
+#

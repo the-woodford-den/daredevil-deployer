@@ -23,10 +23,10 @@ class GitInstallService:
         ).scalar_one_or_none()
         return installation
 
-    async def add(self, create_installation: GitInstallResponse) -> GitInstall:
+    async def add(self, installation: GitInstallResponse) -> GitInstall:
         new_installation = GitInstall(
-            **create_installation.model_dump(exclude="id"),
-            git_id=create_installation.id,
+            **installation.model_dump(exclude="id"),
+            git_id=installation.id,
         )
         self.session.add(new_installation)
         await self.session.commit()

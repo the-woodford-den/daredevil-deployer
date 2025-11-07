@@ -1,32 +1,48 @@
 import { ResultAsync } from 'neverthrow';
-import {
-  type Repository,
-  type ApiError
+import { errorStore, reposStore } from '@/state';
+import type {
+  ErrorState,
+  Repository,
 } from '@/tipos';
 
+const errorHelper = {
+  setError: () => { Promise<void> },
+  unsetError: () => { Promise<void> },
+  isError: true,
+}
 
-export const getRepositories = (token: string): ResultAsync<Repository[], ApiError> => {
+
+export const getRepos = async (): Promise<ResultAsync<Repository[], ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const params = new URLSearchParams({
-    user_token: token
-  });
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/github/repos?${params}`)
+    fetch(`${backendUrl}/github/repos`)
       .then(async (response) => {
         if (!response.ok) {
           throw {
-            type: 'NETWORK_ERROR', message: 'Could not fetch Repositories.'
+            status: 404, detail: 'Could not fetch Repositories.'
           };
         }
         return (await response.json()) as Repository[];
       }
       ),
     (error) => {
-      if (error && typeof error === 'object' && 'type' in error) {
-        return error as ApiError;
+      const setError = errorStore((state) => state.setError);
+      const err = error as ErrorState;
+      setError(err);
+
+      if ('status' in err) {
+        return {
+          ...err,
+          ...errorHelper,
+        } as ErrorState
       }
-      return { type: 'UNKNOWN_ERROR', message: String(error) };
+
+      return {
+        status: 404,
+        detail: "Cannot Grab User Repos!",
+        ...errorHelper,
+      } as ErrorState
     }
   );
 };

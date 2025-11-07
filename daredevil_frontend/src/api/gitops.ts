@@ -1,59 +1,73 @@
 import { ResultAsync } from "neverthrow";
-import {
-  type ApiError,
-  type App,
-  type Installation,
-  type Token,
-  // type User,
+import { errorStore } from '@/state';
+import type {
+  App,
+  ErrorState,
+  Installation,
 } from "@/tipos";
 
+const errorHelper = {
+  setError: () => { Promise<void> },
+  unsetError: () => { Promise<void> },
+  isError: true,
+}
 
-export const findInstallation = (token: string, username: string): ResultAsync<Installation, ApiError> => {
+
+export const findInstallation = async (): Promise<ResultAsync<Installation, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const params = JSON.stringify({ username, token });
 
   return ResultAsync.fromPromise(
     fetch(`${backendUrl}/git/app/installation`, {
-      method: 'POST',
-      body: params,
+      credentials: 'include',
+      method: 'Get',
       headers: { 'Content-Type': 'application/json' }
     })
       .then(async (response) => {
         if (!response.ok) {
           throw {
-            type: 'NETWORK_ERROR', message: 'No Tokens....'
+            stauts: 404, detail: 'No GitApp Installation Found.'
           };
         }
 
         const installResponse = await response.json();
         const installation = installResponse as Installation;
 
-        console.log(installResponse);
         return installation;
       }),
     (error) => {
-      if (error && typeof error === 'object' && 'type' in error) {
-        return error as ApiError;
+      const setError = errorStore((state) => state.setError);
+      const err = error as ErrorState;
+      setError(err);
+
+      if ('status' in err) {
+        return {
+          ...err,
+          ...errorHelper,
+        } as ErrorState
       }
-      return { type: 'UNKNOWN_ERROR', message: String(error) };
+
+      return {
+        status: 404,
+        detail: "Cannot Grab User Installation!",
+        ...errorHelper,
+      } as ErrorState
     }
   );
 };
 
-export const findApp = (token: string, username: string): ResultAsync<App, ApiError> => {
+export const findApp = async (): Promise<ResultAsync<App, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const params = JSON.stringify({ username, token });
 
   return ResultAsync.fromPromise(
     fetch(`${backendUrl}/git/app`, {
-      method: 'POST',
-      body: params,
+      credentials: 'include',
+      method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     })
       .then(async (response) => {
         if (!response.ok) {
           throw {
-            type: 'NETWORK_ERROR', message: 'No Tokens....'
+            status: 422, detail: 'No GitApp Found.'
           };
         }
         const appResponse = await response.json();
@@ -63,41 +77,22 @@ export const findApp = (token: string, username: string): ResultAsync<App, ApiEr
         return gitApp;
       }),
     (error) => {
-      if (error && typeof error === 'object' && 'type' in error) {
-        return error as ApiError;
+      const setError = errorStore((state) => state.setError);
+      const err = error as ErrorState;
+      setError(err);
+
+      if ('status' in err) {
+        return {
+          ...err,
+          ...errorHelper,
+        } as ErrorState
       }
-      return { type: 'UNKNOWN_ERROR', message: String(error) };
-    }
-  );
-};
 
-export const createGitToken = (gitId: string): ResultAsync<Token, ApiError> => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const params = JSON.stringify({ installation_id: gitId });
-
-  return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/git/app/token`, {
-      method: 'POST',
-      body: params,
-      headers: { 'Content-Type': 'application/json' }
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          throw {
-            type: 'NETWORK_ERROR', message: 'No Token.....'
-          };
-        }
-        const tokenResponse = await response.json();
-        const tokenObject = tokenResponse as Token;
-
-        console.log(tokenResponse);
-        return tokenObject;
-      }),
-    (error) => {
-      if (error && typeof error == 'object' && 'type' in error) {
-        return error as ApiError;
-      }
-      return { type: 'UNKNOWN_ERROR', message: String(error) };
+      return {
+        status: 404,
+        detail: "Cannot Grab GitApp!",
+        ...errorHelper,
+      } as ErrorState
     }
   );
 };

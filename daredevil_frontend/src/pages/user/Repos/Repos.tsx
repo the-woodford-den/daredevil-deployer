@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
-import { getRepositories } from '@/api/repositories';
+import { reposStore } from '@/state';
 import { Alarm, Loading } from '@/components';
-import { type ApiError, type Repository } from '@/tipos';
+import type { Repository } from '@/tipos';
 import {
   Box,
   Flex,
@@ -12,34 +11,7 @@ import {
 } from '@chakra-ui/react';
 import './style.css';
 
-
-export function Repositories() {
-  const [data, setData] = useState<Repository[]>([]);
-  const [error, setError] = useState<ApiError | null>(null);
-  const [loading, setLoading] = useState<Boolean>(true);
-
-  useEffect(() => {
-    const token = import.meta.env.VITE_GITHUB_USER_TOKEN;
-
-    async function delay() {
-      await new Promise((resolve) =>
-        setTimeout(resolve, 3000),
-      );
-    }
-
-    if (token) {
-      const fetchRepos = async () => {
-        const result = await getRepositories(token);
-        result.match(
-          (repos) => setData(repos),
-          (err) => setError(err)
-        );
-        await delay();
-        setLoading(false);
-      };
-      fetchRepos();
-    }
-  }, []);
+export function Repos() {
 
   if (loading) {
     return (

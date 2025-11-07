@@ -16,15 +16,13 @@ class GitAppService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get(self, id: int) -> GitApp | None:
-        query = select(GitApp).where(GitApp.git_id == id)
+    async def get(self, git_id: int) -> GitApp | None:
+        query = select(GitApp).where(GitApp.git_id == git_id)
         app = (await self.session.execute(query)).scalar_one_or_none()
         return app
 
-    async def add(self, app_create: GitAppResponse) -> GitApp:
-        new_app = GitApp(
-            **app_create.model_dump(exclude="id"), git_id=app_create.id
-        )
+    async def add(self, data: GitAppResponse) -> GitApp:
+        new_app = GitApp(**data.model_dump(exclude="id"), git_id=data.id)
         self.session.add(new_app)
         await self.session.commit()
         await self.session.refresh(new_app)

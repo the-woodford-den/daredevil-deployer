@@ -3,7 +3,6 @@ from pathlib import Path
 
 import jwt
 import logfire
-from rich import inspect
 
 from .settings import get_settings
 

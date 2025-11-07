@@ -1,9 +1,10 @@
 from typing import Optional
 
-from pydantic import EmailStr
+from pydantic import AliasGenerator, ConfigDict, EmailStr
 from sqlmodel import Field, SQLModel
 
 from models import IDModel, TSModel
+from utility import serialize
 
 
 class UserCreate(SQLModel):
@@ -53,8 +54,16 @@ class UserUpdate(UserBase):
 
 class User(UserBase, IDModel, TSModel, table=True):
     __tablename__ = "users"
-    client_id: str = Field(default=None)
+    model_config = ConfigDict(
+        alias_generator=AliasGenerator(
+            serialization_alias=lambda field_name: (serialize(field_name))
+        )
+    )
+    client_id: str = Field()
     email: EmailStr = Field()
-    git_id: Optional[int] = Field()
+    git_id: int = Field()
     password_hash: str = Field()
     username: str = Field(index=True)
+
+
+#

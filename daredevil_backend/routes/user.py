@@ -5,11 +5,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.response import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
+from configs import get_settings
 from dependency import SessionDependency, get_daredevil_token
 from models.user import User, UserCreate
 from services import UserService
-from utility import decode_user_token
 
+settings = get_settings()
 api = APIRouter(prefix="/user")
 
 
@@ -32,22 +33,17 @@ async def login_user(
     session: SessionDependency,
 ) -> dict:
     """Validates username & password, creates a jwt, adds jwt to cookie,
-    then returns jwt plus user id, clientId, username"""
+    then returns jwt plus user id, clientId, install_id"""
 
     try:
         user_service = UserService(session=session)
         token = await user_service.token(form.username, form.password)
-        content = {
-            "token": token["token"],
-            "username": token["user"].username,
-            "id": token["user"].id,
-            "clientId": token["user"].client_id,
-        }
 
-        response = JSONResponse(content=content)
+        response = JSONResponse(content=token)
         response.set_cookie(
             httponly=True,
             domain=settings.domain,
+            path="/user/login",
             key="daredevil_token",
             value=token["token"],
         )
@@ -58,7 +54,7 @@ async def login_user(
         logfire.error(f"HTTP Error {e.status}: {e.message}")
 
 
-@api.post("/logout")
+@api.delete("/logout")
 async def logout_user(
     *,
     session: SessionDependency,
@@ -67,7 +63,7 @@ async def logout_user(
     """Decodes token and user logouts."""
 
     try:
-        user = await session.get(User, token["user"]["id"])
+        user = await session.get(User, token["user_id"])
         content = {
             "status": 200,
             "detail": f"{user.username} is offline.",

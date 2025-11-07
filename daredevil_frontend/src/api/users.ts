@@ -12,7 +12,7 @@ const errorHelper = {
   isError: true,
 }
 
-export const createUser = (password: string, username: string): ResultAsync<User, ErrorState> => {
+export const createUser = async (password: string, username: string): Promise<ResultAsync<User, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const params = JSON.stringify({
     username: username,

@@ -1,6 +1,6 @@
+import { Outlet } from 'react-router-dom';
 import { Container } from '@chakra-ui/react';
 import { Header, Footer, Main } from '@/components/nav';
-import { Cloud } from '@/pages/cloud';
 import './style.css';
 
 export default function App() {
@@ -8,7 +8,7 @@ export default function App() {
     <Container className="layout-container">
       <Header />
       <Main>
-        <Cloud />
+        <Outlet />
       </Main>
       <Footer />
     </Container>

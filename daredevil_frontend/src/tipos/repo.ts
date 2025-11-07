@@ -1,11 +1,31 @@
+
 export interface Repository {
-  fullName: string;
-  private: boolean;
-  description: string;
-  url: string;
-  language: string;
+  branchesUrl: string;
   defaultBranch: string;
-  visibility: string;
+  description: string;
+  eventsUrl: string;
+  fullName: string;
+  gitId: string;
+  gitUrl: string;
+  homepage: string;
+  hooksUrl: string;
+  htmlUrl: string;
+  language: string;
+  name: string;
+  notificationsUrl: string;
+  private: boolean;
   pushedAt: string;
+  size: number;
+  sshUrl: string;
+  subscribersCount: number;
+  url: string;
+  visibility: string;
+  watchersCount: number;
+};
+
+export interface ReposState {
+  repos: Set<Repository>;
+  handleGetRepos: () => Promise<void>;
+  hasError: boolean;
 };
 

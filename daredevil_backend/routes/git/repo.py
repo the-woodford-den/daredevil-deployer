@@ -2,67 +2,61 @@ from typing import Annotated, List
 
 import logfire
 from fastapi import APIRouter, Depends, HTTPException
-from httpx import AsyncClient
+from httpx import AsyncClient, HTTPStatusError
 from rich import inspect
 from sqlmodel import select
 
-from dependency import SessionDependency
+from configs import GithubLibrary
+from dependency import SessionDependency, get_daredevil_token
+from models import User
 from models.git import Repository, RepositoryResponse
-from security import user_auth
+from services import GitRepoService
 
 api = APIRouter(prefix="/git/repo")
 
 
-@api.get("/all", response_model=List[RepositoryResponse])
-async def get_all_repositories(
+@api.get("/all", response_model=[Repository])
+async def get_repos(
     *,
     session: SessionDependency,
-    token: Annotated[str, Depends(user_auth)],
+    token: Annotated[str, Depends(get_daredevil_token)],
 ):
-    """Searches the Github Api and returns the Github App's associated Repositories."""
-    """This includes the organization and other users who installed the App."""
+    """Searches the Github Api and returns the Github App's associated Repositories.
+    This includes the organization and other users who installed the App."""
+    user = await session.get(User, token["user"]["id"])
+    gh_lib = GithubLibrary(session)
+    jwt = gh_lib.create_jwt(client_id=user.client_id)
 
     endpoint = "https://api.github.com/user/repos"
     header = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
-        "Authorization": f"Bearer {token}",
+        "Authorization": f"Bearer {jwt}",
     }
 
     with logfire.span("Searching Github App's list of repositories ..."):
         try:
-            async with AsyncClient(timeout=60) as viper:
-                response = await viper.get(headers=header, url=endpoint)
-                repository_list = response.json()
-                inspect(repository_list)
-                responses = []
+            repo_list = []
+            repo_service = GitRepoService(session)
+            async with AsyncClient() as viper:
+                response = await viper.get(url=endpoint, headers=header)
+                response.raise_for_status()
+                data = response.json()
                 logfire.info("Iterating through repositories ...")
-                for repo in repository_list:
-                    inspect(repo)
-                    repository_dict = repo.json()
-                    repo_obj = RepositoryResponse.model_validate(
-                        repository_dict
-                    )
-                    responses.append(repo_obj)
 
-                    statement = select(Repository).where(
-                        Repository.github_repository_id == repo_obj.id
-                    )
-                    result = (await session.execute(statement)).first()
+                for repo in data:
+                    repo_in_db = await session.get(
+                        Repository, repo["id"]
+                    ).scalar_one_or_none()
+                    if not repo_in_db:
+                        repo_in_db = await repo_service.add(repo)
+                    repo_list.append(repo_in_db)
 
-                    if result:
-                        repo_id = repo_obj.id
-                        repository_obj = RepositoryResponse.model_dump(repo_obj)
-                        del repository_obj["id"]
-                        repository_obj["github_repository_id"] = repo_id
-                        repository = Repository.model_validate(repository_obj)
+            return repo_list
 
-                        session.add(repository)
-                        await session.commit()
-                        await session.refresh(repository)
-
-            return responses
-
-        except HTTPException as e:
-            logfire.error("Error Message {msg=}", msg=e)
-            raise HTTPException(status_code=e.status_code, detail=e.detail)
+        except HTTPStatusError as e:
+            logfire.error(f"Internal Error: {e}")
+            raise HTTPException(
+                status=e.status_code,
+                detail="Incorrect Request.",
+            )

@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 
-import jwt
 import logfire
 from fastapi import HTTPException, status
 from passlib.context import CryptContext
@@ -9,7 +8,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from configs import get_settings
 from models.user import User, UserCreate, UserUpdate
-from utility import decode_user_token, encode_user_token
+from utility import encode_user_token
 
 settings = get_settings()
 password_context = CryptContext(schemes=[settings.cc_alg], deprecated="auto")
@@ -67,18 +66,18 @@ class UserService:
                 message=f"User '{username}' not found.",
                 status_code=status.HTTP_404_NOT_FOUND,
             )
+
         if not password_correct:
             raise HTTPException(
                 message="Password is incorrect.",
                 status_code=status.HTTP_401_UNAUTHORIZED,
             )
-        token = encode_user_token(
-            data={
-                "user": {
-                    "username": user.username,
-                    "id": user.id,
-                }
-            }
-        )
 
-        return {"token": token, "user": user}
+        content = {
+            "client_id": user.client_id,
+            "expires_at": datetime.now() + timedelta(days=1),
+            "user_id": user.id,
+            "username": username,
+        }
+        token = encode_user_token(data={**content})
+        return {**content, "token": token}
