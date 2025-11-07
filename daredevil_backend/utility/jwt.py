@@ -27,6 +27,6 @@ def encode_user_token(
         key=settings.app_secret,
         payload={
             **data,
-            "exp": datetime.now() + expires,
+            "expiresAt": datetime.now() + expires,
         },
     )

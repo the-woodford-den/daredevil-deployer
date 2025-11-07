@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import jwt
+import logfire
 from fastapi import HTTPException, status
 from passlib.context import CryptContext
 from sqlmodel import select
@@ -54,8 +55,8 @@ class UserService:
     def delete(self, id: int) -> None:
         pass
 
-    async def login(self, username, password) -> str:
-        user = await self.session.get_by_username(UserService, username)
+    async def token(self, username, password) -> dict:
+        user = await self.session.get_by_username(username)
         password_correct = password_context.verify(
             password,
             user.password_hash,
@@ -71,7 +72,6 @@ class UserService:
                 message="Password is incorrect.",
                 status_code=status.HTTP_401_UNAUTHORIZED,
             )
-
         token = encode_user_token(
             data={
                 "user": {
@@ -81,4 +81,4 @@ class UserService:
             }
         )
 
-        return token
+        return {"token": token, "user": user}

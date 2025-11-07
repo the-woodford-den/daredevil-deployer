@@ -1,20 +1,22 @@
 // Github Response Types 
-import { type UUID } from './utility';
+import type { UUID } from './utility';
 
 export interface App {
   id: UUID;
+  clientId: string;
+  description: string;
+  events: string[];
   gitId: string;
   name: string;
-  description: string;
+  permissions: {};
   createdAt: string;
   updatedAt: string;
-  permissions: {};
-  events: string[];
 }
 
 export interface Installation {
   id: UUID;
   appSlug: string;
+  clientId: string;
   gitId: number;
   gitAppId: number;
   username: string;

@@ -8,13 +8,12 @@ from rich import inspect, print
 from sqlmodel import select
 
 from configs import GithubLibrary
-from dependency import SessionDependency
+from dependency import SessionDependency, get_daredevil_token
+from models import User
 from models.git import (CreateGitAppToken, GitApp, GitAppResponse, GitAppToken,
                         GitInstall, GitInstallResponse)
-from security import user_auth
 from services import UserService
 from services.git import GitAppService, GitInstallService
-from utility import decode_user_token
 
 api = APIRouter(prefix="/git/app")
 
@@ -27,20 +26,12 @@ api = APIRouter(prefix="/git/app")
 async def get_app(
     *,
     session: SessionDependency,
-    token: Annotated[str, Depends(user_auth)],
+    token: Annotated[str, Depends(get_daredevil_token)],
 ):
     """This GET request searches Github Api for a Github App with a token.
     In addition to returning App, it returns installations_count with the App"""
 
-    auth = decode_user_token(token)
-    if auth is None:
-        raise HTTPException(
-            status=status.HTTP_401_UNAUTHORIZED,
-            message="Incorrect user token.",
-        )
-
-    user_service = UserService(session=session)
-    user = await user_service.get_by_username(auth["user"]["username"])
+    user = await session.get(token["user"]["id"])
 
     github_library = GithubLibrary()
     jwt = github_library.create_jwt(client_id=user.client_id)
@@ -85,22 +76,13 @@ async def get_app(
 async def get_installation(
     *,
     session: SessionDependency,
-    token: Annotated[str, Depends(user_auth)],
+    token: Annotated[str, Depends(get_daredevil_token)],
 ):
     """This GET request searches Github Api for Github App Installations.
     Searches by username, token required
     Only returns if username matches an installation."""
 
-    auth = decode_user_token(token)
-    if auth is None:
-        raise HTTPException(
-            status=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect user token.",
-        )
-
-    user_service = UserService(session=session)
-    user = await user_service.get_by_username(auth["user"]["username"])
-
+    user = await session.get(User, token["user"]["id"])
     github_library = GithubLibrary()
     jwt = github_library.create_jwt(client_id=user.client_id)
 
@@ -154,22 +136,15 @@ async def create_token(
     *,
     params: CreateGitAppToken,
     session: SessionDependency,
-    token: Annotated[str, Depends(user_auth)],
 ):
     """This POST request creates an access token on behalf of the Github App
     Searches db by user installation id.
     Only returns if username matches an installation.
     Access token expires in 1 hour."""
 
-    auth = decode_user_token(token)
-    if auth is None:
-        raise HTTPException(
-            status=status.HTTP_401_UNAUTHORIZED,
-            message="Incorrect user token.",
-        )
-
+    username = params.get("username")
     user_service = UserService(session=session)
-    user = await user_service.get_by_username(auth["user"]["username"])
+    user = await user_service.get_by_username(username)
 
     statement = select(GitInstall).where(GitInstall.login == user.username)
     git_app_install = (await session.execute(statement)).scalar_one_or_none()

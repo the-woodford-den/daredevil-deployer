@@ -1,3 +1,3 @@
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import APIKeyCookie
 
-user_auth = OAuth2PasswordBearer(tokenUrl="/user/login")
+daredevil_user_cookie = APIKeyCookie(name="daredevil_token")

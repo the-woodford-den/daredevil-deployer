@@ -1,3 +1,3 @@
-from .authenticate import user_auth
+from .authenticate import daredevil_user_cookie
 
-__all__ = ["user_auth"]
+__all__ = ["daredevil_user_cookie"]

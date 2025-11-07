@@ -1,11 +1,12 @@
-import { signIn } from '@/api/auth/user';
 import { create } from 'zustand';
+import { signIn, signOut } from '@/api';
 import type { ErrorState, Token, UserState } from '@/tipos';
 
 type Action = {
   updateUsername: (username: UserState['username']) => void;
   updatePermissions: (permissions: UserState['permissions']) => void;
   handleSignIn: (password: string, username: string) => Promise<void>;
+  handleSignOut: () => Promise<void>;
 }
 
 export const userStore = create<UserState & Action>(
@@ -20,7 +21,11 @@ export const userStore = create<UserState & Action>(
       password: string,
       username: string,
     ) => {
-      set({ loading: true });
+      set({
+        hasError: false,
+        loading: true,
+        username: username,
+      });
       const result = await signIn(password, username);
       result.match(
         (token: Token) => set({ username: token.username }),
@@ -28,7 +33,7 @@ export const userStore = create<UserState & Action>(
       );
     },
     handleSignOut: async () => {
-      // await signOut();
+      await signOut();
       set({
         username: undefined,
         permissions: undefined,

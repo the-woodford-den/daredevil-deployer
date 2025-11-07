@@ -2,11 +2,13 @@ from typing import Annotated
 
 import logfire
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.response import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
-from dependency import SessionDependency
-from models.user import User, UserCreate, UserLogin
+from dependency import SessionDependency, get_daredevil_token
+from models.user import User, UserCreate
 from services import UserService
+from utility import decode_user_token
 
 api = APIRouter(prefix="/user")
 
@@ -23,19 +25,60 @@ async def create_user(
     return await user_service.add(create_user)
 
 
-@api.post("/login", response_model=UserLogin)
+@api.post("/login")
 async def login_user(
     *,
     form: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: SessionDependency,
-):
-    """Validates username & password, then returns a jwt token"""
+) -> dict:
+    """Validates username & password, creates a jwt, adds jwt to cookie,
+    then returns jwt plus user id, clientId, username"""
 
     try:
         user_service = UserService(session=session)
-        token = await user_service(form.username, form.password)
+        token = await user_service.token(form.username, form.password)
+        content = {
+            "token": token["token"],
+            "username": token["user"].username,
+            "id": token["user"].id,
+            "clientId": token["user"].client_id,
+        }
 
-        return {"access_token": token, "type": "jwt"}
+        response = JSONResponse(content=content)
+        response.set_cookie(
+            httponly=True,
+            domain=settings.domain,
+            key="daredevil_token",
+            value=token["token"],
+        )
+
+        return response
 
     except HTTPException as e:
         logfire.error(f"HTTP Error {e.status}: {e.message}")
+
+
+@api.post("/logout")
+async def logout_user(
+    *,
+    session: SessionDependency,
+    token: Annotated[str, Depends(get_daredevil_token)],
+):
+    """Decodes token and user logouts."""
+
+    try:
+        user = await session.get(User, token["user"]["id"])
+        content = {
+            "status": 200,
+            "detail": f"{user.username} is offline.",
+            "user_id": f"{user.id}",
+        }
+
+        response = JSONResponse(content=content)
+        response.delete_cookie(key="daredevil_token")
+
+        return response
+
+    except Exception:
+        logfire.error("Logging out error!")
+        return {"status": 404, "detail": "Error while logging out!"}

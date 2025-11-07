@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     db_port: str = Field()
     db_url: str = Field()
     db_user: str = Field()
+    domain: str = Field()
     env: str = Field(default="test")
     gha_client_id: str = Field()
     gha_secret: str = Field()

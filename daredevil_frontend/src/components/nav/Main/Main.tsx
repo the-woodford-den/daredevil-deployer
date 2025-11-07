@@ -1,4 +1,5 @@
 import { type ReactNode, useRef } from 'react';
+import { useNavigate } from 'react-router';
 import { Flex, Grid, GridItem, Heading, Image, Text } from '@chakra-ui/react';
 import { Alarm, LoginForm } from '@/components';
 import { errorStore } from '@/state/errorStore';
@@ -37,13 +38,15 @@ export function Main({
     data: FormData,
   ) => {
 
+    const navigate = useNavigate()
     const name = data.get("username") as string;
     const pword = data.get("password") as string;
 
     const result = await signIn(pword, name);
+    ref.current?.reset();
 
     console.log(result);
-    ref.current?.reset();
+    navigate('/cloud');
   };
 
   return (

@@ -53,7 +53,8 @@ class UserUpdate(UserBase):
 
 class User(UserBase, IDModel, TSModel, table=True):
     __tablename__ = "users"
+    client_id: str = Field(default=None)
     email: EmailStr = Field()
+    git_id: Optional[int] = Field()
     password_hash: str = Field()
     username: str = Field(index=True)
-    client_id: str = Field(default=None)
