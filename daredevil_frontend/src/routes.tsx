@@ -1,64 +1,64 @@
 import type { RouteConfig } from "@react-router/dev/routes";
-import App from './App';
-import { Error404 } from '@/pages/error';
-import { Cloud, Console, Repos } from '@/pages/cloud';
-import { Login, Register } from '@/pages/user';
+import { About, Catch, Cloud, Layout, Lobby, User } from '@/routes';
+import { Console, Repos } from '@/routes/Cloud';
+import { Login, Register } from '@/routes/Lobby';
+import { Profile } from '@/routes/User';
 
 
 export default [
   {
     path: "/",
-    lazy: () => import("./routes/layout").then(convert),
+    file: "./routes/Layout",
     Component: Layout,
     children: [
       {
         index: true,
-        lazy: () => import("./routes/lobby").then(convert),
+        file: "./routes/Lobby",
         Component: Lobby,
         children: [
           {
             path: "login",
-            lazy: () => import("./routes/login").then(convert),
+            file: "./routes/Login",
             Component: Login,
           },
           {
             path: "register",
-            lazy: () => import("./routes/register").then(convert),
+            file: "./routes/Register",
             Component: Register,
           },
         ],
       },
       {
         path: "about",
-        lazy: () => import("./routes/about").then(convert),
+        file: "./routes/About",
         loader: aboutLoader,
         Component: About,
       },
       {
         path: "user",
-        lazy: () => import("./routes/user").then(convert),
+        file: "./routes/User",
         Component: User,
         children: [
           {
             path: ":username",
-            lazy: () => import("./routes/user/profile").then(convert),
+            file: "./routes/User/Profile",
             Component: Profile,
           },
         ],
       },
       {
         path: 'cloud',
-        lazy: () => import("./routes/cloud").then(convert),
+        file: "./routes/Cloud",
         Component: Cloud,
         children: [
           {
             path: 'console',
-            lazy: () => import("./routes/cloud/console").then(convert),
+            file: "./routes/cloud/Console",
             Component: Console,
           },
           {
             path: 'repos',
-            lazy: () => import("./routes/cloud/repos").then(convert),
+            file: "./routes/cloud/Repos",
             Component: Repos,
           },
         ],
@@ -67,8 +67,8 @@ export default [
   },
   {
     path: '*',
-    lazy: () => import("./routes/error").then(convert),
-    Component: Error404,
+    file: "./routes/Catch",
+    Component: Catch,
   },
 ] satisfies RouteConfig;
 
