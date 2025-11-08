@@ -1,5 +1,4 @@
 import { ResultAsync } from "neverthrow";
-import { errorStore } from '@/state';
 import type {
   ErrorState,
   Token,
@@ -47,9 +46,7 @@ export const signIn = async (username: string, password: string): Promise<Result
     }
     ),
     (error) => {
-      const setError = errorStore((state) => state.setError);
       const err = error as ErrorState;
-      setError(err);
 
       if ('status' in err) {
         return {
@@ -59,8 +56,8 @@ export const signIn = async (username: string, password: string): Promise<Result
       }
 
       return {
-        status: 404,
-        detail: "Cannot Create User Error!",
+        status: 401,
+        detail: "Authentication Error!",
         ...errorHelper,
       } as ErrorState
     }
@@ -90,9 +87,7 @@ export const signOut = async (): Promise<ResultAsync<void, ErrorState>> => {
     }
     ),
     (error) => {
-      const setError = errorStore((state) => state.setError);
       const err = error as ErrorState;
-      setError(err);
 
       if ('status' in err) {
         return {
@@ -102,8 +97,8 @@ export const signOut = async (): Promise<ResultAsync<void, ErrorState>> => {
       }
 
       return {
-        status: 404,
-        detail: "Cannot Create User Error!",
+        status: 500,
+        detail: "Logout Error!",
         ...errorHelper,
       } as ErrorState
     }

@@ -1,5 +1,4 @@
 import { ResultAsync } from 'neverthrow';
-import { errorStore, reposStore } from '@/state';
 import type {
   ErrorState,
   Repository,
@@ -33,9 +32,7 @@ export const getRepos = async (): Promise<ResultAsync<Repository[], ErrorState>>
     }
     ),
     (error) => {
-      const setError = errorStore((state) => state.setError);
       const err = error as ErrorState;
-      setError(err);
 
       if ('status' in err) {
         return {

@@ -1,45 +1,30 @@
-import { type ReactNode, useRef } from 'react';
-import { Flex, Grid, GridItem, Heading, Image, Text } from '@chakra-ui/react';
-import { Alarm, LoginForm } from '@/components';
+import { Flex, Separator } from '@chakra-ui/react';
+import { Alarm } from '@/components/Alarm';
 import { errorStore } from '@/state/errorStore';
 import { userStore } from '@/state/userStore';
 
 
-const ref = useRef<HTMLFormElement>(null);
-
-
-export function Main() {
-  // const loading = userStore(
-  //   (state) => state.loading,
-  // );
-  // const username = userStore(
-  //   (state) => state.username,
-  // );
+export function Main({ children }: { children?: React.ReactNode }) {
   const hasError = userStore(
     (state) => state.hasError
   );
-  // const signIn = userStore(
-  //   (state) => state.handleSignIn,
-  // );
-  // const signOut = userStore(
-  //   (state) => state.handleSignOut,
-  // );
-  const error = errorStore(
-    (state) => state
-  );
 
+  const errorStatus = errorStore((state) => state.status);
+  const errorDetail = errorStore((state) => state.detail);
 
   return (
     <Flex justify="center" p="3">
       {hasError ? (
         <Alarm
           status="error"
-          title={`${error.status} Error Status`}
+          title={`${errorStatus} Error Status`}
           width="60%"
-        >{error.detail}</Alarm>
-      ) : (
-        <></>
-      )}
+        >{errorDetail}</Alarm>
+      ) : (<></>)
+      }
+      <Separator />
+      <Separator margin={18} />
+      {children}
     </Flex>
   );
 };

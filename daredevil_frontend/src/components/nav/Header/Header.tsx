@@ -1,11 +1,9 @@
-import { useRef } from 'react';
 import { userStore } from '@/state/userStore';
 import { Link } from 'react-router-dom';
 import { Breadcrumb, Flex, Text } from '@chakra-ui/react';
 import './style.css';
 
 export function Header() {
-  const ref = useRef<HTMLElement>(null);
 
   const username = userStore(
     (state) => state.username,
@@ -24,7 +22,6 @@ export function Header() {
     const result = signOut();
 
     console.log(result);
-    ref.current?.reset();
   };
 
   return (

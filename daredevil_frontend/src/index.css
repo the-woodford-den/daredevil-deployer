@@ -18,11 +18,20 @@
 html {
   background-color: var(--blue);
   color: var(--green);
+  color-scheme: dark;
   height: 100%;
   margin: 0;
   overflow-x: hidden;
   overflow-y: hidden;
   padding: 0;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.light {
+  color-scheme: light;
 }
 
 body {

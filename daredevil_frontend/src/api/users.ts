@@ -1,5 +1,4 @@
 import { ResultAsync } from "neverthrow";
-import { errorStore } from '@/state';
 import type {
   ErrorState,
   User,
@@ -12,11 +11,16 @@ const errorHelper = {
   isError: true,
 }
 
-export const createUser = async (password: string, username: string): Promise<ResultAsync<User, ErrorState>> => {
+export const createUser = async (
+  password: string,
+  email: string,
+  username: string
+): Promise<ResultAsync<User, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const params = JSON.stringify({
     username: username,
-    password: password
+    password: password,
+    email: email
   });
 
   return ResultAsync.fromPromise(
@@ -27,7 +31,9 @@ export const createUser = async (password: string, username: string): Promise<Re
     }).then(async (response) => {
       if (!response.ok) {
         throw {
-          status: 404, detail: 'User not created!', isError: true,
+          status: response.status,
+          detail: 'User not created!',
+          isError: true,
         };
       }
       const userResponse = await response.json();
@@ -37,13 +43,9 @@ export const createUser = async (password: string, username: string): Promise<Re
     }
     ),
     (error) => {
-      const setError = errorStore(
-        (state) => state.setError
-      );
       const err = error as ErrorState;
 
       if ('status' in err) {
-        setError(err);
         return {
           ...err,
           ...errorHelper,
@@ -53,7 +55,7 @@ export const createUser = async (password: string, username: string): Promise<Re
 
       return {
         ...errorHelper,
-        status: 404,
+        status: 500,
         detail: "Cannot Create User Error!",
       } as ErrorState
     }

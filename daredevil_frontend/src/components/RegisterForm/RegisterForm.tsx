@@ -1,30 +1,33 @@
-import { Button, Field, Input, Stack } from '@chakra-ui/react';
+import { Button, Field, Input, VStack } from '@chakra-ui/react';
 
 export function RegisterForm() {
   return (
-    <Stack gap="8">
-      <Field.Root orientation="vertical" required>
+    <VStack maxW="100%">
+      <Field.Root orientation="horizontal" required>
         <Field.Label>
           github username
           <Field.RequiredIndicator />
         </Field.Label>
         <Input name="username" />
-        <Field.HelperText />
-        <Field.ErrorText />
       </Field.Root>
-      <Field.Root orientation="vertical" required>
+      <Field.Root orientation="horizontal" required>
+        <Field.Label>
+          email
+          <Field.RequiredIndicator />
+        </Field.Label>
+        <Input name="email" type="email" />
+      </Field.Root>
+      <Field.Root orientation="horizontal" required>
         <Field.Label>
           daredevil password
           <Field.RequiredIndicator />
         </Field.Label>
-        <Input name="password" />
-        <Field.HelperText />
-        <Field.ErrorText />
+        <Input name="password" type="password" />
       </Field.Root>
       <Button type="submit" alignSelf="flex-end">
         Register
       </Button>
-    </Stack>
+    </VStack>
   );
-};
+}
 

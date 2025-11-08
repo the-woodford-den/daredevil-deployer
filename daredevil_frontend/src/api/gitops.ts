@@ -1,5 +1,4 @@
 import { ResultAsync } from "neverthrow";
-import { errorStore } from '@/state';
 import type {
   App,
   ErrorState,
@@ -35,9 +34,7 @@ export const findInstallation = async (): Promise<ResultAsync<Installation, Erro
         return installation;
       }),
     (error) => {
-      const setError = errorStore((state) => state.setError);
       const err = error as ErrorState;
-      setError(err);
 
       if ('status' in err) {
         return {
@@ -77,9 +74,7 @@ export const findApp = async (): Promise<ResultAsync<App, ErrorState>> => {
         return gitApp;
       }),
     (error) => {
-      const setError = errorStore((state) => state.setError);
       const err = error as ErrorState;
-      setError(err);
 
       if ('status' in err) {
         return {

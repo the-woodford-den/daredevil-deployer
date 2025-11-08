@@ -1,5 +1,6 @@
 import type { UUID } from './utility';
 
+
 export interface Token {
   expiresAt: string;
   token: string;
@@ -24,6 +25,10 @@ export type UserState = {
     username: string,
     password: string,
   ) => Promise<void>;
-  handleSignOut: () => Promise<void>;
+  createUser: (
+    username: string,
+    email: string,
+    password: string,
+  ) => Promise<void>;
   togglePermissions: () => void;
 }

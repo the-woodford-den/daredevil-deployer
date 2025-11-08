@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { signIn, signOut } from '@/api';
+import { signIn, signOut, createUser } from '@/api';
 import type { ErrorState, Token, UserState } from '@/tipos';
 
 type Action = {
@@ -7,13 +7,14 @@ type Action = {
   updatePermissions: (permissions: UserState['permissions']) => void;
   handleSignIn: (password: string, username: string) => Promise<void>;
   handleSignOut: () => Promise<void>;
+  createUser: (password: string, email: string, username: string) => Promise<void>;
 }
 
 export const userStore = create<UserState & Action>(
   (set) => ({
-    hasError: undefined,
-    username: undefined,
-    permissions: undefined,
+    hasError: false,
+    username: "ss",
+    permissions: ['admin'],
     loading: false,
     updateUsername: (username) => set(() => ({ username: username })),
     updatePermissions: (permissions) => set(() => ({ permissions: permissions })),
@@ -32,13 +33,27 @@ export const userStore = create<UserState & Action>(
         (err: ErrorState) => set({ hasError: err.isError }),
       );
     },
+    createUser: async (
+      password: string,
+      email: string,
+      username: string,
+    ) => {
+      const result = await createUser(password, email, username);
+      result.match(
+        (token) => set({ username: token.username }),
+        (err) => set({ hasError: err.isError }),
+      );
+    },
     handleSignOut: async () => {
-      await signOut();
       set({
-        username: undefined,
-        permissions: undefined,
-        loading: false,
+        hasError: false,
+        loading: true,
       });
+      const result = await signOut();
+      result.match(
+        () => set({ username: undefined, permissions: [], loading: false }),
+        (err: ErrorState) => set({ hasError: err.isError, loading: false }),
+      );
     },
     togglePermissions: () =>
       set((state) =>

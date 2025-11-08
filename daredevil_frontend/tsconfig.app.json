@@ -17,8 +17,8 @@
       "@/tipos/*": [
         "./src/tipos/*"
       ],
-      "@/pages/*": [
-        "./src/pages/*"
+      "@/routes/*": [
+        "./src/routes/*"
       ],
       "@/state/*": [
         "./src/state/*"

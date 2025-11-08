@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
 
 import logfire
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 from fastapi import HTTPException, status
-from passlib.context import CryptContext
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -11,7 +12,7 @@ from models.user import User, UserCreate, UserUpdate
 from utility import encode_user_token
 
 settings = get_settings()
-password_context = CryptContext(schemes=[settings.cc_alg], deprecated="auto")
+ph = PasswordHasher()
 
 
 class UserService:
@@ -38,10 +39,13 @@ class UserService:
         return user
 
     async def add(self, user_create: UserCreate) -> User:
+        # Hash password using Argon2
+        password_hash = ph.hash(user_create.password)
+
         new_user = User(
             **user_create.model_dump(exclude=["password", "id"]),
             client_id=settings.client_id,
-            password_hash=password_context.hash(user_create.password),
+            password_hash=password_hash,
         )
         self.session.add(new_user)
         await self.session.commit()
@@ -55,17 +59,20 @@ class UserService:
         pass
 
     async def token(self, username, password) -> dict:
-        user = await self.session.get_by_username(username)
-        password_correct = password_context.verify(
-            password,
-            user.password_hash,
-        )
+        user = await self.get_by_username(username)
 
         if user is None:
             raise HTTPException(
                 message=f"User '{username}' not found.",
                 status_code=status.HTTP_404_NOT_FOUND,
             )
+
+        # Verify password using Argon2
+        try:
+            ph.verify(user.password_hash, password)
+            password_correct = True
+        except VerifyMismatchError:
+            password_correct = False
 
         if not password_correct:
             raise HTTPException(
