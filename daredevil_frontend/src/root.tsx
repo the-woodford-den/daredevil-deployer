@@ -9,7 +9,7 @@ import {
 } from 'react-router';
 import './index.css';
 
-export function Layout({
+export function App({
   children,
 }: {
   children: React.ReactNode;

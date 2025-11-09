@@ -3,8 +3,10 @@ import type { Config } from "@react-router/dev/config";
 export default {
   appDirectory: "./src",
   buildDirectory: "build",
-  ssr: false,
-  prerender: ["/", "/about", "/login", "/register"],
+  future: {
+    v8_middleware: true,
+  },
+  ssr: true,
+  prerender: ["/", "/login", "/register"],
 } satisfies Config;
-
 

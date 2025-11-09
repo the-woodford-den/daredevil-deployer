@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react";
 import { ResultAsync } from "neverthrow";
 import type {
   ErrorState,
@@ -27,7 +28,8 @@ export const createUser = async (
     fetch(`${backendUrl}/user/create`, {
       method: 'POST',
       body: params,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'
     }).then(async (response) => {
       if (!response.ok) {
         throw {
@@ -58,6 +60,58 @@ export const createUser = async (
         status: 500,
         detail: "Cannot Create User Error!",
       } as ErrorState
+    }
+  );
+};
+
+
+export const getCurrentUser = async (cookieHeader?: string): Promise<ResultAsync<User, ErrorState>> => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  // If cookieHeader is provided (SSR), use it; otherwise browser will send cookies automatically
+  if (cookieHeader) {
+    headers['Cookie'] = cookieHeader;
+  }
+
+  return ResultAsync.fromPromise(
+    fetch(`${backendUrl}/user/me`, {
+      method: 'GET',
+      headers,
+      credentials: 'include',
+    }).then(async (response) => {
+      if (!response.ok) {
+        throw {
+          status: response.status,
+          detail: 'Failed to verify user session!',
+          isError: true,
+        };
+      }
+      Sentry.logger.info("User session verified from token", { log_source: 'src/api/users' });
+      const userResponse = await response.json();
+      const user = userResponse as User;
+
+      return user;
+    }),
+    (error) => {
+      Sentry.logger.error(`Error verifying user session: ${error}`, { log_source: 'src/api/users' });
+      const err = error as ErrorState;
+
+      if ('status' in err) {
+        return {
+          ...err,
+          ...errorHelper,
+        } as ErrorState;
+      }
+
+      return {
+        ...errorHelper,
+        status: 401,
+        detail: "Authentication Error!",
+      } as ErrorState;
     }
   );
 };

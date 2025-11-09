@@ -1,41 +1,31 @@
-import { Image, Grid, GridItem, Text, Stack, Heading, Highlight, } from '@chakra-ui/react';
+import { Image, Grid, GridItem, Text } from '@chakra-ui/react';
 import { RegisterForm } from '@/components';
 import { userStore } from '@/state';
 import rubyUrl from '~/ruby.svg';
-import devilUrl from '~/ddevil-pixel.png';
-import underUrl from '~/underline.svg';
-import type { FormEvent } from 'react';
+import { Form, redirect } from 'react-router';
+import type { Route } from './+types/_lobby.register';
 
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
+  const username = formData.get("username") as string;
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  const createUser = userStore.getState().createUser;
+  await createUser(password, email, username);
+
+  return redirect('/cloud');
+}
 
 export default function Register() {
-
-  const createUser = userStore(
-    (state) => state.createUser,
-  );
-
-  const handleCreateUser = async (
-    event: FormEvent<HTMLFormElement>,
-  ) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("username") as string;
-    const email = formData.get("email") as string;
-    const pword = formData.get("password") as string;
-
-    const res = await createUser(pword, email, name);
-    console.log(res);
-  };
-
   return (
     <Grid
       templateColumns="repeat(4,1fr)"
-      width="vw"
-      height="vh"
+      width="100%"
       gap="10"
-      alignItems="center"
-      justifyItems="center"
+      mt="6"
     >
-      <GridItem colSpan={3}>
+      <GridItem alignItems="end" colSpan={4}>
         <Image
           src={rubyUrl}
           alt="Ruby"
@@ -45,60 +35,20 @@ export default function Register() {
         />
       </GridItem>
       <GridItem
-        colSpan={3}
-        alignItems="center"
-        justifyItems="center"
+        alignItems="left"
+        colSpan={4}
       >
         <Text>
           The Woodford Den: Daredevil Deployer Registration
         </Text>
       </GridItem>
-      <GridItem colSpan={3} alignItems="center" justifyItems="center">
-        <Heading size="xl" mb="5" className="t-font">
-          Cloud Console
-        </Heading>
-      </GridItem>
-      <GridItem colSpan={3} alignItems="center" justifyItems="center">
-        <Image
-          transitionProperty="position"
-          transitionBehavior="slide-fade-in"
-          animation="spin"
-          animationTimeline="auto"
-          src={devilUrl}
-        />
-      </GridItem>
-      <GridItem colSpan={3} alignItems="center" justifyItems="center">
-        <Image
-          maxWidth="50%"
-          animation="spin"
-          src={rubyUrl}
-        />
-      </GridItem>
-      <GridItem colSpan={3} alignItems="center" justifyItems="center">
-        <Stack>
-          <Heading size="2xl" letterSpacing="wider">
-            <Highlight query="Life Will Reward" styles={{ color: "teal.600", }}>
-              Life Will Reward The Brave
-            </Highlight>
-          </Heading>
-          <Image
-            brightness="100"
-            captionSide="MEGAMAN!"
-            src={underUrl}
-            alt="line"
-          />
-        </Stack>
-      </GridItem>
       <GridItem
-        colSpan={3}
-        bgColor="honeydew"
         alignItems="center"
-        justifyItems="center"
-        animationStyle="slide-fade-in"
+        colSpan={4}
       >
-        <form onSubmit={handleCreateUser}>
+        <Form method="post">
           <RegisterForm />
-        </form>
+        </Form>
       </GridItem>
     </Grid >
   );

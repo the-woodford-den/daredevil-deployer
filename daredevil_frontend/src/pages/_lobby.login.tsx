@@ -1,26 +1,40 @@
-import { Container, Flex, Grid, GridItem, Image, Text } from '@chakra-ui/react';
+import { Container, Flex, Grid, GridItem, Text } from '@chakra-ui/react';
 import { LoginForm } from '@/components/LoginForm';
 import { userStore } from '@/state';
-import rubyUrl from '~/ruby.svg';
+import { Form, redirect } from 'react-router';
+import type { Route } from './+types/_lobby.login';
 
-export default function Login() {
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
+  const username = formData.get("username") as string;
+  const password = formData.get("password") as string;
 
-  const signIn = userStore(
-    (state) => state.handleSignIn,
+  const signIn = userStore.getState().handleSignIn;
+  const result = await signIn(password, username);
+
+  // Check if sign-in was successful and forward the cookie
+  const redirectResponse = await result.match(
+    (data) => {
+      // Create a redirect response with the Set-Cookie header from backend
+      const response = redirect('/cloud');
+      if (data.setCookieHeader) {
+        response.headers.set('Set-Cookie', data.setCookieHeader);
+      }
+      return response;
+    },
+    () => null
   );
 
-  const handleSignIn = async (
-    data: FormData,
-  ) => {
+  if (redirectResponse) {
+    return redirectResponse;
+  }
 
-    const name = data.get("username") as string;
+  // If sign-in failed, stay on login page
+  // TODO: Show error message to user
+  return null;
+}
 
-    const pword = data.get("password") as string;
-    const res = await signIn(pword, name);
-    console.log(res);
-
-  };
-
+export default function Login() {
   return (
     <Container>
       <Grid
@@ -28,32 +42,15 @@ export default function Login() {
         gap="6"
       >
         <GridItem colSpan={3} pt="3">
-          <Text textStyle="lg" className="t-font">
+          <Text textStyle="4xl" className="t-font">
             Welcome, Welcome, Welcome
           </Text>
         </GridItem>
-        <GridItem colSpan={3} pt="3">
-          <Flex direction="column" fontWeight="600">
-            <Flex align="center" gap="4" justify="center">
-              <Image
-                src={rubyUrl}
-                alt="Ruby"
-                boxSize="6rem"
-                fit="contain"
-                className="rubyLogo"
-              />
-              <Text textStyle="xl" className="t-font">Daredevil Deployer</Text>
-            </Flex>
-            <Flex align="center" gap="2" justify="center">
-              <Text textStyle="md" className="t-font">Cloud Engineering</Text>
-            </Flex>
-          </Flex>
-        </GridItem>
-        <GridItem colSpan={3} pt="3">
-          <Flex direction="row">
-            <form action={async (formData) => (await handleSignIn(formData))}>
+        <GridItem colSpan={3} textStyle="4xl" pt="3">
+          <Flex direction="horizontal">
+            <Form method="post">
               <LoginForm />
-            </form>
+            </Form>
           </Flex>
         </GridItem>
       </Grid>

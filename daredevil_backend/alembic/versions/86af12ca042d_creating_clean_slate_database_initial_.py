@@ -1,8 +1,8 @@
 """creating clean slate database initial migration
 
-Revision ID: 90096ed017d0
+Revision ID: 86af12ca042d
 Revises:
-Create Date: 2025-11-07 14:43:35.494724
+Create Date: 2025-11-08 06:02:09.053270
 
 """
 
@@ -14,7 +14,7 @@ import sqlmodel
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "90096ed017d0"
+revision: str = "86af12ca042d"
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -391,7 +391,6 @@ def upgrade() -> None:
             nullable=True,
         ),
         sa.Column("email", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column("git_id", sa.Integer(), nullable=False),
         sa.Column(
             "password_hash", sqlmodel.sql.sqltypes.AutoString(), nullable=False
         ),

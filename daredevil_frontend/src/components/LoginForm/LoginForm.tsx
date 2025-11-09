@@ -1,32 +1,32 @@
-import { Button, Field, Heading, Input, Stack } from '@chakra-ui/react';
-import { useFormStatus } from 'react-dom';
+import { Button, GridItem, Field, Heading, Input } from '@chakra-ui/react';
+import { userStore } from '@/state/userStore';
+import type { FormEvent } from 'react';
 
 
 export function LoginForm() {
-  const { pending } = useFormStatus();
 
   return (
-    <Stack gap="8" className="login-form">
-      <Heading size="lg" className="t-font">
+    <GridItem colSpan={3} textStyle="5xl" className="t-font">
+      <Heading textStyle="4xl" className="t-font">
         Daredevil Login
       </Heading>
       <Field.Root orientation="horizontal" required>
-        <Field.Label>
-          Email
+        <Field.Label textStyle="2xl" textEmphasisStyle="sesame" className="t-font">
+          username
           <Field.RequiredIndicator />
         </Field.Label>
-        <Input name="email" type="email" />
+        <Input name="username" type="username" />
       </Field.Root>
       <Field.Root orientation="horizontal" required>
-        <Field.Label>
+        <Field.Label textStyle="2xl" textEmphasisStyle="sesame" className="t-font">
           Password
           <Field.RequiredIndicator />
         </Field.Label>
         <Input name="password" type="password" />
       </Field.Root>
-      <Button disabled={pending} type="button" alignSelf="flex-end">
-        {pending ? "Submitting ..." : "Submit"}
+      <Button alignSelf="stretch" type="submit">
+        <Heading textStyle="4xl" className="t-font">Submit</Heading>
       </Button>
-    </Stack>
+    </GridItem >
   );
 }

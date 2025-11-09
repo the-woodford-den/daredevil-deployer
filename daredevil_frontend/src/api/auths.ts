@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react";
 import { ResultAsync } from "neverthrow";
 import type {
   ErrorState,
@@ -12,40 +13,40 @@ const errorHelper = {
 }
 
 
-export const signIn = async (username: string, password: string): Promise<ResultAsync<Token, ErrorState>> => {
+export const signIn = async (username: string, password: string): Promise<ResultAsync<{ token: Token; setCookieHeader?: string }, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const params = JSON.stringify({
-    username: username,
-    password: password
-  });
+  const params = new URLSearchParams();
+  params.append('username', username);
+  params.append('password', password);
 
+  Sentry.logger.info("User API '/user/login' POST, triggered", { log_source: 'src/api/auths' })
 
   return ResultAsync.fromPromise(
     fetch(`${backendUrl}/user/login`, {
       method: 'POST',
       body: params,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      credentials: 'include'
     }).then(async (response) => {
       if (!response.ok) {
         throw {
           status: 404, detail: 'Error Logging In!', isError: true,
         };
       }
-      const cookie = response.headers.get('Cookie')
-      const set_cookie = response.headers.get('Set-Cookie')
-      console.log(cookie)
-      console.log(set_cookie)
-      const tokenResponse = await response.json();
-      const acookie = tokenResponse.headers.get('Cookie')
-      const aset_cookie = tokenResponse.headers.get('Set-Cookie')
-      console.log(acookie)
-      console.log(aset_cookie)
-      const token = tokenResponse as Token;
 
-      return token;
+      // Capture the Set-Cookie header to forward in SSR context
+      const setCookieHeader = response.headers.get('set-cookie');
+      const tokenResponse = await response.json();
+
+      Sentry.logger.info("User API testing cookie if in response...", { log_source: 'src/api/auths' })
+
+      const token = tokenResponse as Token;
+      return { token, setCookieHeader: setCookieHeader || undefined };
     }
     ),
     (error) => {
+
+      Sentry.logger.error(`User API error in login, creating cookie: ${error}`, { log_source: 'src/api/auths' })
       const err = error as ErrorState;
 
       if ('status' in err) {

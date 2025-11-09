@@ -5,8 +5,8 @@ import type { ErrorState, Token, UserState } from '@/tipos';
 type Action = {
   updateUsername: (username: UserState['username']) => void;
   updatePermissions: (permissions: UserState['permissions']) => void;
-  handleSignIn: (password: string, username: string) => Promise<void>;
-  handleSignOut: () => Promise<void>;
+  handleSignIn: (password: string, username: string) => Promise<import('neverthrow').ResultAsync<{ token: Token; setCookieHeader?: string }, ErrorState>>;
+  handleSignOut: (password: string, username: string) => Promise<void>;
   createUser: (password: string, email: string, username: string) => Promise<void>;
 }
 
@@ -27,11 +27,12 @@ export const userStore = create<UserState & Action>(
         loading: true,
         username: username,
       });
-      const result = await signIn(password, username);
+      const result = await signIn(username, password);
       result.match(
-        (token: Token) => set({ username: token.username }),
-        (err: ErrorState) => set({ hasError: err.isError }),
+        (data) => set({ username: data.token.username, loading: false, hasError: false }),
+        (err: ErrorState) => set({ hasError: err.isError, loading: false }),
       );
+      return result;
     },
     createUser: async (
       password: string,

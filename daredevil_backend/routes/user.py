@@ -40,19 +40,54 @@ async def login_user(
         token = await user_service.token(form.username, form.password)
 
         response = JSONResponse(content=token)
-        response.set_cookie(
-            httponly=True,
-            domain=settings.domain,
-            expires=token["expires_at"],
-            path="/user/login",
-            key="daredevil_token",
-            value=token["token"],
-        )
+
+        # Only set domain in production, not in local development
+        cookie_kwargs = {
+            "key": "daredevil_token",
+            "value": token["token"],
+            "httponly": True,
+            "samesite": "lax",
+            "path": "/",
+            "expires": token["expires_at"],
+        }
+
+        # Only set domain and secure flag in production
+        if settings.env == "production":
+            cookie_kwargs["secure"] = True
+            if settings.domain:
+                cookie_kwargs["domain"] = settings.domain
+
+        response.set_cookie(**cookie_kwargs)
 
         return response
 
     except HTTPException as e:
-        logfire.error(f"HTTP Error {e.status}: {e.message}")
+        logfire.error(f"HTTP Error {e.status_code}: {e.detail}")
+        raise
+
+
+@api.get("/me", response_model=User)
+async def get_current_user(
+    *,
+    session: SessionDependency,
+    token: Annotated[dict, Depends(get_daredevil_token)],
+):
+    """Returns the current authenticated user from token"""
+
+    try:
+        user = await session.get(User, token["user_id"])
+        if user is None:
+            logfire.error(f"User not found for user_id: {token['user_id']}")
+            raise HTTPException(status_code=404, detail="User not found")
+
+        logfire.info(f"User {user.username} authenticated successfully")
+        return user
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logfire.error(f"Error getting current user: {e}")
+        raise HTTPException(status_code=401, detail="Invalid authentication")
 
 
 @api.delete("/logout")
@@ -72,7 +107,7 @@ async def logout_user(
         }
 
         response = JSONResponse(content=content)
-        response.delete_cookie(key="daredevil_token")
+        response.delete_cookie(key="daredevil_token", path="/")
 
         return response
 

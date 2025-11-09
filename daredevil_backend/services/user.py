@@ -3,9 +3,10 @@ from datetime import datetime, timedelta
 import logfire
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, status
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
+from typing_extensions import Annotated
 
 from configs import get_settings
 from models.user import User, UserCreate, UserUpdate
@@ -25,8 +26,14 @@ class UserService:
     delete() deletes a user
     """
 
-    def __init__(self, session: AsyncSession):
+    def __init__(
+        self,
+        session: AsyncSession,
+        client_id: str = Annotated[str, Depends(get_settings)],
+    ):
+        settings = get_settings()
         self.session = session
+        self.client_id = settings.client_id
 
     async def get(self, id: int) -> User | None:
         query = select(User).where(User.git_id == id)
@@ -39,17 +46,20 @@ class UserService:
         return user
 
     async def add(self, user_create: UserCreate) -> User:
-        # Hash password using Argon2
+        logfire.info("Hash password using Argon2")
         password_hash = ph.hash(user_create.password)
 
         new_user = User(
             **user_create.model_dump(exclude=["password", "id"]),
-            client_id=settings.client_id,
+            client_id=self.client_id,
             password_hash=password_hash,
         )
+        log_dump = new_user.model_dump()
+        logfire.info(f"Adding User to Database {log_dump}")
         self.session.add(new_user)
         await self.session.commit()
         await self.session.refresh(new_user)
+        logfire.info(f"DB User HERE {new_user}")
         return new_user
 
     def update(self, user_update: UserUpdate) -> User:
@@ -63,7 +73,7 @@ class UserService:
 
         if user is None:
             raise HTTPException(
-                message=f"User '{username}' not found.",
+                detail=f"User '{username}' not found.",
                 status_code=status.HTTP_404_NOT_FOUND,
             )
 
@@ -76,19 +86,27 @@ class UserService:
 
         if not password_correct:
             raise HTTPException(
-                message="Password is incorrect.",
+                detail="Password is incorrect.",
                 status_code=status.HTTP_401_UNAUTHORIZED,
             )
 
+        expires_at = datetime.now() + timedelta(days=1)
+
         content = {
-            "client_id": user.client_id,
-            "expires_at": datetime.now() + timedelta(days=1),
-            "user_id": user.id,
+            "client_id": str(user.client_id),
+            "exp": int(expires_at.timestamp()),
+            "user_id": str(user.id),
             "username": username,
         }
         token = encode_user_token(data={**content})
 
-        return {**content, "token": token}
+        return {
+            "client_id": str(user.client_id),
+            "expires_at": expires_at.isoformat(),
+            "user_id": str(user.id),
+            "username": username,
+            "token": token,
+        }
 
 
 #

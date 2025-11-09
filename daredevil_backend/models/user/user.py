@@ -61,7 +61,6 @@ class User(UserBase, IDModel, TSModel, table=True):
     )
     client_id: str = Field()
     email: EmailStr = Field()
-    git_id: int = Field()
     password_hash: str = Field()
     username: str = Field(index=True)
 
