@@ -5,9 +5,9 @@ import { reactRouter } from "@react-router/dev/vite";
 import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'path';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
-    reactRouter(),
+    ...(mode !== 'test' ? [reactRouter()] : []),
     tsconfigPaths()
   ],
   resolve: {
@@ -41,4 +41,4 @@ export default defineConfig({
     globals: true,
     setupFiles: "./tests/setup.ts",
   },
-});
+}));

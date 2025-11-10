@@ -1,3 +1,4 @@
+import React from 'react';
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { render as rtlRender } from "@testing-library/react";
 import { MemoryRouter } from 'react-router-dom';
