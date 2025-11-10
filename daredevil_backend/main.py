@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from configs import get_settings
 from dbs import data_store
-from routes.git import app_api, git_api, repository_api
+from routes import main_router
 
 settings = get_settings()
 
@@ -22,9 +22,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan, title=settings.app_title)
-app.include_router(git_api)
-app.include_router(app_api)
-app.include_router(repository_api)
+app.include_router(main_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins_list,
@@ -35,7 +33,7 @@ app.add_middleware(
 
 logfire.configure(
     token=settings.logfire_token,
-    environment=settings.environment,
+    environment=settings.env,
     service_name=settings.logfire_name,
 )
 logfire.instrument_fastapi(app, capture_headers=True)

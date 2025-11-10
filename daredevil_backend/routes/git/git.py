@@ -26,24 +26,6 @@ class ConnectionManager:
             await connection.send_text(msg)
 
 
-@api.get("/callback")
-async def installed_app_callback():
-    """Check Github Status"""
-
-    try:
-        message = "Welcome, Welcome, Welcome!"
-
-        return {"message": message, "client_id": "1234"}
-
-    except Exception as e:
-        logfire.error(f"Error: {e.response}")
-
-        raise HTTPException(
-            status_code=e.response.status_code,
-            detail=f"GitHub error: {e.response.text}",
-        )
-
-
 @api.get("/status")
 async def check_github_status():
     """Check Github Status"""

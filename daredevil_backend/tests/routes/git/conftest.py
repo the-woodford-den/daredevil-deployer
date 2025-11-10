@@ -3,8 +3,7 @@
 import os
 from typing import AsyncGenerator
 
-# Set DB_ENV to test BEFORE any imports that use settings
-os.environ["DB_ENV"] = ".env.test"
+os.environ["ENVFILE"] = ".env.example"
 
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
@@ -56,7 +55,7 @@ async def setup_and_tear_down_test_db():
     """Tear it down after all tests complete."""
     settings = get_settings()
 
-    if settings.environment != "test":
+    if settings.env != "test":
         raise Exception("STOP, wrong environment, set it up again please...")
 
     app.dependency_overrides[get_async_session] = get_session_override

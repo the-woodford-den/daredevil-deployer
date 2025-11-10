@@ -1,46 +1,68 @@
 from typing import Optional
 
+from pydantic import AliasGenerator, ConfigDict, EmailStr
 from sqlmodel import Field, SQLModel
 
 from models import IDModel, TSModel
+from utility import serialize
+
+
+class UserCreate(SQLModel):
+    email: EmailStr = Field()
+    username: str = Field()
+    password: str = Field()
+
+
+class UserLogin(SQLModel):
+    access_token: str = Field()
+    type: str = Field()
 
 
 class UserBase(SQLModel):
     access_token: Optional[str] = Field(default=None)
-    avatar_url: str = Field()
+    avatar_url: Optional[str] = Field()
     client_id: Optional[str] = Field(default=None)
     device_code: Optional[str] = Field(default=None)
-    events_url: str = Field()
+    events_url: Optional[str] = Field()
     expires_in: Optional[str] = Field(default=None)
-    followers_url: str = Field()
-    following_url: str = Field()
-    gists_url: str = Field()
+    followers_url: Optional[str] = Field()
+    following_url: Optional[str] = Field()
+    gists_url: Optional[str] = Field()
     gravatar_id: Optional[str] = Field(default=None)
-    html_url: str = Field()
+    html_url: Optional[str] = Field()
     interval: Optional[int] = Field(default=None)
-    login: str = Field()
-    node_id: str = Field()
-    organizations_url: str = Field()
-    received_events_url: str = Field()
-    repos_url: str = Field()
-    site_admin: bool = Field(default=False)
-    starred_url: str = Field()
-    subscriptions_url: str = Field()
-    type: str = Field()
-    url: str = Field()
+    login: Optional[str] = Field()
+    node_id: Optional[str] = Field()
+    organizations_url: Optional[str] = Field()
+    received_events_url: Optional[str] = Field()
+    repos_url: Optional[str] = Field()
+    site_admin: Optional[bool] = Field(default=False)
+    starred_url: Optional[str] = Field()
+    subscriptions_url: Optional[str] = Field()
+    type: Optional[str] = Field()
+    url: Optional[str] = Field()
     user_code: Optional[str] = Field(default=None)
-    user_view_type: str = Field()
+    user_view_type: Optional[str] = Field()
     verification_uri: Optional[str] = Field(default=None)
 
 
-class UserCreate(UserBase):
-    id: int = Field()
-
-
 class UserUpdate(UserBase):
-    git_id: int = Field()
+    email: Optional[EmailStr] = Field()
+    git_id: Optional[int] = Field()
+    username: Optional[str] = Field()
 
 
 class User(UserBase, IDModel, TSModel, table=True):
     __tablename__ = "users"
-    git_id: int = Field()
+    model_config = ConfigDict(
+        alias_generator=AliasGenerator(
+            serialization_alias=lambda field_name: (serialize(field_name))
+        )
+    )
+    client_id: str = Field()
+    email: EmailStr = Field()
+    password_hash: str = Field()
+    username: str = Field(index=True)
+
+
+#

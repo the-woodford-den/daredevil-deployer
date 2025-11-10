@@ -1,0 +1,37 @@
+import time
+from pathlib import Path
+
+import jwt
+import logfire
+
+from configs import get_settings
+
+
+class GitLib:
+    """The Github Library for Configurations, Tokens"""
+
+    def __init__(self):
+        self.settings = get_settings()
+
+    def create_jwt(self, client_id: str):
+        with logfire.span("GithubApp Creating its own JWT..."):
+            try:
+                pk_path = Path.cwd()
+                full_path = pk_path / self.settings.gha_private_key
+
+                with open(full_path, "rb") as key_file:
+                    signing_key = key_file.read()
+
+                payload = {
+                    "iat": int(time.time()),
+                    "exp": int(time.time()) + 600,
+                    "iss": client_id,
+                }
+                encoded_jwt = jwt.encode(
+                    payload, signing_key, algorithm="RS256"
+                )
+
+                return encoded_jwt
+
+            except Exception as e:
+                logfire.error(f"Error Message {e}")

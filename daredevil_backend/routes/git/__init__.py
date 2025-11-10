@@ -1,11 +1,6 @@
 from .app import api as app_api
 from .git import ConnectionManager
 from .git import api as git_api
-from .repository import api as repository_api
+from .repo import api as repo_api
 
-__all__ = [
-    "app_api",
-    "git_api",
-    "repository_api",
-    "ConnectionManager",
-]
+__all__ = ["app_api", "ConnectionManager", "git_api", "repo_api"]
