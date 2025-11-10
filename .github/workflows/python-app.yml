@@ -43,6 +43,10 @@ jobs:
       with:
         python-version: '3.13'
     - uses: actions/checkout@v4
+    - name: Copy .env.test 
+      working-directory: ./daredevil_backend 
+      run: |
+        cp .env.test .
     - name: Install Pip
       working-directory: ./daredevil_backend 
       run: |
