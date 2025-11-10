@@ -15,6 +15,7 @@ asgiref==3.10.0
     # via opentelemetry-instrumentation-asgi
 asyncpg==0.30.0
     # via daredevil-backend (pyproject.toml)
+argon2-cffi
 authlib==1.6.5
     # via daredevil-backend (pyproject.toml)
 bcrypt==5.0.0
