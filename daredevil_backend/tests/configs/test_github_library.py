@@ -2,11 +2,11 @@
 
 from unittest.mock import mock_open
 
-from configs import GithubLibrary
+from utility import GitLib
 
 
-class TestGithubLibrary:
-    """test suite --> GithubLibrary"""
+class TestGitLib:
+    """test suite --> GitLib"""
 
     def test_create_jwt(self, mocker):
         """Test create_jwt creates a JWT with the correct payload"""
@@ -30,7 +30,7 @@ class TestGithubLibrary:
         mocker.patch("configs.github_library.time.time", return_value=mock_time)
 
         # Create instance and call create_jwt
-        github_lib = GithubLibrary()
+        github_lib = GitLib()
         result = github_lib.create_jwt(client_id="test_client_id")
 
         # Verify the result
