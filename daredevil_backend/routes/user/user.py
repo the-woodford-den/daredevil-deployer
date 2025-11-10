@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import Annotated
 
 import logfire
@@ -83,13 +84,17 @@ async def logout_user(
     try:
         user = await session.get(User, token["user_id"])
         content = {
-            "status": 200,
-            "detail": f"{user.username} is offline.",
-            "user_id": f"{user.id}",
+            "key": "daredevil_token",
+            "value": "",
+            "httponly": True,
+            "samesite": "lax",
+            "path": "/",
+            "expires": datetime.now(timezone.utc),
         }
 
-        response = JSONResponse(content=content)
-        response.delete_cookie(key="daredevil_token", path="/")
+        response = JSONResponse(content={"message": "deleted"})
+        response.set_cookie(**content)
+        response.delete_cookie()
 
         return response
 
