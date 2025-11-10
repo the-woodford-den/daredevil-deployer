@@ -3,7 +3,7 @@
 import os
 from typing import AsyncGenerator
 
-os.environ["ENVFILE"] = ".env.test"
+os.environ["ENVFILE"] = ".env.example"
 
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
