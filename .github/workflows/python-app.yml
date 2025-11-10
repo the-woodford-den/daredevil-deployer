@@ -5,7 +5,7 @@ name: Python application
 
 env:
   LOGFIRE_IGNORE_NO_CONFIG: 1
-  ENVFILE: ".env.test"
+  ENVFILE: ".env.example"
 
 on:
   push:
@@ -55,18 +55,10 @@ jobs:
       working-directory: ./daredevil_backend 
       run: |
         pip install -r requirements.txt
-    - name: Print Dir
-      working-directory: ./daredevil_backend 
-      run: |
-        ls -al
-    - name: Print Env
-      working-directory: ./daredevil_backend 
-      run: |
-        cat .env.test
     - name: Migrate DB Tables
       working-directory: ./daredevil_backend 
       run: |
-        ENVFILE='.env.test' alembic upgrade head
+        ENVFILE='.env.example' alembic upgrade head
     - name: Lint with Ruff
       working-directory: ./daredevil_backend 
       run: |
@@ -77,4 +69,4 @@ jobs:
     - name: Executing pytest
       working-directory: ./daredevil_backend 
       run: |
-        ENVFILE='.env.test' pytest -v
+        ENVFILE='.env.example' pytest -v
