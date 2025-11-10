@@ -1,14 +1,13 @@
-from typing import Annotated, List
+from typing import List
 
 import logfire
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from httpx import AsyncClient, HTTPStatusError
 from rich import inspect
 
-from dependency import GitRepoServiceDepend, SessionDepend
+from dependency import CookieTokenDepend, GitRepoServiceDepend, SessionDepend
 from models.git import Repository
 from models.user import User
-from security import CookieTokenDepend
 from utility import GitLib
 
 api = APIRouter(prefix="/git/repo")

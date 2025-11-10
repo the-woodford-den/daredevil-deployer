@@ -80,7 +80,7 @@ class UserService:
 
             content = {
                 "client_id": user.client_id,
-                "user_id": user.id,
+                "user_id": str(user.id),
                 "username": username,
             }
             token = encode_token(data={**content})

@@ -6,9 +6,8 @@ from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
 from configs import get_settings
-from dependency import SessionDepend, UserServiceDepend
+from dependency import CookieTokenDepend, SessionDepend, UserServiceDepend
 from models.user import User, UserCreate
-from security import CookieTokenDepend
 
 settings = get_settings()
 api = APIRouter(prefix="/user")

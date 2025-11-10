@@ -5,12 +5,11 @@ from httpx import AsyncClient, HTTPStatusError
 from rich import inspect, print
 from sqlmodel import select
 
-from dependency import (GitAppServiceDepend, GitInstallServiceDepend,
-                        SessionDepend)
+from dependency import (CookieTokenDepend, GitAppServiceDepend,
+                        GitInstallServiceDepend, SessionDepend)
 from models import CreateGitToken, GitToken
 from models.git import GitApp, GitAppResponse, GitInstall, GitInstallResponse
 from models.user import User
-from security import CookieTokenDepend
 from utility import GitLib
 
 api = APIRouter(prefix="/git/app")
