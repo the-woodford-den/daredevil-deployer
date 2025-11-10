@@ -55,6 +55,14 @@ jobs:
       working-directory: ./daredevil_backend 
       run: |
         pip install -r requirements.txt
+    - name: Print Dir
+      working-directory: ./daredevil_backend 
+      run: |
+        ls -al
+    - name: Print Env
+      working-directory: ./daredevil_backend 
+      run: |
+        cat .env.test
     - name: Migrate DB Tables
       working-directory: ./daredevil_backend 
       run: |
