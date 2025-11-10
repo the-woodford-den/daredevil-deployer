@@ -5,8 +5,8 @@ from httpx import AsyncClient, HTTPStatusError
 from rich import inspect, print
 from sqlmodel import select
 
-from dependency import (CookieTokenDepend, GitAppServiceDepend,
-                        GitInstallServiceDepend, SessionDepend)
+from dependency import (CookieTokenDepend, CurrentUserDepend,
+                        GitAppServiceDepend, GitInstallServiceDepend)
 from models import CreateGitToken, GitToken
 from models.git import GitApp, GitAppResponse, GitInstall, GitInstallResponse
 from models.user import User
@@ -99,9 +99,7 @@ async def get_installation(
                     logfire.info("username matched, checking db record...")
 
                     install_obj = GitInstallResponse(**git_json)
-                    installation = await service.get(
-                        git_id=install_obj.id
-                    ).scalar_one_or_none()
+                    installation = await service.get(git_id=install_obj.id)
 
                     if installation is None:
                         logfire.info(
@@ -127,28 +125,23 @@ async def get_installation(
 )
 async def create_token(
     *,
+    user: CurrentUserDepend,
     params: CreateGitToken,
-    session: SessionDepend,
+    service: GitInstallServiceDepend,
     token: CookieTokenDepend,
 ):
     """This POST request creates an access token on behalf of the Github App.
     Access token expires in 1 hour."""
 
-    user = await session.get(User, token["user_id"]).scalar_one_or_none()
-    if user is None:
-        logfire.error(f"No user found with user_id: {token['user_id']}")
-        raise HTTPException(status_code=404, detail="User not found")
+    git_install = service.get_by_username(user.username)
 
-    statement = select(GitInstall).where(GitInstall.login == user.username)
-    user_install = (await session.execute(statement)).scalar_one_or_none()
-
-    if user_install is None:
+    if git_install is None:
         logfire.error(f"No installation found for user: {user.username}")
         raise HTTPException(status_code=404, detail="GitInstall not found")
 
     gha_lib = GitLib()
     app_jwt = gha_lib.create_jwt(client_id=user.client_id)
-    id = str(user_install.git_id)
+    id = str(git_install.git_id)
 
     endpoint = f"https://api.github.com/app/installations/{id}/access_tokens"
     header = {
@@ -169,7 +162,7 @@ async def create_token(
                 **token_json,
                 client_id=user.client_id,
                 user_id=user.id,
-                install_id=user_install.id,
+                install_id=git_install.id,
             )
 
             logfire.info("Responding with token ...")

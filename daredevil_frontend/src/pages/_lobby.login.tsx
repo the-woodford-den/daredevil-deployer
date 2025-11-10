@@ -12,10 +12,8 @@ export async function action({ request }: Route.ActionArgs) {
   const signIn = userStore.getState().handleSignIn;
   const result = await signIn(password, username);
 
-  // Check if sign-in was successful and forward the cookie
   const redirectResponse = await result.match(
     (data) => {
-      // Create a redirect response with the Set-Cookie header from backend
       const response = redirect('/cloud');
       if (data.setCookieHeader) {
         response.headers.set('Set-Cookie', data.setCookieHeader);
@@ -29,8 +27,6 @@ export async function action({ request }: Route.ActionArgs) {
     return redirectResponse;
   }
 
-  // If sign-in failed, stay on login page
-  // TODO: Show error message to user
   return null;
 }
 

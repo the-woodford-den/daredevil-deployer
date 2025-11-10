@@ -26,5 +26,5 @@ class AccessTokenBearer(HTTPBearer):
         return data
 
 
-token_bearer = AccessTokenBearer()
-Annotated[dict, Depends(token_bearer)]
+# token_bearer = AccessTokenBearer()
+# Annotated[dict, Depends(token_bearer)]

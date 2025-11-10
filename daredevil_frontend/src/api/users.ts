@@ -72,7 +72,6 @@ export const getCurrentUser = async (cookieHeader?: string): Promise<ResultAsync
     'Content-Type': 'application/json',
   };
 
-  // If cookieHeader is provided (SSR), use it; otherwise browser will send cookies automatically
   if (cookieHeader) {
     headers['Cookie'] = cookieHeader;
   }

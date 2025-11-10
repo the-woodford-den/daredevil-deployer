@@ -34,7 +34,6 @@ export const signIn = async (username: string, password: string): Promise<Result
         };
       }
 
-      // Capture the Set-Cookie header to forward in SSR context
       const setCookieHeader = response.headers.get('set-cookie');
       const tokenResponse = await response.json();
 

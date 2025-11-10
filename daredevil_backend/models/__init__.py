@@ -4,7 +4,6 @@ from .token import CreateGitToken, DaredevilToken, GitToken
 
 __all__ = [
     "CreateGitToken",
-    "DaredevilToken",
     "DataStoreProps",
     "GitToken",
     "IDModel",

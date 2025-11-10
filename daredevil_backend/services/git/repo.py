@@ -5,13 +5,7 @@ from models.git import Repository, RepositoryResponse
 
 
 class GitRepoService:
-    """The GitRepoService handles database actions for creating, searching,
-    updating, and deleting git_repos.
-    get() finds repo by id
-    add() creates a repo
-    update() updates a repo
-    delete() deletes a repo
-    """
+    """The GitRepoService handles database actions for git_repos."""
 
     def __init__(self, session: AsyncSession):
         self.session = session

@@ -5,12 +5,8 @@ from models.git import GitInstall, GitInstallResponse
 
 
 class GitInstallService:
-    """The GitInstallService handles database actions for creating, searching,
-    updating, and deleting git_installs of a git app.
-    get() finds user by id
-    add() creates an installation (application made for many installations)
-    update() updates an installation
-    delete() deletes an installation
+    """The GitInstallService handles database actions for git_installs of
+    a git app.
     """
 
     def __init__(self, session: AsyncSession):
@@ -22,6 +18,11 @@ class GitInstallService:
             await self.session.execute(statement)
         ).scalar_one_or_none()
         return installation
+
+    async def get_by_username(self, username: str) -> GitInstall | None:
+        query = select(GitInstall).where(GitInstall.login == username)
+        install = (await self.session.execute(query)).scalar_one_or_none()
+        return install
 
     async def add(self, installation: GitInstallResponse) -> GitInstall:
         new_installation = GitInstall(
