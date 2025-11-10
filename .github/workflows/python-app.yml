@@ -43,10 +43,6 @@ jobs:
       with:
         python-version: '3.13'
     - uses: actions/checkout@v4
-    - name: Copy .env.test 
-      working-directory: ./daredevil_backend 
-      run: |
-        cp .env.test .
     - name: Install Pip
       working-directory: ./daredevil_backend 
       run: |
@@ -62,7 +58,7 @@ jobs:
     - name: Migrate DB Tables
       working-directory: ./daredevil_backend 
       run: |
-        DB_ENV='.env.test' alembic upgrade head
+        ENVFILE='.env.test' alembic upgrade head
     - name: Lint with Ruff
       working-directory: ./daredevil_backend 
       run: |
@@ -73,4 +69,4 @@ jobs:
     - name: Executing pytest
       working-directory: ./daredevil_backend 
       run: |
-        pytest -v
+        ENVFILE='.env.test' pytest -v
