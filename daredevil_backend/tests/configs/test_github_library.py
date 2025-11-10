@@ -13,9 +13,7 @@ class TestGitLib:
         # Mock the settings
         mock_settings = mocker.MagicMock()
         mock_settings.gha_private_key = "test_key.pem"
-        mocker.patch(
-            "configs.github_library.get_settings", return_value=mock_settings
-        )
+        mocker.patch("utility.git_lib.get_settings", return_value=mock_settings)
 
         # Mock the file reading
         fake_private_key = b"fake_private_key_content"
@@ -23,11 +21,11 @@ class TestGitLib:
 
         # Mock jwt.encode to return a known token
         mock_jwt = "mock_jwt_token"
-        mocker.patch("configs.github_library.jwt.encode", return_value=mock_jwt)
+        mocker.patch("utility.git_lib.jwt.encode", return_value=mock_jwt)
 
         # Mock time.time to return a consistent value
         mock_time = 1000000
-        mocker.patch("configs.github_library.time.time", return_value=mock_time)
+        mocker.patch("utility.git_lib.time.time", return_value=mock_time)
 
         # Create instance and call create_jwt
         github_lib = GitLib()

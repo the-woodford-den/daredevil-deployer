@@ -3,13 +3,11 @@ import logfire
 from fastapi import APIRouter, HTTPException, status
 from httpx import AsyncClient, HTTPStatusError
 from rich import inspect, print
-from sqlmodel import select
 
 from dependency import (CookieTokenDepend, CurrentUserDepend,
                         GitAppServiceDepend, GitInstallServiceDepend)
 from models import CreateGitToken, GitToken
 from models.git import GitApp, GitAppResponse, GitInstall, GitInstallResponse
-from models.user import User
 from utility import GitLib
 
 api = APIRouter(prefix="/git/app")
@@ -28,8 +26,8 @@ async def get_app(
     """This GET request searches Github Api for a Github App with a token.
     In addition to returning App, it returns installations_count with the App"""
 
-    github_library = GitLib()
-    jwt = github_library.create_jwt(client_id=token.client_id)
+    git_lib = GitLib()
+    jwt = git_lib.create_jwt(client_id=token["client_id"])
 
     endpoint = "https://api.github.com/app"
     headers = {
