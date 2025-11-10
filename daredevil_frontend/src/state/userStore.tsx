@@ -5,7 +5,7 @@ import type { ErrorState, Token, UserState } from '@/tipos';
 type Action = {
   updateUsername: (username: UserState['username']) => void;
   updatePermissions: (permissions: UserState['permissions']) => void;
-  handleSignIn: (password: string, username: string) => Promise<import('neverthrow').ResultAsync<{ token: Token; setCookieHeader?: string }, ErrorState>>;
+  handleSignIn: (password: string, username: string) => Promise<void>;
   handleSignOut: (password: string, username: string) => Promise<void>;
   createUser: (password: string, email: string, username: string) => Promise<void>;
 }

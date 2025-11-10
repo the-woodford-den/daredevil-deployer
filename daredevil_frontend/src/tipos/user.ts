@@ -24,7 +24,7 @@ export type UserState = {
   handleSignIn: (
     username: string,
     password: string,
-  ) => Promise<void>;
+  ) => Promise<any>;
   createUser: (
     username: string,
     email: string,

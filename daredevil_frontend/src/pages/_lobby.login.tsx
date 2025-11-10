@@ -30,6 +30,17 @@ export async function action({ request }: Route.ActionArgs) {
   return null;
 }
 
+
+const signIn = userStore(
+  (state) => state.handleSignIn,
+);
+
+const handleSignIn = async (formData: FormData) => {
+  const username = formData.get("username") as string;
+  const password = formData.get("password") as string;
+  await signIn(username, password);
+};
+
 export default function Login() {
   return (
     <Container>
@@ -44,7 +55,7 @@ export default function Login() {
         </GridItem>
         <GridItem colSpan={3} textStyle="4xl" pt="3">
           <Flex direction="horizontal">
-            <Form method="post">
+            <Form method="post" action={async (form: FormData) => { await handleSignIn(form) }}>
               <LoginForm />
             </Form>
           </Flex>
