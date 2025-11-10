@@ -5,10 +5,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from httpx import AsyncClient, HTTPStatusError
 from rich import inspect
 
-from dependency import SessionDependency, get_daredevil_token
+from dependency import GitRepoServiceDepend, SessionDepend
 from models.git import Repository
 from models.user import User
-from services.git import GitRepoService
+from security import CookieTokenDepend
 from utility import GitLib
 
 api = APIRouter(prefix="/git/repo")
@@ -17,8 +17,9 @@ api = APIRouter(prefix="/git/repo")
 @api.get("/all", response_model=List[Repository])
 async def get_repos(
     *,
-    session: SessionDependency,
-    token: Annotated[str, Depends(get_daredevil_token)],
+    session: SessionDepend,
+    service: GitRepoServiceDepend,
+    token: CookieTokenDepend,
 ):
     """Searches the Github Api and returns the Github App's associated Repositories.
     This includes the organization and other users who installed the App."""
@@ -36,7 +37,6 @@ async def get_repos(
     with logfire.span("Searching Github App's list of repositories ..."):
         try:
             repo_list = []
-            repo_service = GitRepoService(session)
             async with AsyncClient() as viper:
                 response = await viper.get(url=endpoint, headers=header)
                 response.raise_for_status()
@@ -44,11 +44,9 @@ async def get_repos(
                 logfire.info("Iterating through repositories ...")
 
                 for repo in data:
-                    repo_in_db = await session.get(
-                        Repository, repo["id"]
-                    ).scalar_one_or_none()
+                    repo_in_db = await service.get(repo["id"])
                     if not repo_in_db:
-                        repo_in_db = await repo_service.add(repo)
+                        repo_in_db = await service.add(repo)
                     repo_list.append(repo_in_db)
 
             return repo_list

@@ -1,24 +1,71 @@
 from typing import Annotated
 
-import logfire
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from dbs import get_async_session
-from security import daredevil_user_cookie
-from utility import decode_user_token
+from models.user import User
+from security import CookieDepend, oauth2_scheme
+from services import UserService
+from services.git import GitAppService, GitInstallService, GitRepoService
+from utility import decode_token
 
-SessionDependency = Annotated[AsyncSession, Depends(get_async_session)]
+SessionDepend = Annotated[AsyncSession, Depends(get_async_session)]
 
 
-def get_daredevil_token(
-    token: Annotated[str, Depends(daredevil_user_cookie)],
+def get_cookie_token(cookie_token: CookieDepend) -> dict:
+    """A helper to retrieve cookie data"""
+    data = decode_token(cookie_token)
+    if data is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token.",
+        )
+    return data
+
+
+def get_access_token(
+    token: Annotated[str, Depends(oauth2_scheme)],
+) -> dict:
+    """A helper dedicated to retrieving token."""
+    data = decode_token(token)
+    if data is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token.",
+        )
+    return data
+
+
+async def get_current_user(
+    access_token: Annotated[dict, Depends(get_cookie_token)],
+    session: SessionDepend,
 ):
-    try:
-        data = decode_user_token(token)
-        if data is not None:
-            return data
+    """Returns the current user from token"""
+    return await session.get(User, access_token["user_id"])
 
-    except Exception:
-        logfire.error("Decoding Cookie Error!")
-        return {"status": 401, "detail": "Unauthorized, no token in cookie!"}
+
+def get_gitapp_service(session: SessionDepend):
+    return GitAppService(session)
+
+
+def get_gitinstall_service(session: SessionDepend):
+    return GitInstallService(session)
+
+
+def get_gitrepo_service(session: SessionDepend):
+    return GitRepoService(session)
+
+
+def get_user_service(session: SessionDepend):
+    return UserService(session)
+
+
+CookieTokenDepend = Annotated[dict, Depends(get_cookie_token)]
+CurrentUserDepend = Annotated[User, Depends(get_current_user)]
+GitAppServiceDepend = Annotated[UserService, Depends(get_gitapp_service)]
+GitInstallServiceDepend = Annotated[
+    UserService, Depends(get_gitinstall_service)
+]
+GitRepoServiceDepend = Annotated[UserService, Depends(get_gitrepo_service)]
+UserServiceDepend = Annotated[UserService, Depends(get_user_service)]

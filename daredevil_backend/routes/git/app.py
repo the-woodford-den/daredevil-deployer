@@ -1,17 +1,16 @@
-from typing import Annotated
-
 import debugpy
 import logfire
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from httpx import AsyncClient, HTTPStatusError
 from rich import inspect, print
 from sqlmodel import select
 
-from dependency import SessionDependency, get_daredevil_token
+from dependency import (GitAppServiceDepend, GitInstallServiceDepend,
+                        SessionDepend)
 from models import CreateGitToken, GitToken
 from models.git import GitApp, GitAppResponse, GitInstall, GitInstallResponse
 from models.user import User
-from services.git import GitAppService, GitInstallService
+from security import CookieTokenDepend
 from utility import GitLib
 
 api = APIRouter(prefix="/git/app")
@@ -24,8 +23,8 @@ api = APIRouter(prefix="/git/app")
 )
 async def get_app(
     *,
-    session: SessionDependency,
-    token: Annotated[str, Depends(get_daredevil_token)],
+    service: GitAppServiceDepend,
+    token: CookieTokenDepend,
 ):
     """This GET request searches Github Api for a Github App with a token.
     In addition to returning App, it returns installations_count with the App"""
@@ -46,12 +45,11 @@ async def get_app(
             response.raise_for_status()
             data = response.json()
 
-            app_service = GitAppService(session=session)
-            git_app = await app_service.get(git_id=data["id"])
+            git_app = await service.get(git_id=data["id"])
 
             if git_app is None:
                 app_resp = GitAppResponse(**data)
-                git_app = await app_service.add(data=app_resp)
+                git_app = await service.add(data=app_resp)
                 logfire.info("GitHub App Validated & Stored in DB")
             else:
                 logfire.info("GitHub App Exists in DB")
@@ -72,8 +70,8 @@ async def get_app(
 )
 async def get_installation(
     *,
-    session: SessionDependency,
-    token: Annotated[str, Depends(get_daredevil_token)],
+    service: GitInstallServiceDepend,
+    token: CookieTokenDepend,
 ):
     """This GET request searches Github Api for Github App Installations.
     Searches by username, token required
@@ -98,12 +96,11 @@ async def get_installation(
 
             logfire.info("checking returned list of installations...")
             for git_json in data:
-                install_service = GitInstallService(session)
                 if git_json["account"]["login"] == token["username"]:
                     logfire.info("username matched, checking db record...")
 
                     install_obj = GitInstallResponse(**git_json)
-                    installation = await install_service.get(
+                    installation = await service.get(
                         git_id=install_obj.id
                     ).scalar_one_or_none()
 
@@ -112,7 +109,7 @@ async def get_installation(
                             f"Adding GitInstallation: {install_obj.id}"
                         )
 
-                        installation = await install_service.add(install_obj)
+                        installation = await service.add(install_obj)
                     return installation
 
             return {"status_code": 404, "msg": "No Installation Found"}
@@ -132,12 +129,10 @@ async def get_installation(
 async def create_token(
     *,
     params: CreateGitToken,
-    session: SessionDependency,
-    token: Annotated[str, Depends(get_daredevil_token)],
+    session: SessionDepend,
+    token: CookieTokenDepend,
 ):
-    """This POST request creates an access token on behalf of the Github App
-    Searches db by user installation id.
-    Only returns if username matches an installation.
+    """This POST request creates an access token on behalf of the Github App.
     Access token expires in 1 hour."""
 
     user = await session.get(User, token["user_id"]).scalar_one_or_none()
