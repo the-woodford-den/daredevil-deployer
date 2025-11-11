@@ -5,7 +5,7 @@ import type { ErrorState, Token, UserState } from '@/tipos';
 type Action = {
   updateUsername: (username: UserState['username']) => void;
   updatePermissions: (permissions: UserState['permissions']) => void;
-  handleSignIn: (password: string, username: string) => Promise<void>;
+  handleSignIn: (password: string, username: string) => Promise<Result<Token | ErrorState>>;
   handleSignOut: (password: string, username: string) => Promise<void>;
   createUser: (password: string, email: string, username: string) => Promise<void>;
 }
@@ -29,7 +29,7 @@ export const userStore = create<UserState & Action>(
       });
       const result = await signIn(username, password);
       result.match(
-        (data) => set({ username: data.token.username, loading: false, hasError: false }),
+        (data) => set({ username: data.username, loading: false, hasError: false }),
         (err: ErrorState) => set({ hasError: err.isError, loading: false }),
       );
       return result;
