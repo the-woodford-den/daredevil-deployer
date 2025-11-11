@@ -12,9 +12,10 @@ const errorHelper = {
   isError: true,
 }
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 export const signIn = async (username: string, password: string): Promise<ResultAsync<{ token: Token; setCookieHeader?: string }, ErrorState>> => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const params = new URLSearchParams();
   params.append('username', username);
   params.append('password', password);
@@ -22,7 +23,7 @@ export const signIn = async (username: string, password: string): Promise<Result
   Sentry.logger.info("User API '/user/login' POST, triggered", { log_source: 'src/api/auths' })
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/user/login`, {
+    fetch(`${BACKEND_URL}/user/login`, {
       method: 'POST',
       body: params,
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -65,10 +66,8 @@ export const signIn = async (username: string, password: string): Promise<Result
 };
 
 export const signOut = async (): Promise<ResultAsync<void, ErrorState>> => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/user/logout`, {
+    fetch(`${BACKEND_URL}/user/logout`, {
       credentials: 'include',
       method: 'DELETE',
       headers: {

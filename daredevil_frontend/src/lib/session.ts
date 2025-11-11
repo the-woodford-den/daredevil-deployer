@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/react";
 
-const COOKIE_NAME = "daredevil_token";
+const COOKIE_NAME = import.meta.env.VITE_COOKIE_NAME;
 
 
 export function parseCookies(cookieHeader: string | null): Record<string, string> {
