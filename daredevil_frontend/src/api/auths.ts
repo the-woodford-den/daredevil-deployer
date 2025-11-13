@@ -15,7 +15,7 @@ const errorHelper = {
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 
-export const signIn = async (username: string, password: string): Promise<ResultAsync<Token, ErrorState>> => {
+export const signIn = async (username: string, password: string): Promise<ResultAsync<User, ErrorState>> => {
   const params = new URLSearchParams();
   params.append('username', username);
   params.append('password', password);
@@ -35,14 +35,13 @@ export const signIn = async (username: string, password: string): Promise<Result
         };
       }
 
-      const setCookieHeader = response.headers.get('set-cookie');
       const tokenResponse = await response.json();
-
+      tokenResponse["cookie"] = response.headers.get('set-cookie');
+      const token = tokenResponse as Token;
       Sentry.logger.info("User API testing cookie if in response...", { log_source: 'src/api/auths' })
 
-      const token = tokenResponse as Token;
       return token;
-    ),
+    }),
     (error) => {
 
       Sentry.logger.error(`User API error in login, creating cookie: ${error}`, { log_source: 'src/api/auths' })
