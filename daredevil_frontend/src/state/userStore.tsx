@@ -1,58 +1,48 @@
 import { create } from 'zustand';
-import { signIn, signOut, createUser } from '@/api';
-import type { ErrorState, User, UserState } from '@/tipos';
-import { ResultAsync } from "neverthrow";
+import type { User, UserCookie, UserState } from '@/tipos';
 
 type Action = {
-  updateUsername: (username: UserState['username']) => Promise<ResultAsync<void, ErrorState>>;
-  handleSignIn: (password: string, username: string) => Promise<ResultAsync<User, ErrorState>>;
-  handleSignOut: (password: string, username: string) => Promise<ResultAsync<void, ErrorState>>;
-  createUser: (password: string, email: string, username: string) => Promise<ResultAsync<User, ErrorState>>;
+  updateUsername: (user: User) => Promise<void>;
+  handleSignIn: (user: User) => Promise<void>;
+  handleSignOut: () => Promise<void>;
+  createUser: (user: User) => Promise<void>;
 }
 
 export const userStore = create<UserState & Action>(
   (set) => ({
-    hasError: false,
-    username: "ss",
+    username: undefined,
+    email: undefined,
+    clientId: undefined,
+    cookie: undefined,
     loading: false,
     createUser: async (
-      password: string,
-      email: string,
-      username: string,
-    ) => {
-      const result = await createUser(password, email, username);
-      result.match(
-        (token) => set({ username: token.username }),
-        (err) => set({ hasError: err.isError }),
-      );
-    },
-    handleSignIn: async (
-      password: string,
-      username: string,
+      user: User,
     ) => {
       set({
-        hasError: false,
-        loading: true,
-        username: username,
+        username: user["username"],
+        email: user["email"],
+        clientId: user["clientId"],
       });
-      const result = await signIn(username, password);
-      result.match(
-        (data) => set({ username: data.username, loading: false, hasError: false }),
-        (err: ErrorState) => set({ hasError: err.isError, loading: false }),
-      );
-      return result;
+    },
+    handleSignIn: async (
+      user: User,
+    ) => {
+      set({
+        cookie: user["cookie"]
+      });
     },
     handleSignOut: async () => {
       set({
-        hasError: false,
-        loading: true,
+        cookie: undefined
       });
-      const result = await signOut();
-      result.match(
-        (err: ErrorState) => set({ hasError: err.isError, loading: false }),
-      );
     },
-    updateUsername: (username) => set(() => ({ username: username })),
+    updateUsername: async (
+      user: User
+    ) => {
+      set({
+        username: user["username"]
+      })
+    },
   }),
 );
 

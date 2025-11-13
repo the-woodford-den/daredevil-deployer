@@ -1,23 +1,32 @@
 import { Image, Grid, GridItem, Text } from '@chakra-ui/react';
+import { createUser } from '@/api';
 import { RegisterForm } from '@/components';
-import { userStore } from '@/state';
+import { errorStore, userStore } from '@/state';
 import rubyUrl from '~/ruby.svg';
 import { Form, redirect } from 'react-router';
-import type { Route } from './+types/_lobby.register';
+import type { User, ErrorState } from '@/tipos';
 
-export async function action({ request }: Route.ActionArgs) {
-  const formData = await request.formData();
-  const username = formData.get("username") as string;
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  const createUser = userStore.getState().createUser;
-  await createUser(password, email, username);
-
-  return redirect('/cloud');
-}
 
 export default function Register() {
+
+  const createUserState = userStore((state) => state.createUser);
+
+  const setError = errorStore((state) => state.setError);
+
+  const handleCreateUser = async (data: FormData) => {
+    const username = data.get("username") as string;
+    const email = data.get("email") as string;
+    const password = data.get("password") as string;
+
+    const result = await createUser(email, password, username);
+    result.match(
+      (user: User) => createUserState(user),
+      (err: ErrorState) => setError(err)
+    );
+    console.log(result);
+    return redirect('/login');
+  };
+
   return (
     <Grid
       templateColumns="repeat(4,1fr)"
@@ -46,7 +55,7 @@ export default function Register() {
         alignItems="center"
         colSpan={4}
       >
-        <Form method="post">
+        <Form method="post" action={async (form: FormData) => { await handleCreateUser(form) }}>
           <RegisterForm />
         </Form>
       </GridItem>

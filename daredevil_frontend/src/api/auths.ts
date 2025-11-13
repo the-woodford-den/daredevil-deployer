@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/react";
 import { ResultAsync } from "neverthrow";
 import type {
   ErrorState,
-  Token,
+  User,
 } from "@/tipos";
 
 
@@ -35,12 +35,11 @@ export const signIn = async (username: string, password: string): Promise<Result
         };
       }
 
-      const tokenResponse = await response.json();
-      tokenResponse["cookie"] = response.headers.get('set-cookie');
-      const token = tokenResponse as Token;
+      const userResponse = await response.json();
+      userResponse["cookie"] = response.headers.get('set-cookie');
       Sentry.logger.info("User API testing cookie if in response...", { log_source: 'src/api/auths' })
 
-      return token;
+      return userResponse as User;
     }),
     (error) => {
 

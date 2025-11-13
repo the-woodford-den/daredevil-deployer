@@ -1,39 +1,40 @@
-import type { ResultAsync } from 'neverthrow';
-import type { ErrorState } from './error';
 import type { UUID } from './utility';
 
 
-export interface Token {
-  expiresAt: string;
-  token: string;
-  username: undefined | string;
+export interface UserCookie {
+  key: string;
+  value: string;
+  httponly: boolean;
+  samesite: string;
+  path: string;
+  expires: string;
+  secure?: boolean;
+  domain?: string;
 }
 
 export interface User {
   id: UUID;
   clientId: string;
   email: string;
-  gitId: string;
-  token: string;
+  gitId?: string;
+  cookie?: string;
   username: string;
 }
 
 export type UserState = {
-  hasError: undefined | boolean;
   username: undefined | string;
+  email: undefined | string;
+  clientId: undefined | string;
   cookie: undefined | string;
   loading: boolean;
   handleSignIn: (
-    username: string,
-    password: string,
-  ) => Promise<ResultAsync<User, ErrorState>>;
+    user: User,
+  ) => Promise<void>;
   handleSignOut: (
     username: string,
     password: string,
-  ) => Promise<ResultAsync<void, ErrorState>>;
+  ) => Promise<void>;
   createUser: (
-    username: string,
-    email: string,
-    password: string,
-  ) => Promise<ResultAsync<User, ErrorState>>;
+    user: User,
+  ) => Promise<void>;
 }

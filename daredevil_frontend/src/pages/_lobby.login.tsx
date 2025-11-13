@@ -1,47 +1,42 @@
 import { Container, Flex, Grid, GridItem, Text } from '@chakra-ui/react';
 import { LoginForm } from '@/components/LoginForm';
-import { userStore } from '@/state';
+import { signIn } from '@/api';
+import type { User, ErrorState } from '@/tipos';
+import { errorStore, userStore } from '@/state';
 import { Form, redirect } from 'react-router';
-import type { Route } from './+types/_lobby.login';
-
-export async function action({ request }: Route.ActionArgs) {
-  const formData = await request.formData();
-  const username = formData.get("username") as string;
-  const password = formData.get("password") as string;
-
-  const signIn = userStore.getState().handleSignIn;
-  const result = await signIn(password, username);
-
-  const redirectResponse = await result.match(
-    (data) => {
-      const response = redirect('/cloud');
-      if (data.setCookieHeader) {
-        response.headers.set('Set-Cookie', data.setCookieHeader);
-      }
-      return response;
-    },
-    () => null
-  );
-
-  if (redirectResponse) {
-    return redirectResponse;
-  }
-
-  return null;
-}
 
 
-const signIn = userStore(
-  (state) => state.handleSignIn,
-);
-
-const handleSignIn = async (formData: FormData) => {
-  const username = formData.get("username") as string;
-  const password = formData.get("password") as string;
-  await signIn(username, password);
-};
 
 export default function Login() {
+  const storeSignIn = userStore(
+    (state) => state.handleSignIn,
+  );
+
+  const setError = errorStore((state) => state.setError);
+
+  const handleSignIn = async (formData: FormData) => {
+    const username = formData.get("username") as string;
+    const password = formData.get("password") as string;
+    const result = await signIn(username, password);
+    result.match(
+      (user: User) => {
+        storeSignIn(user);
+        const response = redirect('/cloud');
+        if (user["cookie"]) {
+          response.headers.set('Set-Cookie', user["cookie"]);
+        }
+        return response;
+
+      },
+      (err: ErrorState) => {
+        setError(err);
+        return redirect('/login');
+      }
+    );
+    console.log(result);
+  };
+
+
   return (
     <Container>
       <Grid
