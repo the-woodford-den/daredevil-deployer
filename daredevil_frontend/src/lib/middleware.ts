@@ -1,7 +1,6 @@
 import * as Sentry from "@sentry/react";
 import { redirect } from "react-router";
 import { getCurrentUser } from "@/api/users";
-import { getTokenFromRequest } from "./session";
 import { userContext } from "@/context";
 import type { User } from "@/tipos/user";
 

@@ -26,6 +26,7 @@ async def get_app(
     """This GET request searches Github Api for a Github App with a token.
     In addition to returning App, it returns installations_count with the App"""
 
+    inspect(token)
     git_lib = GitLib()
     jwt = git_lib.create_jwt(client_id=token["client_id"])
 

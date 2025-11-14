@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/react";
 import { ResultAsync } from "neverthrow";
 import type {
   ErrorState,
-  Token,
+  User,
 } from "@/tipos";
 
 
@@ -12,9 +12,10 @@ const errorHelper = {
   isError: true,
 }
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-export const signIn = async (username: string, password: string): Promise<ResultAsync<{ token: Token; setCookieHeader?: string }, ErrorState>> => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+export const signIn = async (username: string, password: string): Promise<ResultAsync<User, ErrorState>> => {
   const params = new URLSearchParams();
   params.append('username', username);
   params.append('password', password);
@@ -22,7 +23,7 @@ export const signIn = async (username: string, password: string): Promise<Result
   Sentry.logger.info("User API '/user/login' POST, triggered", { log_source: 'src/api/auths' })
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/user/login`, {
+    fetch(`${BACKEND_URL}/user/login`, {
       method: 'POST',
       body: params,
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -34,15 +35,12 @@ export const signIn = async (username: string, password: string): Promise<Result
         };
       }
 
-      const setCookieHeader = response.headers.get('set-cookie');
-      const tokenResponse = await response.json();
-
+      const userResponse = await response.json();
+      userResponse["cookie"] = response.headers.get('set-cookie');
       Sentry.logger.info("User API testing cookie if in response...", { log_source: 'src/api/auths' })
 
-      const token = tokenResponse as Token;
-      return { token, setCookieHeader: setCookieHeader || undefined };
-    }
-    ),
+      return userResponse as User;
+    }),
     (error) => {
 
       Sentry.logger.error(`User API error in login, creating cookie: ${error}`, { log_source: 'src/api/auths' })
@@ -65,10 +63,8 @@ export const signIn = async (username: string, password: string): Promise<Result
 };
 
 export const signOut = async (): Promise<ResultAsync<void, ErrorState>> => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/user/logout`, {
+    fetch(`${BACKEND_URL}/user/logout`, {
       credentials: 'include',
       method: 'DELETE',
       headers: {

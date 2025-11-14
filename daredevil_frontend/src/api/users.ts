@@ -13,8 +13,8 @@ const errorHelper = {
 }
 
 export const createUser = async (
-  password: string,
   email: string,
+  password: string,
   username: string
 ): Promise<ResultAsync<User, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
