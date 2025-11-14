@@ -25,9 +25,9 @@ export function Header() {
   };
 
   return (
-    <Flex direction="column">
-      <Flex align="center" justify="space-between" className="t-font header-container">
-        <Text marginStart="">Daredevil 🩸 Deployer</Text>
+    <Flex direction="column" pl="2" pr="2" pt="2" pb="4">
+      <Flex align="center" justify="space-between" className="header-container">
+        <Text fontWeight="bold" color="aqua">Daredevil Deployer</Text>
         <Breadcrumb.Root marginEnd="1">
           <Breadcrumb.List>
             {username ? (

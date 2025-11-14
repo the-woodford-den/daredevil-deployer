@@ -6,8 +6,8 @@ import './style.css';
 export function Footer() {
   return (
     <footer className="footer-container">
-      <Flex direction="column">
-        <Flex align="center" justifyContent="center">
+      <Flex direction="column" pt="6">
+        <Flex color="aqua" align="center" justifyContent="center">
           <Heading size="sm" className="t-font">
             Operational ~ 2025 Woodford's Den ~ <span>Licenses: </span>
             <a href={bricolageLicense} target="_blank" rel="noopener noreferrer">

@@ -1,10 +1,11 @@
 import { useRef, type FormEvent } from 'react';
-import { Container, Flex, Grid, GridItem, Text } from '@chakra-ui/react';
-import { LoginForm } from '@/components/LoginForm';
+import { Flex, GridItem, HStack, Image, Stack, StackSeparator, Text } from '@chakra-ui/react';
+import { LoginForm } from '@/components';
 import { signIn } from '@/api';
 import type { User, ErrorState } from '@/tipos';
 import { errorStore, userStore } from '@/state';
 import { Form, redirect } from 'react-router';
+import mmUrl from '~/mm1.svg';
 
 
 
@@ -45,25 +46,27 @@ export default function Login() {
 
 
   return (
-    <Container>
-      <Grid
-        templateColumns="repeat(3, 1fr)"
-        gap="6"
-      >
-        <GridItem colSpan={3} pt="3">
-          <Text textStyle="4xl" className="t-font">
-            Welcome, Welcome, Welcome
-          </Text>
-        </GridItem>
-        <GridItem colSpan={3} textStyle="4xl" pt="3">
-          <Flex direction="horizontal">
-            <Form method="post" action="/cloud" onSubmit={async (e) => { await handleSignIn(e) }}>
-              <LoginForm />
-            </Form>
-          </Flex>
-        </GridItem>
-      </Grid>
-    </Container>
+    <GridItem colSpan={3} pt="6" pb="6">
+      <Stack separator={<StackSeparator />}>
+        <Flex gap="8" justify="center">
+          <HStack pb="6">
+            <Text textStyle="4xl" fontWeight="bold" color="aqua">
+              Daredevil Deployer Login
+            </Text>
+            <Image
+              src={mmUrl}
+              alt="MM"
+              boxSize="6rem"
+              fit="contain"
+              className="mmLogo"
+            />
+          </HStack>
+        </Flex>
+        <Form method="post" action="/cloud" onSubmit={async (e) => { await handleSignIn(e) }}>
+          <LoginForm />
+        </Form>
+      </Stack>
+    </GridItem>
   );
 };
 

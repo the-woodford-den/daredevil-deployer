@@ -1,12 +1,19 @@
-import { Image, Grid, GridItem, Text } from '@chakra-ui/react';
-import { useRef } from 'react';
+import {
+  GridItem,
+  HStack,
+  Image,
+  StackSeparator,
+  Text,
+  Stack,
+  Flex
+} from '@chakra-ui/react';
+import { type FormEvent, useRef } from 'react';
 import { createUser } from '@/api';
 import { RegisterForm } from '@/components';
 import { errorStore, userStore } from '@/state';
 import rubyUrl from '~/ruby.svg';
 import { Form, redirect } from 'react-router';
 import type { User, ErrorState } from '@/tipos';
-import type { FormEvent } from 'react';
 
 
 export default function Register() {
@@ -36,38 +43,27 @@ export default function Register() {
   };
 
   return (
-    <Grid
-      templateColumns="repeat(4,1fr)"
-      width="100%"
-      gap="10"
-      mt="6"
-    >
-      <GridItem alignItems="end" colSpan={4}>
-        <Image
-          src={rubyUrl}
-          alt="Ruby"
-          boxSize="6rem"
-          fit="contain"
-          className="rubyLogo"
-        />
-      </GridItem>
-      <GridItem
-        alignItems="left"
-        colSpan={4}
-      >
-        <Text>
-          The Woodford Den: Daredevil Deployer Registration
-        </Text>
-      </GridItem>
-      <GridItem
-        alignItems="center"
-        colSpan={4}
-      >
+    <GridItem colSpan={3} pt="6" pb="6">
+      <Stack separator={<StackSeparator />}>
+        <Flex gap="8" justify="center">
+          <HStack pb="6">
+            <Image
+              src={rubyUrl}
+              alt="Ruby"
+              boxSize="5rem"
+              fit="contain"
+              className="rubyLogo"
+            />
+            <Text textStyle="4xl" fontWeight="bold" color="aqua">
+              Daredevil Deployer Registration
+            </Text>
+          </HStack>
+        </Flex>
         <Form method="post" ref={formRef} action="/login" onSubmit={async (e) => { await handleCreateUser(e) }}>
           <RegisterForm />
         </Form>
-      </GridItem>
-    </Grid >
+      </Stack>
+    </GridItem>
   );
 };
 
