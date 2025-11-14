@@ -1,19 +1,27 @@
 import { Image, Grid, GridItem, Text } from '@chakra-ui/react';
+import { useRef } from 'react';
 import { createUser } from '@/api';
 import { RegisterForm } from '@/components';
 import { errorStore, userStore } from '@/state';
 import rubyUrl from '~/ruby.svg';
 import { Form, redirect } from 'react-router';
 import type { User, ErrorState } from '@/tipos';
+import type { FormEvent } from 'react';
 
 
 export default function Register() {
 
   const createUserState = userStore((state) => state.createUser);
-
+  const formRef = useRef<HTMLFormElement>(null);
   const setError = errorStore((state) => state.setError);
 
-  const handleCreateUser = async (data: FormData) => {
+  const handleCreateUser = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!formRef.current) {
+      return;
+    }
+
+    const data = new FormData(formRef.current)
     const username = data.get("username") as string;
     const email = data.get("email") as string;
     const password = data.get("password") as string;
@@ -55,7 +63,7 @@ export default function Register() {
         alignItems="center"
         colSpan={4}
       >
-        <Form method="post" action={async (form: FormData) => { await handleCreateUser(form) }}>
+        <Form method="post" ref={formRef} action="/login" onSubmit={async (e) => { await handleCreateUser(e) }}>
           <RegisterForm />
         </Form>
       </GridItem>

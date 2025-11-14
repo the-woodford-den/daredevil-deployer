@@ -1,3 +1,4 @@
+import { useRef, type FormEvent } from 'react';
 import { Container, Flex, Grid, GridItem, Text } from '@chakra-ui/react';
 import { LoginForm } from '@/components/LoginForm';
 import { signIn } from '@/api';
@@ -11,12 +12,18 @@ export default function Login() {
   const storeSignIn = userStore(
     (state) => state.handleSignIn,
   );
-
+  const formRef = useRef<HTMLFormElement>(null);
   const setError = errorStore((state) => state.setError);
 
-  const handleSignIn = async (formData: FormData) => {
-    const username = formData.get("username") as string;
-    const password = formData.get("password") as string;
+  const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!formRef.current) {
+      return;
+    }
+
+    const data = new FormData(formRef.current);
+    const username = data.get("username") as string;
+    const password = data.get("password") as string;
     const result = await signIn(username, password);
     result.match(
       (user: User) => {
@@ -50,7 +57,7 @@ export default function Login() {
         </GridItem>
         <GridItem colSpan={3} textStyle="4xl" pt="3">
           <Flex direction="horizontal">
-            <Form method="post" action={async (form: FormData) => { await handleSignIn(form) }}>
+            <Form method="post" action="/cloud" onSubmit={async (e) => { await handleSignIn(e) }}>
               <LoginForm />
             </Form>
           </Flex>
