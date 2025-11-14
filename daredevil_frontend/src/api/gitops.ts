@@ -4,7 +4,6 @@ import type {
   ErrorState,
   Installation,
 } from "@/tipos";
-import { request } from "http";
 
 const errorHelper = {
   setError: () => { Promise<void> },
