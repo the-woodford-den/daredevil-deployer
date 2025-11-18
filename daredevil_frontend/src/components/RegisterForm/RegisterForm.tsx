@@ -2,11 +2,11 @@ import { Button, Container, Field, Fieldset, Input, Stack } from '@chakra-ui/rea
 
 export function RegisterForm() {
   return (
-    <Container centerContent={true} pt="3" pb="3">
+    <Container centerContent={true} pt="6" pb="6">
       <Fieldset.Root size="lg" maxW="lg" color="aqua">
         <Stack>
-          <Fieldset.Legend>User Details</Fieldset.Legend>
-          <Fieldset.HelperText>Please Enter Your Info</Fieldset.HelperText>
+          <Fieldset.Legend color="aqua">User Details</Fieldset.Legend>
+          <Fieldset.HelperText color="aqua">Please Enter Your Info</Fieldset.HelperText>
         </Stack>
 
         <Fieldset.Content>
@@ -15,7 +15,7 @@ export function RegisterForm() {
               github username
               <Field.RequiredIndicator />
             </Field.Label>
-            <Input name="username" />
+            <Input name="username" borderColor="aqua" />
           </Field.Root>
 
           <Field.Root required>
@@ -23,7 +23,7 @@ export function RegisterForm() {
               email
               <Field.RequiredIndicator />
             </Field.Label>
-            <Input name="email" type="email" />
+            <Input name="email" type="email" borderColor="aqua" />
           </Field.Root>
 
           <Field.Root required>
@@ -31,7 +31,7 @@ export function RegisterForm() {
               daredevil password
               <Field.RequiredIndicator />
             </Field.Label>
-            <Input name="password" type="password" />
+            <Input name="password" type="password" borderColor="aqua" />
           </Field.Root>
         </Fieldset.Content>
         <Button type="submit" alignSelf="flex-end">

@@ -8,7 +8,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from 'react-router';
-import { Container, Grid, Separator } from '@chakra-ui/react';
+import { Container, Grid } from '@chakra-ui/react';
 import './index.css';
 
 export function Layout({
@@ -45,17 +45,17 @@ export default function Root() {
       <Provider>
         <Container>
           <Header />
-          <Separator />
           <main>
             <Grid
               templateColumns="repeat(3, 1fr)"
               gap="6"
+              pt="2"
+              pb="6"
             >
               <Outlet />
             </Grid>
           </main>
           <Container width="75%">
-            <Separator />
             <Footer />
           </Container>
         </Container>

@@ -1,4 +1,5 @@
 import {
+  Container,
   GridItem,
   HStack,
   Image,
@@ -43,26 +44,28 @@ export default function Register() {
   };
 
   return (
-    <GridItem colSpan={3} pt="6" pb="6">
-      <Stack separator={<StackSeparator />}>
-        <Flex gap="8" justify="center">
-          <HStack pb="6">
-            <Image
-              src={rubyUrl}
-              alt="Ruby"
-              boxSize="5rem"
-              fit="contain"
-              className="rubyLogo"
-            />
-            <Text textStyle="4xl" fontWeight="bold" color="aqua">
-              Daredevil Deployer Registration
-            </Text>
-          </HStack>
-        </Flex>
-        <Form method="post" ref={formRef} action="/login" onSubmit={async (e) => { await handleCreateUser(e) }}>
-          <RegisterForm />
-        </Form>
-      </Stack>
+    <GridItem colSpan={3}>
+      <Container width="85%">
+        <Stack separator={<StackSeparator borderColor="seagreen" height=".50rem" />}>
+          <Flex gap="8" justify="center">
+            <HStack pb="6">
+              <Image
+                src={rubyUrl}
+                alt="Ruby"
+                boxSize="5rem"
+                fit="contain"
+                className="rubyLogo"
+              />
+              <Text textStyle="4xl" fontWeight="bold" color="aqua">
+                DareDevil Deployer Registration
+              </Text>
+            </HStack>
+          </Flex>
+          <Form method="post" ref={formRef} action="/login" onSubmit={async (e) => { await handleCreateUser(e) }}>
+            <RegisterForm />
+          </Form>
+        </Stack>
+      </Container>
     </GridItem>
   );
 };

@@ -28,7 +28,10 @@ export const userStore = create<UserState & Action>(
       user: User,
     ) => {
       set({
-        cookie: user["cookie"]
+        cookie: user["cookie"],
+        username: user["username"],
+        email: user["email"],
+        clientId: user["clientId"],
       });
     },
     handleSignOut: async () => {

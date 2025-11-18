@@ -25,9 +25,9 @@ export function Header() {
   };
 
   return (
-    <Flex direction="column" pl="2" pr="2" pt="2" pb="4">
+    <Flex direction="column" pt="2" pl="2" pr="2">
       <Flex align="center" justify="space-between" className="header-container">
-        <Text fontWeight="bold" color="aqua">Daredevil Deployer</Text>
+        <Text fontWeight="bold" color="aqua">DareDevil Deployer</Text>
         <Breadcrumb.Root marginEnd="1">
           <Breadcrumb.List>
             <Breadcrumb.Separator />

@@ -85,7 +85,10 @@ class UserService:
             }
             token = encode_token(data={**content})
 
-            return token
+            return {
+                "user": user,
+                "token": token,
+            }
 
         except (InvalidHashError, VerifyMismatchError, HTTPException) as e:
             logfire.error(f"User service create cookie error: {type(e)}: {e}")
