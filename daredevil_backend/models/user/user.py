@@ -48,7 +48,7 @@ class UserBase(SQLModel):
 
 class UserUpdate(UserBase):
     email: Optional[EmailStr] = Field()
-    git_id: Optional[int] = Field()
+    # git_id: Optional[int] = Field()
     username: Optional[str] = Field()
 
 

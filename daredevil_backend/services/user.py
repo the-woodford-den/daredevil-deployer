@@ -84,9 +84,12 @@ class UserService:
                 "username": username,
             }
             token = encode_token(data={**content})
+            user_res = UserUpdate.model_validate(user)
 
             return {
-                "user": user,
+                "user": {
+                    **user_res.model_dump(),
+                },
                 "token": token,
             }
 

@@ -72,7 +72,7 @@ export default function Login() {
               />
             </HStack>
           </Flex>
-          <Form method="post" action="/cloud" onSubmit={async (e) => { await handleSignIn(e) }}>
+          <Form method="post" ref={formRef} onSubmit={async (e) => { await handleSignIn(e) }}>
             <LoginForm />
           </Form>
         </Stack>
