@@ -45,6 +45,7 @@ class UserService:
         new_user = User(
             **user_create.model_dump(exclude=["password", "id"]),
             client_id=self.client_id,
+            git_id=user_create["id"],
             password_hash=password_hash,
         )
         log_dump = new_user.model_dump()

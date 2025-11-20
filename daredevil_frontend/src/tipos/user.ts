@@ -25,6 +25,7 @@ export type UserState = {
   username: undefined | string;
   email: undefined | string;
   clientId: undefined | string;
+  gitId: undefined | number;
   cookie: undefined | string;
   loading: boolean;
   handleSignIn: (

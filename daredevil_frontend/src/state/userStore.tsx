@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { User, UserCookie, UserState } from '@/tipos';
+import type { User, UserState } from '@/tipos';
 
 type Action = {
   updateUsername: (user: User) => Promise<void>;
@@ -15,12 +15,14 @@ export const userStore = create<UserState & Action>(
     clientId: undefined,
     cookie: undefined,
     loading: false,
+    gitId: undefined,
     createUser: async (
       user: User,
     ) => {
       set({
         username: user["username"],
         email: user["email"],
+        gitId: Number(user["gitId"]),
         clientId: user["clientId"],
       });
     },
@@ -29,6 +31,7 @@ export const userStore = create<UserState & Action>(
     ) => {
       set({
         cookie: user["cookie"],
+        gitId: Number(user["gitId"]),
         username: user["username"],
         email: user["email"],
         clientId: user["clientId"],

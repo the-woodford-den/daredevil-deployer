@@ -60,7 +60,9 @@ async def get_current_user(
     try:
         user = await session.get(User, cookie_data["user_id"])
         if user is None:
-            logfire.error(f"User not found for user_id: {token['user_id']}")
+            logfire.error(
+                f"User not found for user_id: {cookie_data['user_id']}"
+            )
             raise HTTPException(status_code=404, detail="User not found")
 
         logfire.info(f"User {user.username} authenticated successfully")
