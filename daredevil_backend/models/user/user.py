@@ -48,8 +48,8 @@ class UserBase(SQLModel):
 
 class UserUpdate(UserBase):
     email: Optional[EmailStr] = Field()
-    git_id: Optional[int] = Field()
     username: Optional[str] = Field()
+    git_id: Optional[int] = Field()
 
 
 class User(UserBase, IDModel, TSModel, table=True):
@@ -60,6 +60,7 @@ class User(UserBase, IDModel, TSModel, table=True):
         )
     )
     client_id: str = Field()
+    git_id: int = Field()
     email: EmailStr = Field()
     password_hash: str = Field()
     username: str = Field(index=True)

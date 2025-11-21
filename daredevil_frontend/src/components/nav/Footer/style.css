@@ -1,9 +1,6 @@
 footer {
   bottom: 0;
+  border-top: seagreen .25rem solid;
   margin-top: 1rem;
-  padding: 2rem 0;
-  width: 100%;
-  border-top: .25rem solid;
-  border-color: var(--green);
-  font-size: .875rem;
+  height: 4rem;
 }

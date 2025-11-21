@@ -1,34 +1,41 @@
 import type { UUID } from './utility';
 
 
-export interface Token {
-  expiresAt: string;
-  token: string;
-  username: undefined | string;
+export interface UserCookie {
+  key: string;
+  value: string;
+  httponly: boolean;
+  samesite: string;
+  path: string;
+  expires: string;
+  secure?: boolean;
+  domain?: string;
 }
 
 export interface User {
   id: UUID;
   clientId: string;
   email: string;
-  gitId: string;
-  token: string;
+  gitId?: string;
+  cookie?: string;
   username: string;
 }
 
 export type UserState = {
-  hasError: undefined | boolean;
   username: undefined | string;
-  permissions: undefined | string[];
+  email: undefined | string;
+  clientId: undefined | string;
+  gitId: undefined | number;
+  cookie: undefined | string;
   loading: boolean;
   handleSignIn: (
+    user: User,
+  ) => Promise<void>;
+  handleSignOut: (
     username: string,
     password: string,
   ) => Promise<void>;
   createUser: (
-    username: string,
-    email: string,
-    password: string,
+    user: User,
   ) => Promise<void>;
-  togglePermissions: () => void;
 }

@@ -45,6 +45,7 @@ class UserService:
         new_user = User(
             **user_create.model_dump(exclude=["password", "id"]),
             client_id=self.client_id,
+            git_id=1234,
             password_hash=password_hash,
         )
         log_dump = new_user.model_dump()
@@ -84,8 +85,14 @@ class UserService:
                 "username": username,
             }
             token = encode_token(data={**content})
+            user_res = UserUpdate.model_validate(user)
 
-            return token
+            return {
+                "user": {
+                    **user_res.model_dump(),
+                },
+                "token": token,
+            }
 
         except (InvalidHashError, VerifyMismatchError, HTTPException) as e:
             logfire.error(f"User service create cookie error: {type(e)}: {e}")
