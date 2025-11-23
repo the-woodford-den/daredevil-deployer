@@ -1,5 +1,4 @@
 import { Outlet, redirect, useLoaderData } from "react-router";
-import { userContext } from "src/context";
 import {
   Box,
   Container,
@@ -9,34 +8,29 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { findApp } from "@/api";
-import type { Route } from "./+types/cloud._index";
-import { authMiddleware, timingMiddleware } from "@/lib/middleware";
+import { userStore } from "@/state";
+// import type { Route } from "./+types/cloud._index";
+// import { authMiddleware, timingMiddleware } from "@/lib/middleware";
 import { Footer, Header } from "@/components";
 import { CloudTree } from "@/components/CloudTree/CloudTree";
 import underUrl from '~/underline.svg';
 
-export const middleware: Route.MiddlewareFunction[] = [
-  authMiddleware,
-];
+// export const middleware: Route.MiddlewareFunction[] = [
+//   authMiddleware,
+// ];
+//
+// export const clientMiddleware: Route.ClientMiddlewareFunction[] = [timingMiddleware];
 
-export const clientMiddleware: Route.ClientMiddlewareFunction[] = [timingMiddleware];
+export async function clientLoader() {
+  // const formRef = useRef<HTMLFormElement>(null);
 
-export async function loader({
-  context
-}: Route.LoaderArgs) {
-
-  const user = context.get(userContext);
-  if (!user) {
-    throw redirect("/login");
-  }
 
   // const cookieHeader = request.headers.get("Cookie");
   const app = await findApp();
+  console.log(app);
 
   return {
     title: 'Just Keep Showing Up & Life Will Reward You',
-    user: user,
-    userApp: app,
   };
 }
 
@@ -44,6 +38,14 @@ export async function loader({
 export default function Cloud() {
 
   let data = useLoaderData();
+  const userState = userStore(
+    (state) => state.cookie,
+  );
+  const user = userStore((state) => state);
+
+  if (!userState) {
+    throw redirect("/login");
+  }
 
   return (
     <Container>
@@ -59,14 +61,14 @@ export default function Cloud() {
         <GridItem alignItems="end">
           <Box>
             <Mark
-              key={data.app.gitId}
+              key={user.gitId}
               css={{
                 fontStyle: 'italic',
                 color: "purple.500",
                 position: "relative",
               }}
             >
-              {data.app.id}
+              <span>{user.username}</span><span>{data.title}</span>
               <img
                 style={{ position: "absolute", left: 0 }}
                 src={underUrl}
