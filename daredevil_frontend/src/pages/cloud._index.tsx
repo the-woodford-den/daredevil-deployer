@@ -7,7 +7,7 @@ import {
   Mark,
   Text,
 } from '@chakra-ui/react';
-import { findApp } from "@/api";
+// import { findApp } from "@/api";
 import { userStore } from "@/state";
 // import type { Route } from "./+types/cloud._index";
 // import { authMiddleware, timingMiddleware } from "@/lib/middleware";
@@ -24,12 +24,19 @@ import underUrl from '~/underline.svg';
 export async function clientLoader() {
   // const formRef = useRef<HTMLFormElement>(null);
 
+  const user = userStore.getState();
+  if (!user.username) {
+    console.log(user);
+    throw redirect("/login");
+  }
 
   // const cookieHeader = request.headers.get("Cookie");
-  const app = await findApp();
-  console.log(app);
+  // const app = await findApp();
+  // console.log(app);
+
 
   return {
+    user: user,
     title: 'Just Keep Showing Up & Life Will Reward You',
   };
 }
@@ -38,49 +45,31 @@ export async function clientLoader() {
 export default function Cloud() {
 
   let data = useLoaderData();
-  const userState = userStore(
-    (state) => state.cookie,
-  );
-  const user = userStore((state) => state);
-
-  if (!userState) {
-    throw redirect("/login");
-  }
 
   return (
-    <Container>
-      <Header />
+    <GridItem alignItems="start" colSpan={3}>
       <Text mt="3" color="aqua" alignItems="right" mb="5" className="t-font">Cloud Console</Text>
-      <Grid gap={12} mt="2" mb="2" templateColumns="repeat(3, 1fr)">
-        <GridItem alignItems="start" colSpan={3}>
-          <CloudTree />
-        </GridItem>
-        <GridItem colSpan={3}>
-          <Outlet />
-        </GridItem>
-        <GridItem alignItems="end">
-          <Box>
-            <Mark
-              key={user.gitId}
-              css={{
-                fontStyle: 'italic',
-                color: "purple.500",
-                position: "relative",
-              }}
-            >
-              <span>{user.username}</span><span>{data.title}</span>
-              <img
-                style={{ position: "absolute", left: 0 }}
-                src={underUrl}
-                loading="lazy"
-                alt="line"
-              />
-            </Mark>
-          </Box>
-        </GridItem>
-      </Grid>
-      <Footer />
-    </Container>
+      <CloudTree />
+      <Outlet />
+      <Box>
+        <Mark
+          key={`${data.user.username}1`}
+          css={{
+            fontStyle: 'italic',
+            color: "purple.500",
+            position: "relative",
+          }}
+        >
+          <span>{data.user.username}</span>
+          <img
+            style={{ position: "absolute", left: 0 }}
+            src={underUrl}
+            loading="lazy"
+            alt="line"
+          />
+        </Mark>
+      </Box>
+    </GridItem>
   );
 }
 

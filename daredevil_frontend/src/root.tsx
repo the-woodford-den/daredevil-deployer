@@ -20,6 +20,9 @@ export function Layout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="UTF-8" />
+        <meta name="author" content="Adam Kaewell" />
+        <meta name="keywords" content="python, fastapi, javascript, react, css, html" />
+        <meta name="description" content="Deployment Application using Github API" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" type="image/svg+xml" href="/ruby.svg" />
         <link href="/assets/Bricolage/Grotesque/2025-9-15/bricolage-grotesque.css" rel="preload" as="style" />
