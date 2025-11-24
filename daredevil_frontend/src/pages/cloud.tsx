@@ -40,7 +40,7 @@ export default function Cloud() {
                 position: "relative",
               }}
             >
-              <span>{data.user.username}</span>
+              <Text className="t-font">{data.user.username}</Text>
               <img
                 style={{ position: "absolute", left: 0 }}
                 src={underUrl}

@@ -11,7 +11,7 @@ export default function Console() {
   let data = useLoaderData();
 
   return (
-    <Container direction="column">
+    <Container width="75%">
       <Text pb="3" textStyle="4xl">{data.title}</Text>
       <Flex pt="3" align="center" justify="space-between" className="t-font">
         <Stack>
