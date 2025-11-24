@@ -1,39 +1,20 @@
 import { Outlet, redirect, useLoaderData } from "react-router";
 import {
   Box,
-  Container,
-  Grid,
   GridItem,
   Mark,
   Text,
 } from '@chakra-ui/react';
-// import { findApp } from "@/api";
 import { userStore } from "@/state";
-// import type { Route } from "./+types/cloud._index";
-// import { authMiddleware, timingMiddleware } from "@/lib/middleware";
-import { Footer, Header } from "@/components";
 import { CloudTree } from "@/components/CloudTree/CloudTree";
 import underUrl from '~/underline.svg';
 
-// export const middleware: Route.MiddlewareFunction[] = [
-//   authMiddleware,
-// ];
-//
-// export const clientMiddleware: Route.ClientMiddlewareFunction[] = [timingMiddleware];
-
 export async function clientLoader() {
-  // const formRef = useRef<HTMLFormElement>(null);
-
   const user = userStore.getState();
   if (!user.username) {
     console.log(user);
     throw redirect("/login");
   }
-
-  // const cookieHeader = request.headers.get("Cookie");
-  // const app = await findApp();
-  // console.log(app);
-
 
   return {
     user: user,
@@ -41,9 +22,7 @@ export async function clientLoader() {
   };
 }
 
-
 export default function Cloud() {
-
   let data = useLoaderData();
 
   return (
