@@ -1,12 +1,19 @@
 """Github App Typed Record Models"""
 
 from typing import Optional
+from uuid import UUID
 
 from pydantic import AliasGenerator, ConfigDict, EmailStr
 from sqlmodel import Field, SQLModel
 
 from models import IDModel, TSModel
 from utility import serialize
+
+serializer = ConfigDict(
+    alias_generator=AliasGenerator(
+        serialization_alias=lambda field_name: (serialize(field_name))
+    )
+)
 
 
 class GitAppBase(SQLModel):
@@ -51,12 +58,7 @@ class GitAppPermissionsResponse(SQLModel):
 
 
 class GitAppResponse(GitAppBase):
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            serialization_alias=lambda field_name: (serialize(field_name))
-        )
-    )
-
+    model_config = serializer
     id: int = Field()
     owner: Optional[GitAppOwnerResponse] = Field(default=None)
     events: list[Optional[str]] = Field(default_factory=list)
@@ -65,11 +67,19 @@ class GitAppResponse(GitAppBase):
 
 class GitApp(GitAppBase, IDModel, TSModel, table=True):
     __tablename__ = "git_apps"
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            serialization_alias=lambda field_name: (serialize(field_name))
-        )
-    )
+    model_config = serializer
+    git_id: int = Field(alias="gitId", index=True)
+
+
+class GitAppRead(SQLModel):
+    model_config = serializer
+    id: UUID = Field()
+    description: Optional[str] = Field(default=None)
+    external_url: str = Field()
+    html_url: str = Field()
+    name: str = Field()
+    node_id: str = Field()
+    slug: str = Field()
     git_id: int = Field(alias="gitId", index=True)
 
 
