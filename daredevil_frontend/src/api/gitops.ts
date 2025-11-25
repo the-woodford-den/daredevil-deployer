@@ -14,12 +14,19 @@ const errorHelper = {
 
 export const findInstallation = async (): Promise<ResultAsync<Installation, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  // request.headers.get("Cookie")
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    // 'Cookie' = cookieHeader,
+  };
+
 
   return ResultAsync.fromPromise(
     fetch(`${backendUrl}/git/app/installation`, {
       credentials: 'include',
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
+      headers
     })
       .then(async (response) => {
         if (!response.ok) {
@@ -55,11 +62,17 @@ export const findInstallation = async (): Promise<ResultAsync<Installation, Erro
 export const findApp = async (): Promise<ResultAsync<App, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    //    headers['Cookie'] = cookieHeader;
+  };
+
+
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/git/app`, {
+    fetch(`${backendUrl}/git/app/`, {
       credentials: 'include',
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
+      headers
     })
       .then(async (response) => {
         if (!response.ok) {
@@ -67,8 +80,11 @@ export const findApp = async (): Promise<ResultAsync<App, ErrorState>> => {
             status: 422, detail: 'No GitApp Found.'
           };
         }
+        console.log(response)
         const appResponse = await response.json();
+        console.log(appResponse)
         const gitApp = appResponse as App;
+        console.log(gitApp)
 
         console.log(appResponse);
         return gitApp;

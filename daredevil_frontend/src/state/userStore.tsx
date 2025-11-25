@@ -1,67 +1,65 @@
 import { create } from 'zustand';
-import { signIn, signOut, createUser } from '@/api';
-import type { ErrorState, Token, UserState } from '@/tipos';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import type { User, UserState } from '@/tipos';
 
 type Action = {
-  updateUsername: (username: UserState['username']) => void;
-  updatePermissions: (permissions: UserState['permissions']) => void;
-  handleSignIn: (password: string, username: string) => Promise<import('neverthrow').ResultAsync<{ token: Token; setCookieHeader?: string }, ErrorState>>;
-  handleSignOut: (password: string, username: string) => Promise<void>;
-  createUser: (password: string, email: string, username: string) => Promise<void>;
+  updateUsername: (user: User) => Promise<void>;
+  handleSignIn: (user: User) => Promise<void>;
+  handleSignOut: () => Promise<void>;
+  createUser: (user: User) => Promise<void>;
 }
 
-export const userStore = create<UserState & Action>(
-  (set) => ({
-    hasError: false,
-    username: "ss",
-    permissions: ['admin'],
-    loading: false,
-    updateUsername: (username) => set(() => ({ username: username })),
-    updatePermissions: (permissions) => set(() => ({ permissions: permissions })),
-    handleSignIn: async (
-      password: string,
-      username: string,
-    ) => {
-      set({
-        hasError: false,
-        loading: true,
-        username: username,
-      });
-      const result = await signIn(username, password);
-      result.match(
-        (data) => set({ username: data.token.username, loading: false, hasError: false }),
-        (err: ErrorState) => set({ hasError: err.isError, loading: false }),
-      );
-      return result;
-    },
-    createUser: async (
-      password: string,
-      email: string,
-      username: string,
-    ) => {
-      const result = await createUser(password, email, username);
-      result.match(
-        (token) => set({ username: token.username }),
-        (err) => set({ hasError: err.isError }),
-      );
-    },
-    handleSignOut: async () => {
-      set({
-        hasError: false,
-        loading: true,
-      });
-      const result = await signOut();
-      result.match(
-        () => set({ username: undefined, permissions: [], loading: false }),
-        (err: ErrorState) => set({ hasError: err.isError, loading: false }),
-      );
-    },
-    togglePermissions: () =>
-      set((state) =>
-        state.permissions?.length === 0
-          ? { permissions: ['admin'] }
-          : { permissions: [] },
-      ),
-  }),
+export const userStore = create<UserState & Action>()(
+  persist(
+    (set) => ({
+      username: undefined,
+      email: undefined,
+      clientId: undefined,
+      cookie: undefined,
+      loading: false,
+      gitId: undefined,
+      createUser: async (
+        user: User,
+      ) => {
+        set({
+          username: user["username"],
+          email: user["email"],
+          gitId: Number(user["gitId"]),
+          clientId: user["clientId"],
+        });
+      },
+      handleSignIn: async (
+        user: User,
+      ) => {
+        set({
+          cookie: user["cookie"],
+          gitId: Number(user["gitId"]),
+          username: user["username"],
+          email: user["email"],
+          clientId: user["clientId"],
+        });
+      },
+      handleSignOut: async () => {
+        set({
+          username: undefined,
+          email: undefined,
+          clientId: undefined,
+          cookie: undefined,
+          gitId: undefined,
+        });
+      },
+      updateUsername: async (
+        user: User
+      ) => {
+        set({
+          username: user["username"]
+        })
+      },
+    }),
+    {
+      name: 'user-storage',
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
 );
 

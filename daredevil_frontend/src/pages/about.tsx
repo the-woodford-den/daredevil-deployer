@@ -1,6 +1,14 @@
 import { Fragment } from 'react';
 import { useLoaderData } from "react-router";
-import { Stack, Highlight, Heading, Mark, useHighlight } from '@chakra-ui/react';
+import {
+  Container,
+  HStack,
+  Stack,
+  Highlight,
+  Heading,
+  Mark,
+  useHighlight
+} from '@chakra-ui/react';
 import underUrl from '~/underline.svg';
 
 export async function clientLoader() {
@@ -20,35 +28,40 @@ export default function About() {
 
   return (
     <Stack>
-      <Heading size="2xl" letterSpacing="wider">
-        <Highlight query="Life Will Reward" styles={{ color: "teal.600", }}>
-          {data.title}
-        </Highlight>
-      </Heading>
-      <Heading size="2xl" maxW="32">
-        {chunks.map((chunk, index) => {
-          return chunk.match ? (
-            <Mark
-              key={index}
-              css={{
-                fontStyle: 'italic',
-                color: "purple.500",
-                position: "relative",
-              }}
-            >
-              {chunk.text}
-              <img
-                style={{ position: "absolute", left: 0 }}
-                src={underUrl}
-                loading="lazy"
-                alt="line"
-              />
-            </Mark>
-          ) : (
-            <Fragment key={index}>{chunk.text}</Fragment>
-          )
-        })}
-      </Heading>
+      <Container width="80%">
+        <Heading size="2xl" letterSpacing="wider">
+          <Highlight query="Life Will Reward" styles={{ color: "teal.600", }}>
+            {data.title}
+          </Highlight>
+        </Heading>
+        <Heading size="2xl" maxW="32">
+          <HStack>
+
+            {chunks.map((chunk, index) => {
+              return chunk.match ? (
+                <Mark
+                  key={index}
+                  css={{
+                    fontStyle: 'italic',
+                    color: "purple.500",
+                    position: "relative",
+                  }}
+                >
+                  {chunk.text}
+                  <img
+                    style={{ position: "absolute", left: 0 }}
+                    src={underUrl}
+                    loading="lazy"
+                    alt="line"
+                  />
+                </Mark>
+              ) : (
+                <Fragment key={index}>{chunk.text}</Fragment>
+              )
+            })}
+          </HStack>
+        </Heading>
+      </Container>
     </Stack>
   )
 }

@@ -9,6 +9,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from configs import get_settings
 from dependency import CookieTokenDepend, SessionDepend, UserServiceDepend
 from models.user import User, UserCreate
+from utility import decode_token
 
 settings = get_settings()
 api = APIRouter(prefix="/user")
@@ -35,11 +36,10 @@ async def login_user(
     then returns response"""
 
     try:
-        token = await service.create_token(form.username, form.password)
-        cookie_data = await service.create_cookie(token)
+        data = await service.create_token(form.username, form.password)
+        cookie_data = await service.create_cookie(data["token"])
 
-        content = {"status": "Active Daredevil Deployer Cookie"}
-        response = JSONResponse(content=content)
+        response = JSONResponse(content=data["user"])
         response.set_cookie(**cookie_data)
 
         return response
@@ -53,14 +53,16 @@ async def login_user(
 async def get_current_user(
     *,
     session: SessionDepend,
-    token: CookieTokenDepend,
+    cookie_data: CookieTokenDepend,
 ):
     """Returns the current authenticated user from token"""
 
     try:
-        user = await session.get(User, token["user_id"])
+        user = await session.get(User, cookie_data["user_id"])
         if user is None:
-            logfire.error(f"User not found for user_id: {token['user_id']}")
+            logfire.error(
+                f"User not found for user_id: {cookie_data['user_id']}"
+            )
             raise HTTPException(status_code=404, detail="User not found")
 
         logfire.info(f"User {user.username} authenticated successfully")
@@ -77,12 +79,18 @@ async def get_current_user(
 async def logout_user(
     *,
     session: SessionDepend,
-    token: CookieTokenDepend,
+    cookie_data: CookieTokenDepend,
 ):
     """Deactivates cookie and logout."""
 
     try:
+        token = decode_token(cookie_data)
         user = await session.get(User, token["user_id"])
+
+        if user is None:
+            logfire.error(f"User not found for user_id: {token['user_id']}")
+            raise HTTPException(status_code=404, detail="User not found")
+
         content = {
             "key": "daredevil_token",
             "value": "",

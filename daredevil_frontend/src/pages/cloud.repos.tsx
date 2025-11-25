@@ -1,14 +1,25 @@
 import underUrl from '~/underline.svg';
+import { useLoaderData } from "react-router";
 import {
-  Heading,
+  Container,
   Mark,
   Separator,
+  Text,
 } from '@chakra-ui/react';
 
+export async function clientLoader() {
+  return {
+    title: 'Your Repositories',
+  };
+}
+
 export function Repos() {
+  let data = useLoaderData();
+
   return (
-    <Heading size="2xl" maxW="20ch">
-      <Separator />
+    <Container direction="column">
+      <Text pb="3" textStyle="4xl">{data.title}</Text>
+      <Separator pb="3" />
       <Mark
         key={"index"}
         css={{
@@ -17,6 +28,7 @@ export function Repos() {
           position: "relative",
         }}
       >
+        <span>Repositories</span>
         <img
           style={{ position: "absolute", left: 0 }}
           src={underUrl}
@@ -25,7 +37,7 @@ export function Repos() {
         />
       </Mark>
       <Separator />
-    </Heading>
+    </Container >
   );
 }
 

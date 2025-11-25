@@ -63,9 +63,9 @@ def get_user_service(session: SessionDepend):
 
 CookieTokenDepend = Annotated[dict, Depends(get_cookie_token)]
 CurrentUserDepend = Annotated[User, Depends(get_current_user)]
-GitAppServiceDepend = Annotated[UserService, Depends(get_gitapp_service)]
+GitAppServiceDepend = Annotated[GitAppService, Depends(get_gitapp_service)]
 GitInstallServiceDepend = Annotated[
-    UserService, Depends(get_gitinstall_service)
+    GitInstallService, Depends(get_gitinstall_service)
 ]
-GitRepoServiceDepend = Annotated[UserService, Depends(get_gitrepo_service)]
+GitRepoServiceDepend = Annotated[GitRepoService, Depends(get_gitrepo_service)]
 UserServiceDepend = Annotated[UserService, Depends(get_user_service)]

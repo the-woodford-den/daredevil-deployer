@@ -53,15 +53,6 @@ main {
   flex: 1;
 }
 
-.b-g-font {
-  font-family: "Bricolage Grotesque", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 600;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
-}
-
 .layout-container {
   background-color: transparent;
   display: flex;
@@ -69,6 +60,15 @@ main {
   min-height: 100vh;
   overflow-x: hidden;
   width: 100%;
+}
+
+.b-g-font {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
 }
 
 .t-font {

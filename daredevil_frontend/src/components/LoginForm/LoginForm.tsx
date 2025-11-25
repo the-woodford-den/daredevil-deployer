@@ -1,32 +1,36 @@
-import { Button, GridItem, Field, Heading, Input } from '@chakra-ui/react';
-import { userStore } from '@/state/userStore';
-import type { FormEvent } from 'react';
+import { Button, Container, Fieldset, Field, Input, Stack } from '@chakra-ui/react';
 
 
 export function LoginForm() {
 
   return (
-    <GridItem colSpan={3} textStyle="5xl" className="t-font">
-      <Heading textStyle="4xl" className="t-font">
-        Daredevil Login
-      </Heading>
-      <Field.Root orientation="horizontal" required>
-        <Field.Label textStyle="2xl" textEmphasisStyle="sesame" className="t-font">
-          username
-          <Field.RequiredIndicator />
-        </Field.Label>
-        <Input name="username" type="username" />
-      </Field.Root>
-      <Field.Root orientation="horizontal" required>
-        <Field.Label textStyle="2xl" textEmphasisStyle="sesame" className="t-font">
-          Password
-          <Field.RequiredIndicator />
-        </Field.Label>
-        <Input name="password" type="password" />
-      </Field.Root>
-      <Button alignSelf="stretch" type="submit">
-        <Heading textStyle="4xl" className="t-font">Submit</Heading>
-      </Button>
-    </GridItem >
+    <Container centerContent={true} pt="6" pb="6">
+      <Fieldset.Root size="lg" maxW="lg" color="aqua">
+        <Stack>
+          <Fieldset.Legend>Daredevil User</Fieldset.Legend>
+          <Fieldset.HelperText>Enter Login Details</Fieldset.HelperText>
+        </Stack>
+
+        <Fieldset.Content>
+          <Field.Root required>
+            <Field.Label>
+              username
+              <Field.RequiredIndicator />
+            </Field.Label>
+            <Input name="username" type="username" borderColor="aqua" />
+          </Field.Root>
+          <Field.Root required>
+            <Field.Label>
+              Password
+              <Field.RequiredIndicator />
+            </Field.Label>
+            <Input name="password" type="password" borderColor="aqua" />
+          </Field.Root>
+        </Fieldset.Content>
+        <Button alignSelf="flex-end" type="submit">
+          Login
+        </Button>
+      </Fieldset.Root>
+    </Container>
   );
 }
