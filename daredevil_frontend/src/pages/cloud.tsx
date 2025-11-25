@@ -2,8 +2,8 @@ import { Outlet, redirect, useLoaderData } from "react-router";
 import {
   Box,
   GridItem,
+  Heading,
   Mark,
-  Text,
   HStack,
   Center,
 } from '@chakra-ui/react';
@@ -17,9 +17,13 @@ export async function clientLoader() {
     throw redirect("/login");
   }
 
+  const username = user.username;
+  const title = `${username!.at(0).toUpperCase()}` +
+    `${username!.slice(1)}'s Cloud Console`;
+
   return {
-    user: user,
-    title: 'Just Keep Showing Up & Life Will Reward You',
+    title: title,
+    footer: 'Just Keep Showing Up & Life Will Reward You',
   };
 }
 
@@ -28,19 +32,18 @@ export default function Cloud() {
 
   return (
     <GridItem alignItems="start" colSpan={3}>
-      <Center pb="6">
+      <Center mb="6" pb="6">
         <HStack>
-          <Text mt="3" color="aqua" alignItems="right" mb="5" className="t-font">Cloud Console</Text>
           <Box>
             <Mark
-              key={`${data.user.username}1`}
+              key={`${data.name}1`}
               css={{
                 fontStyle: 'italic',
                 color: "purple.500",
                 position: "relative",
               }}
             >
-              <Text className="t-font">{data.user.username}</Text>
+              <Heading textStyle="2xl" className="t-font">{data.title}</Heading>
               <img
                 style={{ position: "absolute", left: 0 }}
                 src={underUrl}
@@ -52,6 +55,9 @@ export default function Cloud() {
         </HStack>
       </Center>
       <Outlet />
+      <Center mt="6" pt="6">
+        <Heading textStyle="2xl" className="t-font">{data.footer}</Heading>
+      </Center>
     </GridItem>
   );
 }
