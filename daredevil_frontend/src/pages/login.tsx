@@ -13,7 +13,7 @@ import { LoginForm } from '@/components';
 import { signIn } from '@/api';
 import type { User, ErrorState } from '@/tipos';
 import { errorStore, userStore } from '@/state';
-import { Form, redirect } from 'react-router';
+import { Form, useNavigate } from 'react-router';
 import mmUrl from '~/mm1.svg';
 
 
@@ -24,6 +24,7 @@ export default function Login() {
   );
   const formRef = useRef<HTMLFormElement>(null);
   const setError = errorStore((state) => state.setError);
+  const navigate = useNavigate();
 
   const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -38,19 +39,14 @@ export default function Login() {
     result.match(
       (user: User) => {
         storeSignIn(user);
-        const response = redirect('/cloud');
-        if (user["cookie"]) {
-          response.headers.set('Set-Cookie', user["cookie"]);
-        }
-        return response;
-
+        console.log(result);
+        navigate("/cloud");
       },
       (err: ErrorState) => {
         setError(err);
-        return redirect('/login');
+        navigate('/login');
       }
     );
-    console.log(result);
   };
 
 
