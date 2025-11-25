@@ -30,6 +30,11 @@ export function Header() {
         <Text fontWeight="bold" color="aqua">DareDevil Deployer</Text>
         <Breadcrumb.Root marginEnd="1">
           <Breadcrumb.List>
+            <Breadcrumb.Item>
+              <Breadcrumb.Link asChild>
+                <Link to="/" viewTransition>Home</Link>
+              </Breadcrumb.Link>
+            </Breadcrumb.Item>
             <Breadcrumb.Separator />
             {username ? (
               <>
@@ -41,18 +46,24 @@ export function Header() {
                 <Breadcrumb.Separator />
                 <Breadcrumb.Item>
                   <Breadcrumb.Link asChild>
+                    <Link to="/cloud/console" viewTransition>Console</Link>
+                  </Breadcrumb.Link>
+                </Breadcrumb.Item>
+                <Breadcrumb.Separator />
+                <Breadcrumb.Item>
+                  <Breadcrumb.Link asChild>
+                    <Link to="/cloud/repos" viewTransition>Repos</Link>
+                  </Breadcrumb.Link>
+                </Breadcrumb.Item>
+                <Breadcrumb.Separator />
+                <Breadcrumb.Item>
+                  <Breadcrumb.Link asChild>
                     <Link to="/logout" viewTransition>Logout</Link>
                   </Breadcrumb.Link>
                 </Breadcrumb.Item>
               </>
             ) : (
               <>
-                <Breadcrumb.Item>
-                  <Breadcrumb.Link asChild>
-                    <Link to="/" viewTransition>Home</Link>
-                  </Breadcrumb.Link>
-                </Breadcrumb.Item>
-                <Breadcrumb.Separator />
                 <Breadcrumb.Item>
                   <Breadcrumb.Link asChild>
                     <Link to="/login" viewTransition>Login</Link>
@@ -73,7 +84,6 @@ export function Header() {
                 <Link to="/about" viewTransition>About</Link>
               </Breadcrumb.Link>
             </Breadcrumb.Item>
-            <Breadcrumb.Separator />
           </Breadcrumb.List>
         </Breadcrumb.Root>
       </Flex>
