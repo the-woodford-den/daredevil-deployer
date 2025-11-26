@@ -15,7 +15,7 @@ api = APIRouter(prefix="/git/app")
 
 @api.get(
     "/",
-    response_model=GitApp,
+    response_model=GitAppResponse,
     response_model_exclude_unset=True,
 )
 async def get_app(
@@ -44,14 +44,6 @@ async def get_app(
             data = response.json()
 
             git_app = await service.get(git_id=data["id"])
-
-            if git_app is None:
-                app_resp = GitAppResponse(**data)
-                git_app = await service.add(data=app_resp)
-                logfire.info("GitHub App Validated & Stored in DB")
-            else:
-                logfire.info("GitHub App Exists in DB")
-
             return git_app
 
     except HTTPStatusError as e:
