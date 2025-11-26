@@ -55,17 +55,16 @@ async def get_app(
 
 
 @api.get(
-    "/installation",
-    response_model=GitInstall,
+    "/install",
+    response_model=GitInstallResponse,
 )
-async def get_installation(
+async def get_install(
     *,
     service: GitInstallServiceDepend,
     token: CookieTokenDepend,
 ):
     """This GET request searches Github Api for Github App Installations.
-    Searches by username, token required
-    Only returns if username matches an installation."""
+    Searches by username, token required"""
 
     github_library = GitLib()
     jwt = github_library.create_jwt(client_id=token["client_id"])
@@ -84,23 +83,7 @@ async def get_installation(
                 response.raise_for_status()
                 data = response.json()
 
-            logfire.info("checking returned list of installations...")
-            for git_json in data:
-                if git_json["account"]["login"] == token["username"]:
-                    logfire.info("username matched, checking db record...")
-
-                    install_obj = GitInstallResponse(**git_json)
-                    installation = await service.get(git_id=install_obj.id)
-
-                    if installation is None:
-                        logfire.info(
-                            f"Adding GitInstallation: {install_obj.id}"
-                        )
-
-                        installation = await service.add(install_obj)
-                    return installation
-
-            return {"status_code": 404, "msg": "No Installation Found"}
+            return data
 
         except HTTPStatusError as e:
             logfire.error(f"Internal Error: {e}")
