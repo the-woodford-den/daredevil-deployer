@@ -1,7 +1,9 @@
+import logfire
 from fastapi import APIRouter, Depends, HTTPException
 
 from dependency import CookieTokenDepend, GitAppServiceDepend
-from models.git import GitAppRead
+from models.git import GitAppRead, GitAppResponse
+from routes import git_api
 
 api = APIRouter("/git_app")
 
@@ -21,4 +23,8 @@ async def create_git_app(
     service: GitAppServiceDepend,
     cookie_data: CookieTokenDepend,
 ):
-    pass
+    new_app = await git_api.get_app(token=cookie_data)
+    app_resp = GitAppResponse(**new_app)
+    git_app = await service.add(data=app_resp)
+    logfire.info("GitHub App Validated & Stored in DB")
+    return git_app
