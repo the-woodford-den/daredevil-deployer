@@ -12,7 +12,7 @@ type Action = {
 export const userStore = create<UserState & Action>()(
   persist(
     (set) => ({
-      username: null,
+      username: undefined,
       email: undefined,
       clientId: undefined,
       cookie: undefined,

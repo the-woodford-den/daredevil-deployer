@@ -12,7 +12,6 @@ const errorHelper = {
   isError: true,
 }
 
-
 export const getInstall = async (cookieHeader?: string): Promise<ResultAsync<Installation, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
