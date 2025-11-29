@@ -15,6 +15,12 @@ class GitAppService:
         app = (await self.session.execute(query)).scalar_one_or_none()
         return app
 
+    # Fix TODO
+    async def get_by_username(self, username: str) -> GitApp | None:
+        query = select(GitApp).where(GitApp.username == username)
+        app = (await self.session.execute(query)).scalar_one_or_none()
+        return app
+
     async def add(self, data: GitAppResponse) -> GitApp:
         new_app = GitApp(**data.model_dump(exclude="id"), git_id=data.id)
         self.session.add(new_app)
