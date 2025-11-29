@@ -25,7 +25,6 @@ export const userStore = create<UserState & Action>()(
           username: user["username"],
           email: user["email"],
           gitId: Number(user["gitId"]),
-          clientId: user["clientId"],
         });
       },
       handleSignIn: async (
@@ -36,14 +35,12 @@ export const userStore = create<UserState & Action>()(
           gitId: Number(user["gitId"]),
           username: user["username"],
           email: user["email"],
-          clientId: user["clientId"],
         });
       },
       handleSignOut: async () => {
         set({
           username: undefined,
           email: undefined,
-          clientId: undefined,
           cookie: undefined,
           gitId: undefined,
         });
@@ -58,7 +55,11 @@ export const userStore = create<UserState & Action>()(
     }),
     {
       name: 'user-storage',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => typeof window !== 'undefined' ? localStorage : ({
+        getItem: () => null,
+        setItem: () => {},
+        removeItem: () => {},
+      } as any)),
     }
   )
 );

@@ -59,7 +59,6 @@ class User(UserBase, IDModel, TSModel, table=True):
             serialization_alias=lambda field_name: (serialize(field_name))
         )
     )
-    client_id: str = Field()
     git_id: int = Field()
     email: EmailStr = Field()
     password_hash: str = Field()

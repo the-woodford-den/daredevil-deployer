@@ -3,6 +3,14 @@ import { Link } from 'react-router';
 import { Breadcrumb, Flex, Text } from '@chakra-ui/react';
 import './style.css';
 
+export async function clientLoader() {
+
+  return {
+    title: 'DareDevil Deployer',
+    welcome: "Welcome Welcome Welcome"
+  };
+}
+
 export function Header() {
 
   const username = userStore(

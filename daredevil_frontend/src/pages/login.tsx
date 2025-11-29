@@ -44,7 +44,6 @@ export default function Login() {
       },
       (err: ErrorState) => {
         setError(err);
-        navigate('/login');
       }
     );
   };

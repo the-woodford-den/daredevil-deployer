@@ -73,7 +73,6 @@ class TestGithubAppRoutes:
 
         def override_cookie_token():
             return {
-                "client_id": "12345678123456781234567812345678",
                 "user_id": "test-user-id",
             }
 

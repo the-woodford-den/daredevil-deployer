@@ -44,7 +44,11 @@ export const appStore = create<App & Action>()(
     }),
     {
       name: 'app-storage',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => typeof window !== 'undefined' ? localStorage : ({
+        getItem: () => null,
+        setItem: () => {},
+        removeItem: () => {},
+      } as any)),
     }
   )
 );

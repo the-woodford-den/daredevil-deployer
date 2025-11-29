@@ -20,7 +20,6 @@ class Settings(BaseSettings):
     app_secret: str = Field()
     app_title: str = Field(default=None)
     cc_alg: str = Field()
-    client_id: str = Field()
     db_host: str = Field()
     db_name: str = Field()
     db_port: str = Field()

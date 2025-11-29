@@ -13,36 +13,31 @@ import {
 } from '@chakra-ui/react';
 import type { App, ErrorState } from '@/tipos';
 import { appStore, userStore, errorStore } from "@/state";
-import { Form, useNavigate } from 'react-router';
+import { Form } from 'react-router';
 import { createApp, getApp } from '@/api';
 import underUrl from '~/underline.svg';
 
-const setError = errorStore((state) => state.setError);
 
 export async function clientLoader() {
-  const navigate = useNavigate();
   const user = userStore.getState();
   if (!user.username) {
     console.log(user);
-    navigate("/login");
+    throw redirect("/login");
   }
 
   const username = user.username;
   const title = `${username!.at(0).toUpperCase()}` +
     `${username!.slice(1)}'s Cloud Console`;
 
-  const appUpdate = appStore(
-    (state) => state.updateApp,
-  );
   let app = appStore.getState();
   if (!app.name) {
     const result = await getApp(user.cookie);
     result.match(
       (app: App) => {
-        appUpdate(app);
+        appStore.getState().updateApp(app);
       },
       (err: ErrorState) => {
-        setError(err);
+        errorStore.getState().setError(err);
       });
     console.log(result);
   }

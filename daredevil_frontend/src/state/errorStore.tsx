@@ -12,12 +12,12 @@ export const errorStore = create<ErrorState & Action>(
     isError: false,
     status: undefined,
     detail: undefined,
-    setError: async () => {
-      set((error: ErrorState) => ({
+    setError: async (error: ErrorState) => {
+      set({
         isError: error.isError,
         status: error.status,
         detail: error.detail,
-      }));
+      });
     },
     unsetError: async () => {
       set({
