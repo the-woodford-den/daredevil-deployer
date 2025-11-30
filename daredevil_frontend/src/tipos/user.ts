@@ -14,7 +14,7 @@ export interface UserCookie {
 
 export interface User {
   id: UUID;
-  clientId: string;
+  clientId?: string;
   email: string;
   gitId?: string;
   cookie?: string;

@@ -1,9 +1,9 @@
 import { Fragment } from 'react';
 import { useLoaderData } from "react-router";
 import {
-  Container,
-  HStack,
-  Stack,
+  Center,
+  Grid,
+  GridItem,
   Highlight,
   Heading,
   Mark,
@@ -21,29 +21,46 @@ export default function About() {
   let data = useLoaderData();
 
   const chunks = useHighlight({
-    text: "Authenticating & Authorizing Every Connection :: Securing Data Applications :: Build High Performance AI/ML Pipelines :: Building Cloud Native Agentic Workflows on Kubernetes",
-    query: ["Securing Data", "Performance", "Authenticating", "AI/ML Pipelines", "Agentic Workflows on Kubernetes"],
+    text: " Secure Responsive Environments :: High Performance CI/CD ::" +
+      " Persistent Data Intense Applications :: AI/ML Pipelines ::" +
+      " Cloud Native Cloud Formation :: Kubernetes & Podman ::",
+    query: [
+      " Secure Responsive Environments ::",
+      " High Performance CI/CD ::",
+      " Persistent Data Intense Applications ::",
+      " AI/ML Pipelines ::",
+      " Cloud Native Cloud Formation ::",
+      " Kubernetes & Podman ::"
+    ],
   })
 
 
   return (
-    <Stack>
-      <Container width="80%">
-        <Heading size="2xl" letterSpacing="wider">
-          <Highlight query="Life Will Reward" styles={{ color: "teal.600", }}>
-            {data.title}
-          </Highlight>
-        </Heading>
-        <Heading size="2xl" maxW="32">
-          <HStack>
-
-            {chunks.map((chunk, index) => {
-              return chunk.match ? (
+    <GridItem colSpan={3}>
+      <Grid
+        templateColumns="repeat(3, 1fr)"
+        gap="12"
+        pt="2"
+        pb="6"
+      >
+        <GridItem colSpan={3}>
+          <Center>
+            <Heading color="aqua" size="4xl" letterSpacing="wider" className="t-font">
+              <Highlight query="& Life Will Reward You" styles={{ color: "purple.600", }}>
+                {data.title}
+              </Highlight>
+            </Heading>
+          </Center>
+        </GridItem>
+        {chunks.map((chunk, index) => {
+          return chunk.match ? (
+            <GridItem alignSelf="end">
+              <Heading size="xl" maxW="32" className="t-font">
                 <Mark
                   key={index}
                   css={{
                     fontStyle: 'italic',
-                    color: "purple.500",
+                    color: "purple.600",
                     position: "relative",
                   }}
                 >
@@ -55,13 +72,16 @@ export default function About() {
                     alt="line"
                   />
                 </Mark>
-              ) : (
-                <Fragment key={index}>{chunk.text}</Fragment>
-              )
-            })}
-          </HStack>
-        </Heading>
-      </Container>
-    </Stack>
+              </Heading>
+            </GridItem>
+          ) : (
+            <GridItem>
+              <Heading size="2xl" maxW="32">
+                {chunk.text}
+              </Heading></GridItem>
+          )
+        })}
+      </Grid>
+    </GridItem>
   )
 }

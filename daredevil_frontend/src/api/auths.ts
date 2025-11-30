@@ -36,7 +36,8 @@ export const signIn = async (username: string, password: string): Promise<Result
       }
 
       const userResponse = await response.json();
-      userResponse["cookie"] = response.headers.get('set-cookie');
+      userResponse["cookie"] = response.headers.get('Cookie');
+      console.log(response.headers);
       Sentry.logger.info("User API testing cookie if in response...", { log_source: 'src/api/auths' })
 
       return userResponse as User;

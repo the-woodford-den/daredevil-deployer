@@ -15,6 +15,4 @@ class GitToken(SQLModel):
         )
     )
     token: str = Field()
-    client_id: str = Field()
     user_id: str = Field()
-    install_id: str = Field()

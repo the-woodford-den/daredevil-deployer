@@ -3,10 +3,9 @@ from datetime import datetime, timedelta, timezone
 import logfire
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerifyMismatchError
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
-from typing_extensions import Annotated
 
 from configs import get_settings
 from models.user import User, UserCreate, UserUpdate
@@ -24,11 +23,8 @@ class UserService:
     def __init__(
         self,
         session: AsyncSession,
-        client_id: str = Annotated[str, Depends(get_settings)],
     ):
-        settings = get_settings()
         self.session = session
-        self.client_id = settings.client_id
 
     async def get(self, id: int) -> User | None:
         query = select(User).where(User.git_id == id)
@@ -44,7 +40,6 @@ class UserService:
         password_hash = ph.hash(user_create.password)
         new_user = User(
             **user_create.model_dump(exclude=["password", "id"]),
-            client_id=self.client_id,
             git_id=1234,
             password_hash=password_hash,
         )
@@ -80,7 +75,6 @@ class UserService:
                 )
 
             content = {
-                "client_id": user.client_id,
                 "user_id": str(user.id),
                 "username": username,
             }

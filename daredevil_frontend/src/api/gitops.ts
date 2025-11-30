@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react";
 import { ResultAsync } from "neverthrow";
 import type {
   App,
@@ -11,15 +12,15 @@ const errorHelper = {
   isError: true,
 }
 
-
-export const findInstallation = async (): Promise<ResultAsync<Installation, ErrorState>> => {
+export const getInstall = async (cookieHeader?: string): Promise<ResultAsync<Installation, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  // request.headers.get("Cookie")
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    // 'Cookie' = cookieHeader,
   };
+  if (cookieHeader) {
+    headers['Cookie'] = cookieHeader;
+  }
 
 
   return ResultAsync.fromPromise(
@@ -59,36 +60,35 @@ export const findInstallation = async (): Promise<ResultAsync<Installation, Erro
   );
 };
 
-export const findApp = async (): Promise<ResultAsync<App, ErrorState>> => {
+export const getApp = async (cookieHeader?: string): Promise<ResultAsync<App, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    //    headers['Cookie'] = cookieHeader;
   };
 
+  if (cookieHeader) {
+    headers['Cookie'] = cookieHeader;
+  }
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/git/app/`, {
-      credentials: 'include',
+    fetch(`${backendUrl}/git_app/`, {
       method: 'GET',
-      headers
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          throw {
-            status: 422, detail: 'No GitApp Found.'
-          };
-        }
-        console.log(response)
-        const appResponse = await response.json();
-        console.log(appResponse)
-        const gitApp = appResponse as App;
-        console.log(gitApp)
-
-        console.log(appResponse);
-        return gitApp;
-      }),
+      headers,
+      credentials: 'include',
+    }).then(async (response) => {
+      if (!response.ok) {
+        throw {
+          status: 422, detail: 'No GitApp Found.'
+        };
+      }
+      console.log(response, "INITIAL");
+      const appResponse = await response.json();
+      console.log(appResponse, "JSON");
+      const gitApp = appResponse as App;
+      console.log(gitApp, "APP");
+      return gitApp;
+    }),
     (error) => {
       const err = error as ErrorState;
 
@@ -101,10 +101,67 @@ export const findApp = async (): Promise<ResultAsync<App, ErrorState>> => {
 
       return {
         status: 404,
-        detail: "Cannot Grab GitApp!",
+        detail: "Cannot Grab GitApp.",
         ...errorHelper,
       } as ErrorState
     }
   );
 };
 
+export const createApp = async (
+  clientId: string,
+  cookieHeader?: string,
+): Promise<ResultAsync<App, ErrorState>> => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const params = JSON.stringify({
+    clientId: clientId,
+  });
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (cookieHeader) {
+    headers['Cookie'] = cookieHeader;
+  }
+
+  return ResultAsync.fromPromise(
+    fetch(`${backendUrl}/git_app/create`, {
+      method: 'POST',
+      body: params,
+      headers: headers,
+      credentials: 'include'
+    }).then(async (response) => {
+      if (!response.ok) {
+        throw {
+          status: response.status,
+          detail: 'Git App not created!',
+          isError: true,
+        };
+      }
+      const appResponse = await response.json();
+      console.log(response, "INITIAL");
+      const app = appResponse as App;
+      console.log(appResponse, "JSON");
+      console.log(app, "APP");
+
+      return app;
+    }
+    ),
+    (error) => {
+      const err = error as ErrorState;
+
+      if ('status' in err) {
+        return {
+          ...err,
+          ...errorHelper,
+        } as ErrorState
+
+      }
+
+      return {
+        ...errorHelper,
+        status: 500,
+        detail: "Cannot Create Git App.",
+      } as ErrorState
+    }
+  );
+};
