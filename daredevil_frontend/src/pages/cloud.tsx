@@ -74,7 +74,7 @@ export default function Cloud() {
         appCreate(app);
       },
       (err: ErrorState) => {
-        setError(err);
+        errorStore.getState().setError(err);
       });
     console.log(result);
     formRef.current?.reset();
@@ -83,31 +83,6 @@ export default function Cloud() {
 
   return (
     <>
-      <GridItem pt="6" pb="8" colSpan={2}>
-        <Flex
-          w="full"
-          justify="left"
-        >
-          <Box
-            background="black"
-            p="2rem"
-            color="white"
-            w="65%"
-          >
-            {data.app ? (
-              <div>
-                <Text textStyle="md">{`App Name: ${data.app.name}`}</Text>
-                <Text textStyle="md">{`App ID: ${data.app.id}`}</Text>
-                <Text textStyle="md">{`Client ID: ${data.app.gitId}`}</Text>
-              </div>
-            ) : (
-              <Form method="post" ref={formRef} onSubmit={async (e) => { await handleCreateApp(e) }}>
-                <FindAppForm />
-              </Form>
-            )}
-          </Box>
-        </Flex>
-      </GridItem>
       <GridItem alignItems="start" colSpan={3}>
         <Center mb="6" pb="6">
           <HStack>
@@ -135,6 +110,31 @@ export default function Cloud() {
         <Center mt="6" pt="6">
           <Heading textStyle="2xl" className="t-font">{data.footer}</Heading>
         </Center>
+      </GridItem>
+      <GridItem pt="6" pb="8">
+        <Flex
+          w="full"
+          justify="left"
+        >
+          <Box
+            background="black"
+            p="2rem"
+            color="white"
+            w="65%"
+          >
+            {data.app.name ? (
+              <div>
+                <Text textStyle="md">{`App Name: ${data.app.name}`}</Text>
+                <Text textStyle="md">{`App ID: ${data.app.id}`}</Text>
+                <Text textStyle="md">{`Client ID: ${data.app.gitId}`}</Text>
+              </div>
+            ) : (
+              <Form method="post" ref={formRef} onSubmit={async (e) => { await handleCreateApp(e) }}>
+                <FindAppForm />
+              </Form>
+            )}
+          </Box>
+        </Flex>
       </GridItem>
     </>
   );
