@@ -4,7 +4,7 @@ import logfire
 from fastapi import APIRouter, HTTPException, WebSocket
 from httpx import AsyncClient, HTTPStatusError
 
-api = APIRouter(prefix="/git")
+api = APIRouter(prefix="/git/hub")
 
 
 class ConnectionManager:

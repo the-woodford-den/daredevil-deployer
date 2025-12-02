@@ -30,6 +30,6 @@ def mock_websocket_factory():
 @pytest.fixture
 def connection_manager():
     """Build New ConnectionManager Instance"""
-    from routes.git import ConnectionManager
+    from routes import ConnectionManager
 
     return ConnectionManager()

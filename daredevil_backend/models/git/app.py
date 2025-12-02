@@ -1,19 +1,13 @@
-"""Github App Typed Record Models"""
+"""Git App Typed Record Models"""
 
 from typing import Optional
 from uuid import UUID
 
-from pydantic import AliasGenerator, ConfigDict, EmailStr
+from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
 from models import IDModel, TSModel
-from utility import serialize
-
-serializer = ConfigDict(
-    alias_generator=AliasGenerator(
-        serialization_alias=lambda field_name: (serialize(field_name))
-    )
-)
+from utility import serializer
 
 
 class GitAppBase(SQLModel):
@@ -71,14 +65,17 @@ class GitApp(GitAppBase, IDModel, TSModel, table=True):
     git_id: int = Field(alias="gitId", index=True)
 
 
+class GitAppCreate(SQLModel):
+    app_slug: str = Field()
+    client_id: str = Field()
+
+
 class GitAppRead(SQLModel):
     model_config = serializer
     id: UUID = Field()
     description: Optional[str] = Field(default=None)
-    external_url: str = Field()
     html_url: str = Field()
     name: str = Field()
-    node_id: str = Field()
     slug: str = Field()
     git_id: int = Field(alias="gitId", index=True)
 

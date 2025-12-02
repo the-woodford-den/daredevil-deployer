@@ -1,4 +1,4 @@
-"""tests for routes/git/github.py"""
+"""tests for /git/hub/ routes"""
 
 import pytest
 

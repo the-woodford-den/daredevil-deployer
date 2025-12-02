@@ -6,7 +6,7 @@ from fastapi.security import APIKeyCookie, HTTPBearer, OAuth2PasswordBearer
 from utility import decode_token
 
 cookie_scheme = APIKeyCookie(name="daredevil_token")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 CookieDepend = Annotated[str, Depends(cookie_scheme)]
 
