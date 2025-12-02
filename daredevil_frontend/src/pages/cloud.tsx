@@ -1,5 +1,5 @@
 import { useRef, type FormEvent } from 'react';
-import { FindAppForm } from '@/components';
+import { CreateAppForm, CreateInstallationForm } from '@/components';
 import { Outlet, redirect, useLoaderData } from "react-router";
 import {
   Box,
@@ -11,10 +11,10 @@ import {
   Center,
   Text,
 } from '@chakra-ui/react';
-import type { App, ErrorState } from '@/tipos';
-import { appStore, userStore, errorStore } from "@/state";
+import type { App, ErrorState, Installation } from '@/tipos';
+import { appStore, installationStore, userStore, errorStore } from "@/state";
 import { Form } from 'react-router';
-import { createApp, getApp } from '@/api';
+import { createApp, createInstallation, getApp, getInstall } from '@/api';
 import underUrl from '~/underline.svg';
 
 
@@ -42,8 +42,22 @@ export async function clientLoader() {
     console.log(result);
   }
 
+  let installation = installationStore.getState();
+  if (!installation.appSlug) {
+    const result = await getInstall(user.cookie);
+    result.match(
+      (install: Installation) => {
+        installationStore.getState().updateInstallation(install);
+      },
+      (err: ErrorState) => {
+        errorStore.getState().setError(err);
+      });
+    console.log(result);
+  }
+
   return {
     app: app,
+    installation: installation,
     title: title,
     footer: 'Just Keep Showing Up & Life Will Reward You',
   };
@@ -54,6 +68,9 @@ export default function Cloud() {
   const formRef = useRef<HTMLFormElement>(null);
   const appCreate = appStore(
     (state) => state.createApp,
+  );
+  const installationCreate = installationStore(
+    (state) => state.createInstallation,
   );
 
   const handleCreateApp = async (event: FormEvent<HTMLFormElement>) => {
@@ -72,6 +89,30 @@ export default function Cloud() {
     result.match(
       (app: App) => {
         appCreate(app);
+      },
+      (err: ErrorState) => {
+        errorStore.getState().setError(err);
+      });
+    console.log(result);
+    formRef.current?.reset();
+  };
+
+  const handleCreateInstallation = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!formRef.current) {
+      return;
+    }
+    const user = userStore.getState();
+    if (!user.cookie) {
+      console.log(user);
+      throw redirect("/login");
+    }
+
+    const username = data.get("username") as string;
+    const result = await createInstallation(user.cookie, username);
+    result.match(
+      (install: Installation) => {
+        installationCreate(install);
       },
       (err: ErrorState) => {
         errorStore.getState().setError(err);
@@ -130,7 +171,32 @@ export default function Cloud() {
               </div>
             ) : (
               <Form method="post" ref={formRef} onSubmit={async (e) => { await handleCreateApp(e) }}>
-                <FindAppForm />
+                <CreateAppForm />
+              </Form>
+            )}
+          </Box>
+        </Flex>
+      </GridItem>
+      <GridItem pt="6" pb="8">
+        <Flex
+          w="full"
+          justify="left"
+        >
+          <Box
+            background="black"
+            p="2rem"
+            color="white"
+            w="65%"
+          >
+            {data.installation.name ? (
+              <div>
+                <Text textStyle="md">{`App Name: ${data.installation.appSlug}`}</Text>
+                <Text textStyle="md">{`App ID: ${data.installaton.id}`}</Text>
+                <Text textStyle="md">{`Git ID: ${data.installation.gitId}`}</Text>
+              </div>
+            ) : (
+              <Form method="post" ref={formRef} onSubmit={async (e) => { await handleCreateInstallation(e) }}>
+                <CreateInstallationForm />
               </Form>
             )}
           </Box>
