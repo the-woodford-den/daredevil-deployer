@@ -1,5 +1,5 @@
 import { useRef, type FormEvent } from 'react';
-import { CreateAppForm, CreateInstallationForm } from '@/components';
+import { CreateGitAppForm, CreateGitInstallationForm } from '@/components';
 import { Outlet, redirect, useLoaderData } from "react-router";
 import {
   Box,
@@ -73,7 +73,7 @@ export default function Cloud() {
     (state) => state.createInstallation,
   );
 
-  const handleCreateApp = async (event: FormEvent<HTMLFormElement>) => {
+  const handleGitApp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!formRef.current) {
       return;
@@ -97,7 +97,7 @@ export default function Cloud() {
     formRef.current?.reset();
   };
 
-  const handleCreateInstallation = async (event: FormEvent<HTMLFormElement>) => {
+  const handleGitInstallation = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!formRef.current) {
       return;
@@ -170,8 +170,8 @@ export default function Cloud() {
                 <Text textStyle="md">{`Client ID: ${data.app.gitId}`}</Text>
               </div>
             ) : (
-              <Form method="post" ref={formRef} onSubmit={async (e) => { await handleCreateApp(e) }}>
-                <CreateAppForm />
+              <Form method="post" ref={formRef} onSubmit={async (e) => { await handleGitApp(e) }}>
+                <CreateGitAppForm />
               </Form>
             )}
           </Box>
@@ -195,8 +195,8 @@ export default function Cloud() {
                 <Text textStyle="md">{`Git ID: ${data.installation.gitId}`}</Text>
               </div>
             ) : (
-              <Form method="post" ref={formRef} onSubmit={async (e) => { await handleCreateInstallation(e) }}>
-                <CreateInstallationForm />
+              <Form method="post" ref={formRef} onSubmit={async (e) => { await handleGitInstallation(e) }}>
+                <CreateGitInstallationForm />
               </Form>
             )}
           </Box>
