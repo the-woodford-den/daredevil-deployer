@@ -1,8 +1,8 @@
 """creating clean slate database initial migration
 
-Revision ID: a2c7ebb07c82
+Revision ID: f3ade97fa117
 Revises:
-Create Date: 2025-11-29 04:29:40.980087
+Create Date: 2025-12-02 20:31:05.794363
 
 """
 
@@ -14,7 +14,7 @@ import sqlmodel
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "a2c7ebb07c82"
+revision: str = "f3ade97fa117"
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -60,7 +60,7 @@ def upgrade() -> None:
     )
     op.create_index(op.f("ix_git_apps_id"), "git_apps", ["id"], unique=False)
     op.create_table(
-        "git_installs",
+        "git_installations",
         sa.Column(
             "created_at",
             sa.DateTime(),
@@ -98,10 +98,13 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(
-        op.f("ix_git_installs_id"), "git_installs", ["id"], unique=False
+        op.f("ix_git_installations_id"),
+        "git_installations",
+        ["id"],
+        unique=False,
     )
     op.create_table(
-        "git_repos",
+        "git_repositories",
         sa.Column(
             "created_at", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
@@ -303,7 +306,9 @@ def upgrade() -> None:
         sa.Column("git_id", sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(op.f("ix_git_repos_id"), "git_repos", ["id"], unique=False)
+    op.create_index(
+        op.f("ix_git_repositories_id"), "git_repositories", ["id"], unique=False
+    )
     op.create_table(
         "users",
         sa.Column(
@@ -413,10 +418,12 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_users_username"), table_name="users")
     op.drop_index(op.f("ix_users_id"), table_name="users")
     op.drop_table("users")
-    op.drop_index(op.f("ix_git_repos_id"), table_name="git_repos")
-    op.drop_table("git_repos")
-    op.drop_index(op.f("ix_git_installs_id"), table_name="git_installs")
-    op.drop_table("git_installs")
+    op.drop_index(op.f("ix_git_repositories_id"), table_name="git_repositories")
+    op.drop_table("git_repositories")
+    op.drop_index(
+        op.f("ix_git_installations_id"), table_name="git_installations"
+    )
+    op.drop_table("git_installations")
     op.drop_index(op.f("ix_git_apps_id"), table_name="git_apps")
     op.drop_index(op.f("ix_git_apps_git_id"), table_name="git_apps")
     op.drop_table("git_apps")

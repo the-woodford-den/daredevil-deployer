@@ -50,3 +50,7 @@ class GitInstallationRead(SQLModel):
     repositories_url: Optional[str] = Field(default=None)
     html_url: str = Field()
     git_id: int = Field(alias="gitId", index=True)
+
+
+class GitInstallationUpdate(SQLModel):
+    username: str = Field()

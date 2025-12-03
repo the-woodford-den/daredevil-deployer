@@ -1,7 +1,6 @@
-from pydantic import AliasGenerator, ConfigDict
 from sqlmodel import Field, SQLModel
 
-from utility import serialize
+from utility import serializer
 
 
 class CreateGitToken(SQLModel):
@@ -9,10 +8,6 @@ class CreateGitToken(SQLModel):
 
 
 class GitToken(SQLModel):
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            serialization_alias=lambda field_name: (serialize(field_name))
-        )
-    )
+    model_config = serializer
     token: str = Field()
     user_id: str = Field()
