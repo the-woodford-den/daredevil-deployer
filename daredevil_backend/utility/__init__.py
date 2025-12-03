@@ -1,5 +1,5 @@
 from .git_lib import GitLib
 from .jwt import decode_token, encode_token
-from .serializer import serialize
+from .serializer import serializer
 
-__all__ = ["GitLib", "decode_token", "encode_token", "serialize"]
+__all__ = ["GitLib", "decode_token", "encode_token", "serializer"]
