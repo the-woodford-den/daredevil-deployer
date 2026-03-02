@@ -1,8 +1,8 @@
-import debugpy
 import logfire
-from fastapi import APIRouter, HTTPException, status
-from httpx import AsyncClient, HTTPStatusError
-from rich import inspect, print
+from fastapi import APIRouter, HTTPException
+from starlette.status import HTTP_400_BAD_REQUEST as status_400
+from httpx import AsyncClient, HTTPStatusError, RequestError
+from rich import inspect
 
 from dependency import CookieTokenDepend, GitAppServiceDepend
 from models.git import GitAppResponse
@@ -22,7 +22,7 @@ async def get(
     cookie: CookieTokenDepend,
 ):
     """This GET request searches Github Api for a Github App with a token.
-    In addition to returning App, it returns installations_count with the App"""
+    In addition to returning App, it returns install count with the App"""
 
     inspect(cookie)
     git_lib = GitLib()
@@ -47,15 +47,22 @@ async def get(
                     git_app = await service.get(git_id=data["id"])
                     return git_app
 
-            logfire.info(
-                "Did not find github app for username"
-                + f"#{cookie['username']} with client_id #{cookie['client_id']}."
-            )
-            return None
-
         except HTTPStatusError as e:
-            logfire.error(f"HTTP Status Error: {e}")
+            status_code = int(e.response.status_code)
+            status_detail = (
+                f"Response Error: {status_code} No git app for"
+                f"{cookie['username']} with client_id {cookie['client_id']}."
+            )
+        except RequestError as e:
+            status_detail = (
+                f"Request Error: {e.request.url!s} No git app for "
+                f"{cookie['username']} with client_id {cookie['client_id']}"
+            )
+        finally:
+            error_code = status_400 if status_code is None else status_code
+            error_msg = "unknown" if status_detail is None else status_detail
+            logfire.error(error_msg)
             raise HTTPException(
-                status=status.HTTP_40O_BAD_REQUEST,
-                detail="Incorrect Request.",
+                status_code=error_code,
+                detail=error_msg,
             )

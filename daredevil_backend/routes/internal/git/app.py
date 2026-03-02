@@ -1,11 +1,12 @@
-import logfire
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
+# import logfire
+# import debugpy
 from dependency import CookieTokenDepend, GitAppServiceDepend
-from models.git import GitAppCreate, GitAppRead, GitAppResponse
-from routes import git_api
+from models.git import GitAppRead, GitAppResponse
+from routes.external.git import app
 
-api = APIRouter("/git/app")
+api = APIRouter(prefix="/git/app")
 
 
 @api.get("/", response_model=GitAppRead)
@@ -17,15 +18,17 @@ async def get(
     return service.get_by_username(cookie["username"])
 
 
-@api.post("/create", response_model=GitAppRead)
+@api.post("/create", response_model=GitAppRead | None)
 async def create(
     *,
     cookie: CookieTokenDepend,
-    create_app: GitAppCreate,
     service: GitAppServiceDepend,
 ):
-    new_app = await git_api.get_app(data=GitAppCreate, token=cookie)
-    app_resp = GitAppResponse(**new_app)
-    git_app = await service.add(data=app_resp)
-    logfire.info("GitHub App Validated & Stored in DB")
-    return git_app
+    try:
+        new_app = await app.get(service=service, cookie=cookie)
+
+        app_resp = GitAppResponse(**new_app.model_dump())
+        return await service.add(data=app_resp)
+
+    except HTTPException:
+        return None

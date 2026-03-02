@@ -1,11 +1,9 @@
-import logfire
 from fastapi import APIRouter
-
 from dependency import CookieTokenDepend, GitInstallationServiceDepend
-from models.git import GitInstallationCreate, GitInstallationRead
-from routes import git_api
+from models.git.installation import GitInstallationResponse, GitInstallationRead
+from routes.external.git import installation
 
-api = APIRouter("/git/installation")
+api = APIRouter(prefix="/git/installation")
 
 
 @api.get("/", response_model=GitInstallationRead)
@@ -20,9 +18,8 @@ async def get(
 @api.post("/create", response_model=GitInstallationRead)
 async def create(
     *,
-    cookie_data: CookieTokenDepend,
-    create_installation: GitInstallationCreate,
+    cookie: CookieTokenDepend,
     service: GitInstallationServiceDepend,
 ):
-    installation_response = await git_api.get_install(token=cookie_data)
-    return await service.add(installation_response)
+    ins_resp = await installation.get(service=service, cookie=cookie)
+    return await service.add(GitInstallationResponse.model_validate(ins_resp))
