@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from dependency import CookieTokenDepend, GitInstallationServiceDepend
-from models.git.installation import GitInstallationResponse, GitInstallationRead
+from models.git.installation import GitInstallationRead
 from routes.external.git import installation
 
 api = APIRouter(prefix="/git/installation")
@@ -21,5 +21,5 @@ async def create(
     cookie: CookieTokenDepend,
     service: GitInstallationServiceDepend,
 ):
-    ins_resp = await installation.get(service=service, cookie=cookie)
-    return await service.add(GitInstallationResponse.model_validate(ins_resp))
+    ins_resp = await installation.get(cookie=cookie)
+    return await service.add(ins_resp)

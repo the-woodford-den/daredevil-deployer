@@ -1,0 +1,13 @@
+app:
+  name: "Daredevil Deployer"
+  description: >
+    for building and maintaining continuous integration and 
+    continuous deployment for web applications
+  
+error:
+  http:
+    status_code:
+      400: "Oof! Something is wrong."
+      401: "Denied! Unauthorized entry."
+      404: "Lost! Something is missing."
+

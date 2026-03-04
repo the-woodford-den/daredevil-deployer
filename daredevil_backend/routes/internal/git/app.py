@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
 # import logfire
 # import debugpy
@@ -18,17 +18,11 @@ async def get(
     return service.get_by_username(cookie["username"])
 
 
-@api.post("/create", response_model=GitAppRead | None)
+@api.post("/create", response_model=GitAppResponse)
 async def create(
     *,
     cookie: CookieTokenDepend,
     service: GitAppServiceDepend,
 ):
-    try:
-        new_app = await app.get(service=service, cookie=cookie)
-
-        app_resp = GitAppResponse(**new_app.model_dump())
-        return await service.add(data=app_resp)
-
-    except HTTPException:
-        return None
+    new_app = await app.get(cookie=cookie)
+    return await service.add(new_app)

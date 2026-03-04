@@ -1,11 +1,10 @@
-import debugpy
 import logfire
-from fastapi import APIRouter, HTTPException, status
-from httpx import AsyncClient, HTTPStatusError
-from rich import inspect, print
+from fastapi import APIRouter
+from httpx import AsyncClient
+from starlette.exceptions import HTTPException
 
-from dependency import CookieTokenDepend, GitInstallationServiceDepend
-from models.git import GitInstallationResponse
+from dependency import CookieTokenDepend
+from models.git import GitInstallationResponse as Git_I_Resp
 from utility import GitLib
 
 api = APIRouter(prefix="/git/hub/installation")
@@ -13,14 +12,13 @@ api = APIRouter(prefix="/git/hub/installation")
 
 @api.get(
     "/",
-    response_model=GitInstallationResponse,
+    response_model=Git_I_Resp,
     response_model_exclude_unset=True,
 )
 async def get(
     *,
-    service: GitInstallationServiceDepend,
     cookie: CookieTokenDepend,
-) -> GitInstallationResponse | None:
+):
     """This GET request searches Github Api for Github App Installations.
     Searches by username, token required"""
 
@@ -35,31 +33,24 @@ async def get(
     }
 
     with logfire.span("Sending request for github app installations list"):
-        try:
-            async with AsyncClient() as viper:
-                response = await viper.get(url=endpoint, headers=header)
-                response.raise_for_status()
-                data = response.json()
+        async with AsyncClient() as viper:
+            response = await viper.get(url=endpoint, headers=header)
+            response.raise_for_status()
+            data = response.json()
 
-            for installation in data:
-                if (
-                    installation["account"]["login"] == cookie["username"]
-                    and installation["client_id"] == cookie["client_id"]
-                ):
-                    logfire.info(
-                        f"Found github app installation id #{installation['id']}"
-                    )
-                    return GitInstallationResponse(**installation)
+        for i in data:
+            if (
+                i["account"]["login"] == cookie["username"]
+                and i["client_id"] == cookie["client_id"]
+            ):
+                logfire.info(f"Git installation: #{i['id']}")
+                return Git_I_Resp.model_validate(**i)
 
-            logfire.info(
-                "Did not find github app installation for username"
-                + f"#{cookie['username']} with client_id #{cookie['client_id']}."
-            )
-            return None
+        raise HTTPException(status_code=404, detail="Git install not found")
 
-        except HTTPStatusError as e:
-            logfire.error(f"Internal Error: {e}")
-            raise HTTPException(
-                status=status.HTTP_40O_BAD_REQUEST,
-                detail="Incorrect Request.",
-            )
+    # except HTTPStatusError as e:
+    #     logfire.error(f"Internal Error: {e}")
+    #     raise HTTPException(
+    #         status=status.HTTP_40O_BAD_REQUEST,
+    #         detail="Incorrect Request.",
+    #     )

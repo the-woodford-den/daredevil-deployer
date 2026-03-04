@@ -1,8 +1,11 @@
 from contextlib import asynccontextmanager
+from datetime import datetime as dt
 
 import logfire
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from configs import get_settings
 from dbs import data_store
@@ -45,4 +48,14 @@ async def get_root():
     return {"message": "Daredevil Deployer Application"}
 
 
-# end
+@app.exception_handler(HTTPException)
+async def http_exception(req: Request, exc):
+    logfire.error(
+        f"||{getattr(req.client, 'host', 'X.X.X.X')}::"
+        + f"{getattr(req.client, 'port', 'XXXX')}||::"
+        + f"{dt.now()}||\n||{exc.message}"
+    )
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"message": "Oof! Something is wrong."},
+    )

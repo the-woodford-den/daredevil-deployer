@@ -2,7 +2,7 @@
 name = "daredevil-backend"
 version = "0.1.0"
 description = "Backend for Daredevil Deployer"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
     "alembic>=1.17.0",
     "argon2-cffi>=25.1.0",

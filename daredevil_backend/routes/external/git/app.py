@@ -1,11 +1,11 @@
 import logfire
-from fastapi import APIRouter, HTTPException
-from starlette.status import HTTP_400_BAD_REQUEST as status_400
-from httpx import AsyncClient, HTTPStatusError, RequestError
+from fastapi import APIRouter
+from httpx import AsyncClient
 from rich import inspect
 
-from dependency import CookieTokenDepend, GitAppServiceDepend
+from dependency import CookieTokenDepend
 from models.git import GitAppResponse
+from starlette.exceptions import HTTPException
 from utility import GitLib
 
 api = APIRouter(prefix="/git/hub/app")
@@ -18,7 +18,6 @@ api = APIRouter(prefix="/git/hub/app")
 )
 async def get(
     *,
-    service: GitAppServiceDepend,
     cookie: CookieTokenDepend,
 ):
     """This GET request searches Github Api for a Github App with a token.
@@ -36,33 +35,25 @@ async def get(
     }
 
     with logfire.span("Sending request for github app data."):
-        try:
-            async with AsyncClient() as viper:
-                response = await viper.get(url=endpoint, headers=headers)
-                response.raise_for_status()
-                data = response.json()
+        async with AsyncClient() as viper:
+            response = await viper.get(url=endpoint, headers=headers)
+            response.raise_for_status()
+            data = response.json()
 
-                if data["id"] is not None:
-                    logfire.info(f"Found github app id #{data['id']}")
-                    git_app = await service.get(git_id=data["id"])
-                    return git_app
+        if data["id"] is None:
+            raise HTTPException(status_code=404, detail="Git app not found")
 
-        except HTTPStatusError as e:
-            status_code = int(e.response.status_code)
-            status_detail = (
-                f"Response Error: {status_code} No git app for"
-                f"{cookie['username']} with client_id {cookie['client_id']}."
-            )
-        except RequestError as e:
-            status_detail = (
-                f"Request Error: {e.request.url!s} No git app for "
-                f"{cookie['username']} with client_id {cookie['client_id']}"
-            )
-        finally:
-            error_code = status_400 if status_code is None else status_code
-            error_msg = "unknown" if status_detail is None else status_detail
-            logfire.error(error_msg)
-            raise HTTPException(
-                status_code=error_code,
-                detail=error_msg,
-            )
+        logfire.info(f"Git app: #{data['id']}")
+        return GitAppResponse.model_validate(**data)
+
+    # except HTTPStatusError as e:
+    #     status_code = int(e.response.status_code)
+    #     status_detail = (
+    #         f"Response Error: {status_code} No git app for"
+    #         f"{cookie['username']} with client_id {cookie['client_id']}."
+    #     )
+    # except RequestError as e:
+    #     status_detail = (
+    #         f"Request Error: {e.request.url!s} No git app for "
+    #         f"{cookie['username']} with client_id {cookie['client_id']}"
+    #     )

@@ -37,8 +37,6 @@ async def get_current_user(
         logfire.info(f"User {user.username} authenticated successfully")
         return user
 
-    except HTTPException:
-        raise
     except Exception as e:
         logfire.error(f"Error getting current user: {e}")
         raise HTTPException(status_code=401, detail="Invalid authentication")
