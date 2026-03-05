@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from datetime import datetime as dt
+import datetime as dt
 
 import logfire
 from fastapi import FastAPI, HTTPException
@@ -53,9 +53,19 @@ async def http_exception(req: Request, exc):
     logfire.error(
         f"||{getattr(req.client, 'host', 'X.X.X.X')}::"
         + f"{getattr(req.client, 'port', 'XXXX')}||::"
-        + f"{dt.now()}||\n||{exc.message}"
+        + f"{dt.datetime.now(dt.timezone.utc)}||\n||{exc.message}"
     )
     return JSONResponse(
         status_code=exc.status_code,
         content={"message": "Oof! Something is wrong."},
     )
+
+
+@app.middleware("http")
+async def req_time_header(request: Request, call_next):
+    request.state.start_time = dt.datetime.now(dt.timezone.utc)
+    resp = await call_next(request)
+
+    end_time = dt.datetime.now(dt.timezone.utc) - request.state.end_time
+    resp.headers["X-Req-Time"] = f"||{end_time.strftime('%H:%M:%%S')}||"
+    return resp
