@@ -1,4 +1,5 @@
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -43,7 +44,7 @@ async def get_current_user(
     session: SessionDepend,
 ):
     """Returns the current user from token"""
-    return await session.get(User, access_token["user_id"])
+    return await session.get(User, UUID(access_token["user_id"]))
 
 
 def get_git_app_service(session: SessionDepend):

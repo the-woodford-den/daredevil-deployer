@@ -13,7 +13,7 @@ export async function clientLoader() {
   };
 }
 
-export function Repos() {
+export default function Repos() {
   let data = useLoaderData();
 
   return (

@@ -63,7 +63,7 @@ class UserService:
 
         ph.verify(user.password_hash, password)
 
-        content = {"username": username}
+        content = {"username": username, "user_id": str(user.id)}
         token = encode_token(data={**content})
         merge = {**user.model_dump(exclude={"access_token"})} | {
             "access_token": token

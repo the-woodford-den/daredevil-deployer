@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from typing import Annotated
+from uuid import UUID
 
 import logfire
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -48,7 +49,7 @@ async def logout_user(
     cookie: CookieTokenDepend,
 ):
     """Deactivates cookie and logout."""
-    user = await session.get(User, cookie["user_id"])
+    user = await session.get(User, UUID(cookie["user_id"]))
     if user is None:
         logfire.error(f"User not found for user_id: {cookie['user_id']}")
         raise HTTPException(status_code=404, detail="User not found")

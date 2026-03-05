@@ -108,6 +108,31 @@ export const getApp = async (cookieHeader?: string): Promise<ResultAsync<App, Er
   );
 };
 
+export const createInstallation = async (): Promise<ResultAsync<Installation, ErrorState>> => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  return ResultAsync.fromPromise(
+    fetch(`${backendUrl}/git/installation/create`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    }).then(async (response) => {
+      if (!response.ok) {
+        throw { status: response.status, detail: 'Failed to create installation.', isError: true };
+      }
+      const installResponse = await response.json();
+      return installResponse as Installation;
+    }),
+    (error) => {
+      const err = error as ErrorState;
+      if ('status' in err) {
+        return { ...err, ...errorHelper } as ErrorState;
+      }
+      return { status: 500, detail: 'Cannot Create Installation.', ...errorHelper } as ErrorState;
+    }
+  );
+};
+
 export const createApp = async (
   clientId: string,
   cookieHeader?: string,

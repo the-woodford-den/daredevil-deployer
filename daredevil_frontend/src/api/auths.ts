@@ -62,8 +62,7 @@ export const signIn = async (username: string, password: string): Promise<Result
   );
 };
 
-export const signOut = async (cookieHeader?: string): Promise<ResultAsync<void, ErrorState>> => {
-  userRequest["cookie"] = response.headers.get('Cookie');
+export const signOut = async (): Promise<ResultAsync<void, ErrorState>> => {
   return ResultAsync.fromPromise(
     fetch(`${BACKEND_URL}/auth/logout`, {
       credentials: 'include',

@@ -6,6 +6,7 @@ export * from './DisplayPolling';
 export * from './GithubAppGetForm';
 export * from './Loading';
 export * from './LoginForm';
+export * from './LogoutForm';
 export * from './NetworkForm';
 export * from './Note';
 export * from './RegisterForm';

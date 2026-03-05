@@ -1,4 +1,4 @@
-import { Button, Container, Fieldset, Field, Input, Stack } from '@chhakra-ui/react';
+import { Button, Container, Fieldset, Stack } from '@chakra-ui/react';
 
 
 export function LogoutForm() {
@@ -7,10 +7,10 @@ export function LogoutForm() {
     <Container centerContent={true} pt="6" pb="6">
       <Fieldset.Root size="lg" maxW="lg" color="aqua">
         <Stack>
-          <Fieldset.Legend>DareDevil</Fieldset>
+          <Fieldset.Legend>DareDevil</Fieldset.Legend>
           <Fieldset.HelperText>ByeBye</Fieldset.HelperText>
         </Stack>
-        <Button size alignSelf="flex-end" type="submit">
+        <Button alignSelf="flex-end" type="submit">
           Logout
         </Button>
       </Fieldset.Root>

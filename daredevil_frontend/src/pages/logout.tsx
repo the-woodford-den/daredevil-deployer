@@ -9,9 +9,9 @@ import {
   StackSeparator,
   Text
 } from '@chakra-ui/react';
-import { LogoutButton } from '@/components';
-import { handleSignOut } from '@/api';
-import type { User, ErrorState } from '@/tipos';
+import { LogoutForm } from '@/components';
+import { signOut } from '@/api';
+import type { ErrorState } from '@/tipos';
 import { errorStore, userStore } from '@/state';
 import { Form, useNavigate } from 'react-router';
 import ddUrl from '@/assets/ddevil-pixel.png';
@@ -31,11 +31,11 @@ export default function Logout() {
       return;
     }
 
-    const result = await signOut(username, password);
+    const result = await signOut();
     result.match(
-      (user: User) => {
-        storeSignOut(user);
-        navigate("/cloud");
+      () => {
+        storeSignOut();
+        navigate("/", { viewTransition: true });
       },
       (err: ErrorState) => {
         setError(err);

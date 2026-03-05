@@ -14,54 +14,63 @@ import {
 import type { App, ErrorState, Installation } from '@/tipos';
 import { appStore, installationStore, userStore, errorStore } from "@/state";
 import { Form } from 'react-router';
-import { createApp, createInstallation, getApp, getInstall } from '@/api';
+import { createApp, createInstallation, getApp, getInstall, getCurrentUser } from '@/api';
 import underUrl from '~/underline.svg';
 
 
 export async function clientLoader() {
-  const user = userStore.getState();
-  if (!user.username) {
-    console.log(user);
+  try {
+    const userResult = await getCurrentUser();
+    const user = await userResult.match(
+      (user) => user,
+      () => null,
+    );
+
+    if (!user) {
+      throw redirect("/login");
+    }
+
+    if (!userStore.getState().username) {
+      await userStore.getState().handleSignIn(user);
+    }
+
+    const username = user.username;
+    const title = username
+      ? `${username.charAt(0).toUpperCase()}${username.slice(1)}'s Cloud Console`
+      : 'Cloud Console';
+
+    let app = appStore.getState();
+    if (!app.name) {
+      const result = await getApp();
+      result.match(
+        (fetchedApp: App) => { appStore.getState().updateApp(fetchedApp); },
+        (err: ErrorState) => { errorStore.getState().setError(err); },
+      );
+    }
+
+    let installation = installationStore.getState();
+    if (!installation.appSlug) {
+      const result = await getInstall();
+      result.match(
+        (install: Installation) => { installationStore.getState().updateInstallation(install); },
+        (err: ErrorState) => { errorStore.getState().setError(err); },
+      );
+    }
+
+    return {
+      app: appStore.getState(),
+      installation: installationStore.getState(),
+      title,
+      footer: 'Just Keep Showing Up & Life Will Reward You',
+    };
+  } catch (err) {
+    // Let redirect responses from React Router pass through
+    if (err instanceof Response) throw err;
+    console.error('[cloud clientLoader] unexpected error:', err);
     throw redirect("/login");
   }
-
-  const username = user.username;
-  const title = `${username!.at(0).toUpperCase()}` +
-    `${username!.slice(1)}'s Cloud Console`;
-
-  let app = appStore.getState();
-  if (!app.name) {
-    const result = await getApp(user.cookie);
-    result.match(
-      (app: App) => {
-        appStore.getState().updateApp(app);
-      },
-      (err: ErrorState) => {
-        errorStore.getState().setError(err);
-      });
-    console.log(result);
-  }
-
-  let installation = installationStore.getState();
-  if (!installation.appSlug) {
-    const result = await getInstall(user.cookie);
-    result.match(
-      (install: Installation) => {
-        installationStore.getState().updateInstallation(install);
-      },
-      (err: ErrorState) => {
-        errorStore.getState().setError(err);
-      });
-    console.log(result);
-  }
-
-  return {
-    app: app,
-    installation: installation,
-    title: title,
-    footer: 'Just Keep Showing Up & Life Will Reward You',
-  };
 }
+clientLoader.hydrate = true;
 
 export default function Cloud() {
   let data = useLoaderData();
@@ -109,7 +118,7 @@ export default function Cloud() {
     }
 
     const username = data.get("username") as string;
-    const result = await createInstallation(user.cookie, username);
+    const result = await createInstallation();
     result.match(
       (install: Installation) => {
         installationCreate(install);

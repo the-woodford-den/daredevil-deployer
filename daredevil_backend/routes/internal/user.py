@@ -1,5 +1,6 @@
 import logfire
 from fastapi import APIRouter, HTTPException
+from uuid import UUID
 
 from configs import get_settings
 from dependency import CookieTokenDepend, SessionDepend, UserServiceDepend
@@ -26,7 +27,7 @@ async def get_current_user(
     cookie: CookieTokenDepend,
 ):
     """Returns the current authenticated user from token"""
-    user = await session.get(User, cookie["user_id"])
+    user = await session.get(User, UUID(cookie["user_id"]))
     if user is None:
         raise HTTPException(status_code=404, detail="User is not here.")
 
