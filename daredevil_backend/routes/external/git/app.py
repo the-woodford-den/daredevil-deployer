@@ -35,7 +35,7 @@ async def get(
     }
 
     with logfire.span("Sending request for github app data."):
-        async with AsyncClient() as viper:
+        async with AsyncClient(timeout=60.0) as viper:
             response = await viper.get(url=endpoint, headers=headers)
             response.raise_for_status()
             data = response.json()

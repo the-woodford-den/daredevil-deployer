@@ -3,10 +3,12 @@ from typing import List
 import logfire
 from fastapi import APIRouter, HTTPException
 from httpx import AsyncClient, HTTPStatusError
-from rich import inspect
 
-from dependency import (CookieTokenDepend, GitRepositoryServiceDepend,
-                        SessionDepend)
+from dependency import (
+    CookieTokenDepend,
+    GitRepositoryServiceDepend,
+    SessionDepend,
+)
 from models.git import GitRepositoryResponse
 from models.user import User
 from utility import GitLib
@@ -37,7 +39,7 @@ async def get_all(
     with logfire.span("Searching Github App's list of repositories ..."):
         try:
             repo_list = []
-            async with AsyncClient() as viper:
+            async with AsyncClient(timeout=60.0) as viper:
                 response = await viper.get(url=endpoint, headers=header)
                 response.raise_for_status()
                 data = response.json()
