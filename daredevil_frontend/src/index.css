@@ -2,6 +2,7 @@
   --gray: #3d3d3d;
   --green: #3fae6a;
   --blue: #213547;
+  --aqua: #00FFFF;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-family: 'Bricolage Grotesque', sans-serif, 'Texturina', serif;
@@ -17,7 +18,7 @@
 
 html {
   background-color: var(--blue);
-  color: var(--green);
+  color: var(--aqua);
   color-scheme: dark;
   height: 100%;
   margin: 0;

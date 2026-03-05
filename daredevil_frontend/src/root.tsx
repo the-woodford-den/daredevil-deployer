@@ -58,9 +58,7 @@ export default function Root() {
               <Outlet />
             </Grid>
           </main>
-          <Container width="75%">
-            <Footer />
-          </Container>
+          <Footer />
         </Container>
       </Provider>
     </StrictMode>

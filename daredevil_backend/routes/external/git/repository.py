@@ -3,26 +3,29 @@ from typing import List
 import logfire
 from fastapi import APIRouter, HTTPException
 from httpx import AsyncClient, HTTPStatusError
-from rich import inspect
 
-from dependency import CookieTokenDepend, GitRepoServiceDepend, SessionDepend
-from models.git import Repository
+from dependency import (
+    CookieTokenDepend,
+    GitRepositoryServiceDepend,
+    SessionDepend,
+)
+from models.git import GitRepositoryResponse
 from models.user import User
 from utility import GitLib
 
-api = APIRouter(prefix="/git/repo")
+api = APIRouter(prefix="/git/hub/repository")
 
 
-@api.get("/all", response_model=List[Repository])
-async def get_repos(
+@api.get("/all", response_model=List[GitRepositoryResponse])
+async def get_all(
     *,
     session: SessionDepend,
-    service: GitRepoServiceDepend,
-    token: CookieTokenDepend,
+    service: GitRepositoryServiceDepend,
+    cookie: CookieTokenDepend,
 ):
-    """Searches the Github Api and returns the Github App's associated Repositories.
-    This includes the organization and other users who installed the App."""
-    user = await session.get(User, token["user"]["id"])
+    """Searches Github API & returns associated organization & user
+    repositories."""
+    user = await session.get(User, cookie["user"]["id"])
     gh_lib = GitLib(session)
     jwt = gh_lib.create_jwt(client_id=user.client_id)
 
@@ -36,7 +39,7 @@ async def get_repos(
     with logfire.span("Searching Github App's list of repositories ..."):
         try:
             repo_list = []
-            async with AsyncClient() as viper:
+            async with AsyncClient(timeout=60.0) as viper:
                 response = await viper.get(url=endpoint, headers=header)
                 response.raise_for_status()
                 data = response.json()

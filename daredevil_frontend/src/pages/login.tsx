@@ -40,11 +40,10 @@ export default function Login() {
       (user: User) => {
         storeSignIn(user);
         console.log(result);
-        navigate("/cloud");
+        navigate("/cloud", { viewTransition: true });
       },
       (err: ErrorState) => {
         setError(err);
-        navigate('/login');
       }
     );
   };
@@ -68,7 +67,7 @@ export default function Login() {
               />
             </HStack>
           </Flex>
-          <Form method="post" ref={formRef} onSubmit={async (e) => { await handleSignIn(e) }}>
+          <Form method="post" ref={formRef} onSubmit={async (e) => { await handleSignIn(e) }} viewTransition="true">
             <LoginForm />
           </Form>
         </Stack>

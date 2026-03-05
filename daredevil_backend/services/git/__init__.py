@@ -1,5 +1,5 @@
 from .app import GitAppService
-from .install import GitInstallService
-from .repo import GitRepoService
+from .installation import GitInstallationService
+from .repository import GitRepositoryService
 
-__all__ = ["GitAppService", "GitInstallService", "GitRepoService"]
+__all__ = ["GitAppService", "GitInstallationService", "GitRepositoryService"]

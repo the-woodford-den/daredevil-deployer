@@ -1,4 +1,5 @@
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -7,7 +8,8 @@ from dbs import get_async_session
 from models.user import User
 from security import CookieDepend, oauth2_scheme
 from services import UserService
-from services.git import GitAppService, GitInstallService, GitRepoService
+from services.git import (GitAppService, GitInstallationService,
+                          GitRepositoryService)
 from utility import decode_token
 
 SessionDepend = Annotated[AsyncSession, Depends(get_async_session)]
@@ -42,19 +44,19 @@ async def get_current_user(
     session: SessionDepend,
 ):
     """Returns the current user from token"""
-    return await session.get(User, access_token["user_id"])
+    return await session.get(User, UUID(access_token["user_id"]))
 
 
-def get_gitapp_service(session: SessionDepend):
+def get_git_app_service(session: SessionDepend):
     return GitAppService(session)
 
 
-def get_gitinstall_service(session: SessionDepend):
-    return GitInstallService(session)
+def get_git_installation_service(session: SessionDepend):
+    return GitInstallationService(session)
 
 
-def get_gitrepo_service(session: SessionDepend):
-    return GitRepoService(session)
+def get_git_repository_service(session: SessionDepend):
+    return GitRepositoryService(session)
 
 
 def get_user_service(session: SessionDepend):
@@ -63,9 +65,11 @@ def get_user_service(session: SessionDepend):
 
 CookieTokenDepend = Annotated[dict, Depends(get_cookie_token)]
 CurrentUserDepend = Annotated[User, Depends(get_current_user)]
-GitAppServiceDepend = Annotated[GitAppService, Depends(get_gitapp_service)]
-GitInstallServiceDepend = Annotated[
-    GitInstallService, Depends(get_gitinstall_service)
+GitAppServiceDepend = Annotated[GitAppService, Depends(get_git_app_service)]
+GitInstallationServiceDepend = Annotated[
+    GitInstallationService, Depends(get_git_installation_service)
 ]
-GitRepoServiceDepend = Annotated[GitRepoService, Depends(get_gitrepo_service)]
+GitRepositoryServiceDepend = Annotated[
+    GitRepositoryService, Depends(get_git_repository_service)
+]
 UserServiceDepend = Annotated[UserService, Depends(get_user_service)]

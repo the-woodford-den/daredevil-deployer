@@ -1,15 +1,15 @@
-"""Git Repo Typed Models"""
+"""Git GitRepository Typed Models"""
 
 from typing import Optional
 
-from pydantic import AliasGenerator, ConfigDict, EmailStr
+from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
 from models import IDModel, TSModel
-from utility import serialize
+from utility import serializer
 
 
-class RepositoryBase(SQLModel):
+class GitRepositoryBase(SQLModel):
     node_id: Optional[str]
     name: Optional[str]
     full_name: Optional[str]
@@ -77,8 +77,6 @@ class RepositoryBase(SQLModel):
     disabled: Optional[bool]
     visibility: Optional[str]
     pushed_at: Optional[str]
-    created_at: Optional[str]
-    updated_at: Optional[str]
     allow_rebase_merge: Optional[bool] = Field(default=False)
     template_repository: Optional[str] = Field(default=None)
     temp_clone_token: Optional[str] = Field(default=None)
@@ -93,7 +91,7 @@ class RepositoryBase(SQLModel):
     watchers: Optional[int] = Field(default=0)
 
 
-class RepositoryOwnerResponse(SQLModel):
+class GitRepositoryOwnerResponse(SQLModel):
     id: int
     name: Optional[str] = Field(default=None)
     email: Optional[EmailStr] = Field(default=None)
@@ -101,31 +99,31 @@ class RepositoryOwnerResponse(SQLModel):
     node_id: str
     avatar_url: str
     gravatar_id: Optional[str] = Field(default=None)
-    url: str = Field()
-    html_url: str = Field()
-    followers_url: str = Field()
-    following_url: str = Field()
-    gists_url: str = Field()
-    starred_url: str = Field()
-    subscriptions_url: str = Field()
-    organizations_url: str = Field()
-    repos_url: str = Field()
-    events_url: str = Field()
-    received_events_url: str = Field()
-    type: str = Field()
-    user_view_type: str = Field()
+    url: str = Field(default=...)
+    html_url: str = Field(default=...)
+    followers_url: str = Field(default=...)
+    following_url: str = Field(default=...)
+    gists_url: str = Field(default=...)
+    starred_url: str = Field(default=...)
+    subscriptions_url: str = Field(default=...)
+    organizations_url: str = Field(default=...)
+    repos_url: str = Field(default=...)
+    events_url: str = Field(default=...)
+    received_events_url: str = Field(default=...)
+    type: str = Field(default=...)
+    user_view_type: str = Field(default=...)
     site_admin: bool = Field(default=False)
 
 
-class RepositoryPermissionsResponse(SQLModel):
-    admin: bool = Field()
-    push: bool = Field()
-    pull: bool = Field()
-    maintain: bool = Field()
-    triage: bool = Field()
+class GitRepositoryPermissionsResponse(SQLModel):
+    admin: bool = Field(default=...)
+    push: bool = Field(default=...)
+    pull: bool = Field(default=...)
+    maintain: bool = Field(default=...)
+    triage: bool = Field(default=...)
 
 
-class RepositoryLicenseResponse(SQLModel):
+class GitRepositoryLicenseResponse(SQLModel):
     key: Optional[str] = Field(default=None)
     name: Optional[str] = Field(default=None)
     url: Optional[str] = Field(default=None)
@@ -134,22 +132,51 @@ class RepositoryLicenseResponse(SQLModel):
     html_url: Optional[str] = Field(default=None)
 
 
-class RepositoryResponse(RepositoryBase):
-    topics: list[Optional[str]] = Field()
-    owner: Optional[RepositoryOwnerResponse] = Field()
-    license: Optional[RepositoryLicenseResponse] = Field()
-    permissions: Optional[RepositoryPermissionsResponse] = Field()
-    id: int = Field()
+class GitRepositoryResponse(GitRepositoryBase):
+    topics: list[Optional[str]] = Field(default=...)
+    owner: Optional[GitRepositoryOwnerResponse] = Field(default=...)
+    license: Optional[GitRepositoryLicenseResponse] = Field(default=...)
+    permissions: Optional[GitRepositoryPermissionsResponse] = Field(
+        default=...)
+    id: int = Field(default=...)
 
 
-class Repository(RepositoryBase, IDModel, TSModel, table=True):
-    __tablename__ = "git_repos"
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            serialization_alias=lambda field_name: (serialize(field_name))
-        )
-    )
-    git_id: int = Field()
+class GitRepository(GitRepositoryBase, IDModel, TSModel, table=True):
+    __tablename__ = "git_repositories"  # type: ignore[reportAssignmentType]
+    model_config = serializer
+    git_id: int = Field(default=...)
+
+
+class GitRepositoryCreate(SQLModel):
+    username: str = Field(default=...)
+
+
+class GitRepositoryRead(SQLModel):
+    model_config = serializer
+    name: Optional[str]
+    private: Optional[bool]
+    html_url: Optional[str]
+    description: Optional[str]
+    url: Optional[str]
+    git_url: Optional[str]
+    ssh_url: Optional[str]
+    clone_url: Optional[str]
+    homepage: Optional[str] = Field(default=None)
+    language: Optional[str]
+    forks_count: Optional[int]
+    stargazers_count: Optional[int]
+    watchers_count: Optional[int]
+    size: Optional[int]
+    default_branch: Optional[str]
+    open_issues_count: Optional[int]
+    is_template: Optional[bool]
+    has_wiki: Optional[bool]
+    has_pages: Optional[bool]
+    visibility: Optional[str]
+    pushed_at: Optional[str]
+    created_at: Optional[str]
+    updated_at: Optional[str]
+    git_id: int = Field(default=...)
 
 
 #

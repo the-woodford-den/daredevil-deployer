@@ -1,14 +1,14 @@
 from .session import (CookieTokenDepend, CurrentUserDepend,
-                      GitAppServiceDepend, GitInstallServiceDepend,
-                      GitRepoServiceDepend, SessionDepend, UserServiceDepend,
-                      get_access_token)
+                      GitAppServiceDepend, GitInstallationServiceDepend,
+                      GitRepositoryServiceDepend, SessionDepend,
+                      UserServiceDepend, get_access_token)
 
 __all__ = [
     "CookieTokenDepend",
     "CurrentUserDepend",
     "GitAppServiceDepend",
-    "GitInstallServiceDepend",
-    "GitRepoServiceDepend",
+    "GitInstallationServiceDepend",
+    "GitRepositoryServiceDepend",
     "SessionDepend",
     "UserServiceDepend",
     "get_access_token",

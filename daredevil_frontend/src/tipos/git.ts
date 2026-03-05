@@ -2,15 +2,15 @@
 import type { UUID } from './utility';
 
 export interface App {
-  id: UUID;
-  clientId: string;
-  description: string;
-  events: string[];
-  gitId: string;
-  name: string;
+  id: UUID | undefined;
+  clientId: string | undefined;
+  description: string | undefined;
+  events: string[] | [];
+  gitId: string | undefined;
+  name: string | undefined;
   permissions: {};
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | undefined;
+  updatedAt: string | undefined;
 }
 
 export interface Installation {

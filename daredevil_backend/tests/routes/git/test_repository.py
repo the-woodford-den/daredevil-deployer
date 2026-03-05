@@ -1,4 +1,4 @@
-"""Feature tests for routes/git/repository.py"""
+"""Feature tests for /git/repository routes"""
 
 # from unittest.mock import AsyncMock, patch
 
@@ -11,7 +11,7 @@ import pytest
 api = "/git/repository"
 
 
-class TestGithubRepositoryRoutes:
+class TestGitRepositoryRoutes:
     """test suite --> routes/git/repository.py"""
 
     @pytest.mark.asyncio

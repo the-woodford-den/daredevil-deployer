@@ -8,7 +8,7 @@ from sqlmodel import SQLModel
 
 from alembic import context
 from configs import get_settings
-from models.git import GitApp, GitInstall, Repository
+from models.git import GitApp, GitInstallation, GitRepository
 from models.user import User
 
 settings = get_settings()

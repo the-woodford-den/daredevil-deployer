@@ -1,20 +1,20 @@
 import { useFormStatus } from 'react-dom';
 import { Button, Field, Heading, Input, Stack } from '@chakra-ui/react';
 
-export function FindAppForm() {
+export function CreateGitAppForm() {
   const { pending } = useFormStatus();
 
   return (
     <Stack gap="8" className="app-get-form">
       <Heading size="lg" className="t-font">
-        Get Github App Form
+        Create Git App
       </Heading>
       <Field.Root required orientation="horizontal">
         <Field.Label>
-          Slug
+          Client ID
           <Field.RequiredIndicator />
         </Field.Label>
-        <Input name="slug" type="text" disabled={pending} />
+        <Input name="clientId" type="text" disabled={pending} />
       </Field.Root>
       <Button type="submit" disabled={pending}>
         {pending ? "Submitting ..." : "Submit"}

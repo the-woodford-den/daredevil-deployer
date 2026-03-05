@@ -15,7 +15,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from configs import get_settings
 from dbs import get_async_session
 from main import app
-from models.git import GitApp, GitInstall, Repository
+from models.git import GitApp, GitInstallation, GitRepository
 from models.user import User
 
 settings = get_settings()

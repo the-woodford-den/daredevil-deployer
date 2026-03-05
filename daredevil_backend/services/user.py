@@ -3,10 +3,8 @@ from datetime import datetime, timedelta, timezone
 import logfire
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerifyMismatchError
-from fastapi import Depends, HTTPException, status
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
-from typing_extensions import Annotated
 
 from configs import get_settings
 from models.user import User, UserCreate, UserUpdate
@@ -24,27 +22,23 @@ class UserService:
     def __init__(
         self,
         session: AsyncSession,
-        client_id: str = Annotated[str, Depends(get_settings)],
     ):
-        settings = get_settings()
         self.session = session
-        self.client_id = settings.client_id
 
     async def get(self, id: int) -> User | None:
         query = select(User).where(User.git_id == id)
-        user = (await self.session.execute(query)).scalar_one_or_none()
+        user = (await self.session.exec(query)).first()
         return user
 
     async def get_by_username(self, username: str) -> User | None:
         query = select(User).where(User.username == username)
-        user = (await self.session.execute(query)).scalar_one_or_none()
+        user = (await self.session.exec(query)).first()
         return user
 
     async def add(self, user_create: UserCreate) -> User:
         password_hash = ph.hash(user_create.password)
         new_user = User(
-            **user_create.model_dump(exclude=["password", "id"]),
-            client_id=self.client_id,
+            **user_create.model_dump(exclude={"password", "id"}),
             git_id=1234,
             password_hash=password_hash,
         )
@@ -56,47 +50,34 @@ class UserService:
         await self.session.refresh(new_user)
         return new_user
 
-    def update(self, user_update: UserUpdate) -> User:
-        pass
+    # def update(self, user_update: UserUpdate) -> User:
+    #     pass
 
-    def delete(self, id: int) -> None:
-        pass
+    # def delete(self, id: int) -> None:
+    #     pass
 
     async def create_token(self, username, password) -> dict | None:
         user = await self.get_by_username(username)
-
-        try:
-            if user is None:
-                raise HTTPException(
-                    detail=f"User '{username}' not found.",
-                    status_code=status.HTTP_404_NOT_FOUND,
-                )
-            isValid = ph.verify(user.password_hash, password)
-
-            if not isValid:
-                raise HTTPException(
-                    detail="Password is incorrect.",
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                )
-
-            content = {
-                "client_id": user.client_id,
-                "user_id": str(user.id),
-                "username": username,
-            }
-            token = encode_token(data={**content})
-            user_res = UserUpdate.model_validate(user)
-
-            return {
-                "user": {
-                    **user_res.model_dump(),
-                },
-                "token": token,
-            }
-
-        except (InvalidHashError, VerifyMismatchError, HTTPException) as e:
-            logfire.error(f"User service create cookie error: {type(e)}: {e}")
+        if not user:
             return None
+
+        ph.verify(user.password_hash, password)
+
+        content = {"username": username, "user_id": str(user.id)}
+        token = encode_token(data={**content})
+        merge = {**user.model_dump(exclude={"access_token"})} | {
+            "access_token": token
+        }
+        response = UserUpdate.model_validate(merge)
+        return {
+            "user": response.model_dump(
+                include={"git_id", "access_token", "username"}
+            ),
+            "token": token,
+        }
+
+        # except (InvalidHashError, VerifyMismatchError) as e:
+        #     throw
 
     async def create_cookie(
         self, token: str, expiry: timedelta = timedelta(days=1)

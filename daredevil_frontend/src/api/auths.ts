@@ -5,6 +5,7 @@ import type {
   User,
 } from "@/tipos";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const errorHelper = {
   setError: () => { Promise<void> },
@@ -12,18 +13,16 @@ const errorHelper = {
   isError: true,
 }
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-
 
 export const signIn = async (username: string, password: string): Promise<ResultAsync<User, ErrorState>> => {
   const params = new URLSearchParams();
   params.append('username', username);
   params.append('password', password);
 
-  Sentry.logger.info("User API '/user/login' POST, triggered", { log_source: 'src/api/auths' })
+  Sentry.logger.info("User API '/auth/login' POST, triggered", { log_source: 'src/api/auths' })
 
   return ResultAsync.fromPromise(
-    fetch(`${BACKEND_URL}/user/login`, {
+    fetch(`${BACKEND_URL}/auth/login`, {
       method: 'POST',
       body: params,
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -36,7 +35,8 @@ export const signIn = async (username: string, password: string): Promise<Result
       }
 
       const userResponse = await response.json();
-      userResponse["cookie"] = response.headers.get('set-cookie');
+      userResponse["cookie"] = response.headers.get('Cookie');
+      console.log(response.headers);
       Sentry.logger.info("User API testing cookie if in response...", { log_source: 'src/api/auths' })
 
       return userResponse as User;
@@ -64,7 +64,7 @@ export const signIn = async (username: string, password: string): Promise<Result
 
 export const signOut = async (): Promise<ResultAsync<void, ErrorState>> => {
   return ResultAsync.fromPromise(
-    fetch(`${BACKEND_URL}/user/logout`, {
+    fetch(`${BACKEND_URL}/auth/logout`, {
       credentials: 'include',
       method: 'DELETE',
       headers: {
@@ -100,3 +100,4 @@ export const signOut = async (): Promise<ResultAsync<void, ErrorState>> => {
     }
   );
 };
+

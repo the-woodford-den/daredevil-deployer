@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 from uuid import UUID, uuid4
 
 from sqlalchemy import func
@@ -10,11 +10,11 @@ class IDModel(SQLModel):
 
 
 class TSModel(SQLModel):
-    created_at: datetime = Field(
-        default_factory=datetime.now,
+    created_at: dt.datetime = Field(
+        default_factory=dt.datetime.utcnow,
         sa_column_kwargs={"server_default": func.now()},
     )
-    updated_at: datetime = Field(
-        default_factory=datetime.now,
+    updated_at: dt.datetime = Field(
+        default_factory=dt.datetime.utcnow,
         sa_column_kwargs={"server_default": func.now(), "onupdate": func.now()},
     )

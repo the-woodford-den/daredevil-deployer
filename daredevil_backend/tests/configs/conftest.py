@@ -4,10 +4,10 @@ import pytest
 
 
 @pytest.fixture
-def mock_github_app_lib():
+def mock_git_lib():
     """Builds new mock Instance of GithubAppLib"""
-    github_app_lib = Mock()
-    github_app_lib.settings = Mock()
-    github_app_lib.create_jwt = Mock(return_value="mock_jwt_token")
+    git_lib = Mock()
+    git_lib.settings = Mock()
+    git_lib.create_jwt = Mock(return_value="mock_jwt_token")
 
-    return github_app_lib
+    return git_lib
