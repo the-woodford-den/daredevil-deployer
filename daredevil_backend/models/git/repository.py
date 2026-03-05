@@ -77,8 +77,6 @@ class GitRepositoryBase(SQLModel):
     disabled: Optional[bool]
     visibility: Optional[str]
     pushed_at: Optional[str]
-    created_at: Optional[str]
-    updated_at: Optional[str]
     allow_rebase_merge: Optional[bool] = Field(default=False)
     template_repository: Optional[str] = Field(default=None)
     temp_clone_token: Optional[str] = Field(default=None)
@@ -101,28 +99,28 @@ class GitRepositoryOwnerResponse(SQLModel):
     node_id: str
     avatar_url: str
     gravatar_id: Optional[str] = Field(default=None)
-    url: str = Field()
-    html_url: str = Field()
-    followers_url: str = Field()
-    following_url: str = Field()
-    gists_url: str = Field()
-    starred_url: str = Field()
-    subscriptions_url: str = Field()
-    organizations_url: str = Field()
-    repos_url: str = Field()
-    events_url: str = Field()
-    received_events_url: str = Field()
-    type: str = Field()
-    user_view_type: str = Field()
+    url: str = Field(default=...)
+    html_url: str = Field(default=...)
+    followers_url: str = Field(default=...)
+    following_url: str = Field(default=...)
+    gists_url: str = Field(default=...)
+    starred_url: str = Field(default=...)
+    subscriptions_url: str = Field(default=...)
+    organizations_url: str = Field(default=...)
+    repos_url: str = Field(default=...)
+    events_url: str = Field(default=...)
+    received_events_url: str = Field(default=...)
+    type: str = Field(default=...)
+    user_view_type: str = Field(default=...)
     site_admin: bool = Field(default=False)
 
 
 class GitRepositoryPermissionsResponse(SQLModel):
-    admin: bool = Field()
-    push: bool = Field()
-    pull: bool = Field()
-    maintain: bool = Field()
-    triage: bool = Field()
+    admin: bool = Field(default=...)
+    push: bool = Field(default=...)
+    pull: bool = Field(default=...)
+    maintain: bool = Field(default=...)
+    triage: bool = Field(default=...)
 
 
 class GitRepositoryLicenseResponse(SQLModel):
@@ -135,21 +133,22 @@ class GitRepositoryLicenseResponse(SQLModel):
 
 
 class GitRepositoryResponse(GitRepositoryBase):
-    topics: list[Optional[str]] = Field()
-    owner: Optional[GitRepositoryOwnerResponse] = Field()
-    license: Optional[GitRepositoryLicenseResponse] = Field()
-    permissions: Optional[GitRepositoryPermissionsResponse] = Field()
-    id: int = Field()
+    topics: list[Optional[str]] = Field(default=...)
+    owner: Optional[GitRepositoryOwnerResponse] = Field(default=...)
+    license: Optional[GitRepositoryLicenseResponse] = Field(default=...)
+    permissions: Optional[GitRepositoryPermissionsResponse] = Field(
+        default=...)
+    id: int = Field(default=...)
 
 
 class GitRepository(GitRepositoryBase, IDModel, TSModel, table=True):
-    __tablename__ = "git_repositories"
+    __tablename__ = "git_repositories"  # type: ignore[reportAssignmentType]
     model_config = serializer
-    git_id: int = Field()
+    git_id: int = Field(default=...)
 
 
 class GitRepositoryCreate(SQLModel):
-    username: str = Field()
+    username: str = Field(default=...)
 
 
 class GitRepositoryRead(SQLModel):
@@ -177,7 +176,7 @@ class GitRepositoryRead(SQLModel):
     pushed_at: Optional[str]
     created_at: Optional[str]
     updated_at: Optional[str]
-    git_id: int = Field()
+    git_id: int = Field(default=...)
 
 
 #

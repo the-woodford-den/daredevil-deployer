@@ -16,7 +16,6 @@ async def create_user(
     service: UserServiceDepend,
 ):
     """Creates a user with a username & password"""
-
     return await service.add(create_user)
 
 
@@ -27,16 +26,9 @@ async def get_current_user(
     cookie: CookieTokenDepend,
 ):
     """Returns the current authenticated user from token"""
+    user = await session.get(User, cookie["user_id"])
+    if user is None:
+        raise HTTPException(status_code=404, detail="User is not here.")
 
-    try:
-        user = await session.get(User, cookie["user_id"])
-        if user is None:
-            logfire.error(f"User not found for user_id: {cookie['user_id']}")
-            raise HTTPException(status_code=404, detail="User not found")
-
-        logfire.info(f"User {user.username} authenticated successfully")
-        return user
-
-    except Exception as e:
-        logfire.error(f"Error getting current user: {e}")
-        raise HTTPException(status_code=401, detail="Invalid authentication")
+    logfire.info(f"User {user.username} authenticated successfully")
+    return user

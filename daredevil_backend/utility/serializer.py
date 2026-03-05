@@ -1,6 +1,7 @@
 """Simple function for model serialization"""
 
-from pydantic import AliasGenerator, ConfigDict
+from pydantic import AliasGenerator
+from sqlmodel._compat import SQLModelConfig
 
 
 def _serialize(field_name):
@@ -9,7 +10,7 @@ def _serialize(field_name):
     return new_field_name
 
 
-serializer = ConfigDict(
+serializer = SQLModelConfig(
     alias_generator=AliasGenerator(
         serialization_alias=lambda field_name: _serialize(field_name)
     )

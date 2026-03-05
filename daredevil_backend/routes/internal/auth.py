@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from typing import Annotated
 
 import logfire
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -23,18 +23,21 @@ async def login_user(
     """Validates username & password, creates a jwt, adds jwt to cookie,
     then returns response"""
 
-    try:
-        data = await service.create_token(form.username, form.password)
-        cookie_data = await service.create_cookie(data["token"])
+    data = await service.create_token(form.username, form.password)
+    if data is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Oof! Not authorized.",
+        )
 
-        response = JSONResponse(content=data["user"])
-        response.set_cookie(**cookie_data)
+    cookie_data = await service.create_cookie(data["token"])
+    response = JSONResponse(content=data["user"])
+    response.set_cookie(**cookie_data)
 
-        return response
+    return response
 
-    except HTTPException as e:
-        logfire.error(f"HTTP Error {e.status_code}: {e.detail}")
-        raise HTTPException(status=e.status_code, detail=f"{e.detail}")
+    logfire.error(f"HTTP Error {e.status_code}: {e.detail}")
+    raise HTTPException(status=e.status_code, detail=f"{e.detail}")
 
 
 @api.delete("/logout")

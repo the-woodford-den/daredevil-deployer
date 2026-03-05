@@ -1,14 +1,14 @@
-from datetime import datetime, timedelta, timezone
-
-import jwt
 import logfire
-
+import jwt
+from jwt import PyJWTError
+from datetime import datetime, timedelta, timezone
 from configs import get_settings
+from fastapi import HTTPException, status
 
 settings = get_settings()
 
 
-def decode_token(token: str) -> dict | None:
+def decode_token(token: str) -> dict:
     """Decodes tokens"""
     try:
         return jwt.decode(
@@ -16,9 +16,12 @@ def decode_token(token: str) -> dict | None:
             key=settings.app_secret,
             jwt=token,
         )
-    except jwt.PyJWTError as e:
-        logfire.error(f"Utility decode token error: {e}")
-        return None
+    except PyJWTError as e:
+        logfire.error(f"Failed to decode token: {e.args}")
+        raise HTTPException(
+            detail="Failed to decode token, unauthorized",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
 
 
 def encode_token(data: dict, expiry: timedelta = timedelta(days=1)) -> str:

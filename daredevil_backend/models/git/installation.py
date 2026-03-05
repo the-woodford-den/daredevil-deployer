@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from pydantic import ConfigDict, EmailStr
+from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
 from models import IDModel, TSModel
@@ -24,8 +24,7 @@ class GitInstallationAccountResponse(SQLModel):
 
 
 class GitInstallationResponse(GitInstallationBase):
-    model_config = ConfigDict(extra="ignore")
-
+    model_config = serializer
     id: Optional[int] = Field(default=None)
     account: Optional[GitInstallationAccountResponse] = Field(default=None)
     app_id: int = Field(default=None)
@@ -33,24 +32,24 @@ class GitInstallationResponse(GitInstallationBase):
 
 
 class GitInstallation(GitInstallationBase, IDModel, TSModel, table=True):
-    __tablename__ = "git_installations"
+    __tablename__ = "git_installations"  # type: ignore[reportAssignmentType]
     model_config = serializer
-    git_app_id: int = Field()
-    git_id: int = Field()
-    username: str = Field()
+    git_app_id: int = Field(default=...)
+    git_id: int = Field(default=...)
+    username: str = Field(default=...)
 
 
 class GitInstallationCreate(SQLModel):
-    username: str = Field()
+    username: str = Field(default=...)
 
 
 class GitInstallationRead(SQLModel):
     model_config = serializer
-    app_slug: str = Field()
+    app_slug: str = Field(default=...)
     repositories_url: Optional[str] = Field(default=None)
-    html_url: str = Field()
-    git_id: int = Field(alias="gitId", index=True)
+    html_url: str = Field(default=...)
+    git_id: int = Field(default=..., alias="gitId", index=True)
 
 
 class GitInstallationUpdate(SQLModel):
-    username: str = Field()
+    username: str = Field(default=...)

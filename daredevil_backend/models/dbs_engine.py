@@ -1,12 +1,12 @@
 from typing import Optional, Type
 
-from pydantic import ConfigDict
+from sqlmodel._compat import SQLModelConfig
 from sqlalchemy.pool import AsyncAdaptedQueuePool
 from sqlmodel import Field, SQLModel
 
 
 class DataStoreProps(SQLModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = SQLModelConfig(arbitrary_types_allowed=True)
     echo: Optional[bool] = Field(default=True)
     future: Optional[bool] = Field(default=True)
     poolclass: Optional[Type[AsyncAdaptedQueuePool]] = Field(default=None)

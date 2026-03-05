@@ -1,4 +1,5 @@
-from datetime import datetime
+import datetime as dt
+from datetime import timezone
 from uuid import UUID, uuid4
 
 from sqlalchemy import func
@@ -10,11 +11,11 @@ class IDModel(SQLModel):
 
 
 class TSModel(SQLModel):
-    created_at: datetime = Field(
-        default_factory=datetime.now,
+    created_at: dt.datetime = Field(
+        default_factory=lambda: dt.datetime.now(timezone.utc),
         sa_column_kwargs={"server_default": func.now()},
     )
-    updated_at: datetime = Field(
-        default_factory=datetime.now,
+    updated_at: dt.datetime = Field(
+        default_factory=lambda: dt.datetime.now(timezone.utc),
         sa_column_kwargs={"server_default": func.now(), "onupdate": func.now()},
     )

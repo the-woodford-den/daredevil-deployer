@@ -1,15 +1,16 @@
+import json
 from contextlib import asynccontextmanager
 import time as t
-
 import logfire
-from fastapi import FastAPI, HTTPException
+
+from fastapi.exceptions import RequestValidationError
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.openapi.utils import get_openapi
-from starlette.middleware import Middleware
-from starlette.middleware.cors import CORSMiddleware
-from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.requests import Request
-from starlette.responses import JSONResponse, Response
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.responses import JSONResponse, Response
 from typing import Callable, Awaitable
+
 from configs import get_settings
 from dbs import data_store
 from routes import main_router
@@ -40,7 +41,11 @@ def custom_openapi():
         description="Interact & try our schema",
         routes=app.routes,
     )
-    for path in ["/git/hub/app/", "/git/hub/installation/", "/git/hub/repository/all"]:
+    for path in [
+        "/git/hub/app/",
+        "/git/hub/installation/",
+        "/git/hub/repository/all",
+    ]:
         openapi_schema["paths"].pop(path, None)
     app.openapi_schema = openapi_schema
 
@@ -65,7 +70,7 @@ app = FastAPI(
 app.include_router(main_router)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.allowed_origins,
+    allow_origins=settings.allowed_origins_list,
     allow_credentials=True,
     allow_headers=[".*"],
 )
@@ -90,19 +95,6 @@ async def get_root():
     return {"message": "Daredevil Deployer Application"}
 
 
-@app.exception_handler(HTTPException)
-async def http_exception(req: Request, exc):
-    logfire.error(
-        f"||{getattr(req.client, 'host', 'X.X.X.X')}::"
-        + f"{getattr(req.client, 'port', 'XXXX')}||::"
-        + f"{t.time()}||\n||{exc.detail}"
-    )
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"message": "Oof! Something is wrong."},
-    )
-
-
 @app.middleware("http")
 async def req_time_header(
     request: Request, call_next: Callable[[Request], Awaitable[Response]]
@@ -115,3 +107,31 @@ async def req_time_header(
         f"||{t.strftime('%H:%M:%S', t.gmtime(end_time))}||"
     )
     return resp
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception(req: Request, err: RequestValidationError):
+    sts = status.HTTP_400_BAD_REQUEST
+
+    logfire.error(
+        f"||Request error on validation: {req.url}||\n"
+        f"{json.dumps(err.errors(), indent=4)}",
+        status=sts,
+    )
+    return JSONResponse(
+        status_code=sts,
+        content={"message": err.errors},
+    )
+
+
+@app.exception_handler(HTTPException)
+async def http_exception(req: Request, err: HTTPException):
+    logfire.error(
+        f"||{getattr(req.client, 'host', 'X.X.X.X')}::"
+        + f"{getattr(req.client, 'port', 'XXXX')}||::"
+        + f"{t.time()}||\n||{err.detail}"
+    )
+    return JSONResponse(
+        status_code=err.status_code,
+        content={"message": err.detail},
+    )
