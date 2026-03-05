@@ -2,7 +2,7 @@ from typing import List
 
 import logfire
 from fastapi import APIRouter, HTTPException, WebSocket
-from httpx import AsyncClient, HTTPStatusError
+from httpx import AsyncClient, ConnectTimeout, HTTPStatusError
 
 api = APIRouter(prefix="/git/hub")
 
@@ -38,15 +38,18 @@ async def check_github_status():
     }
 
     try:
-        async with AsyncClient() as viper:
+        async with AsyncClient(timeout=30.0) as viper:
             response = await viper.get(url=url, headers=headers)
             data = response.json()
 
         return data
 
+    except ConnectTimeout:
+        logfire.error("Connect timeout reaching githubstatus.com")
+        raise HTTPException(status_code=504, detail="GitHub status unreachable")
+
     except HTTPStatusError as e:
         logfire.error(f"HTTP Status Error: {e.response.status_code}")
-
         raise HTTPException(
             status_code=e.response.status_code,
             detail=f"GitHub error: {e.response.text}",
