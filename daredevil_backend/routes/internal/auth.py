@@ -19,11 +19,12 @@ async def login_user(
     *,
     form: Annotated[OAuth2PasswordRequestForm, Depends()],
     service: UserServiceDepend,
-) -> dict:
+) -> JSONResponse:
     """Validates username & password, creates a jwt, adds jwt to cookie,
     then returns response"""
 
     data = await service.create_token(form.username, form.password)
+
     if data is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -36,8 +37,8 @@ async def login_user(
 
     return response
 
-    logfire.error(f"HTTP Error {e.status_code}: {e.detail}")
-    raise HTTPException(status=e.status_code, detail=f"{e.detail}")
+    # logfire.error(f"HTTP Error {e.status_code}: {e.detail}")
+    # raise HTTPException(status=e.status_code, detail=f"{e.detail}")
 
 
 @api.delete("/logout")

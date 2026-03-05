@@ -21,7 +21,7 @@ class DataStore:
         props = DataStoreProps.model_dump(self._engine_kwargs)
         self._engine = create_async_engine(host, **props)
         self._async_sessionmaker = async_sessionmaker(
-            autocommit=False, bind=self._engine
+            autocommit=False, bind=self._engine, class_=AsyncSession
         )
 
     async def close(self):

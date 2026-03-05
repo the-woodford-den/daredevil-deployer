@@ -20,10 +20,10 @@ export const signIn = async (username: string, password: string): Promise<Result
   params.append('username', username);
   params.append('password', password);
 
-  Sentry.logger.info("User API '/user/login' POST, triggered", { log_source: 'src/api/auths' })
+  Sentry.logger.info("User API '/auth/login' POST, triggered", { log_source: 'src/api/auths' })
 
   return ResultAsync.fromPromise(
-    fetch(`${BACKEND_URL}/user/login`, {
+    fetch(`${BACKEND_URL}/auth/login`, {
       method: 'POST',
       body: params,
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -65,7 +65,7 @@ export const signIn = async (username: string, password: string): Promise<Result
 
 export const signOut = async (): Promise<ResultAsync<void, ErrorState>> => {
   return ResultAsync.fromPromise(
-    fetch(`${BACKEND_URL}/user/logout`, {
+    fetch(`${BACKEND_URL}/auth/logout`, {
       credentials: 'include',
       method: 'DELETE',
       headers: {

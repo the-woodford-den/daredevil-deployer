@@ -32,7 +32,8 @@ class UserService:
 
     async def get_by_username(self, username: str) -> User | None:
         query = select(User).where(User.username == username)
-        user = (await self.session.exec(query)).first()
+        result = (await self.session.exec(query)).first()
+        user = result
         return user
 
     async def add(self, user_create: UserCreate) -> User:
@@ -61,22 +62,23 @@ class UserService:
         if not user:
             return None
 
-        try:
-            ph.verify(user.password_hash, password)
+        ph.verify(user.password_hash, password)
 
-            content = {"username": username}
-            token = encode_token(data={**content})
-            response = UserUpdate(
-                access_token=token,
-                **user.model_dump(),
-            )
-            return {
-                "user": response.model_dump(),
-                "token": token,
-            }
+        content = {"username": username}
+        token = encode_token(data={**content})
+        merge = {**user.model_dump(exclude={"access_token"})} | {
+            "access_token": token
+        }
+        response = UserUpdate.model_validate(merge)
+        return {
+            "user": response.model_dump(
+                include={"git_id", "access_token", "username"}
+            ),
+            "token": token,
+        }
 
-        except (InvalidHashError, VerifyMismatchError) as e:
-            throw
+        # except (InvalidHashError, VerifyMismatchError) as e:
+        #     throw
 
     async def create_cookie(
         self, token: str, expiry: timedelta = timedelta(days=1)
