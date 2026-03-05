@@ -48,29 +48,25 @@ async def logout_user(
     cookie: CookieTokenDepend,
 ):
     """Deactivates cookie and logout."""
+    user = await session.get(User, cookie["user_id"])
+    if user is None:
+        logfire.error(f"User not found for user_id: {cookie['user_id']}")
+        raise HTTPException(status_code=404, detail="User not found")
+    content = {
+        "key": "daredevil_token",
+        "value": "",
+        "httponly": True,
+        "samesite": "lax",
+        "path": "/",
+        "expires": datetime.now(timezone.utc),
+    }
 
     try:
-        user = await session.get(User, cookie["user_id"])
-
-        if user is None:
-            logfire.error(f"User not found for user_id: {cookie['user_id']}")
-            raise HTTPException(status_code=404, detail="User not found")
-
-        content = {
-            "key": "daredevil_token",
-            "value": "",
-            "httponly": True,
-            "samesite": "lax",
-            "path": "/",
-            "expires": datetime.now(timezone.utc),
-        }
-
         response = JSONResponse(content={"message": "deleted"})
         response.set_cookie(**content)
-        response.delete_cookie()
+        response.delete_cookie(key="daredevil_token")
 
         return response
-
     except Exception:
         logfire.error("Logging out error!")
         return {"status": 404, "detail": "Error while logging out!"}

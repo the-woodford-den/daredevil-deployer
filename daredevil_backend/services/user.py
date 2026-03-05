@@ -32,8 +32,7 @@ class UserService:
 
     async def get_by_username(self, username: str) -> User | None:
         query = select(User).where(User.username == username)
-        result = (await self.session.exec(query)).first()
-        user = result
+        user = (await self.session.exec(query)).first()
         return user
 
     async def add(self, user_create: UserCreate) -> User:

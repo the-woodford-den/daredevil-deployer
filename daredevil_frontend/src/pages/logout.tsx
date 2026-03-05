@@ -9,37 +9,32 @@ import {
   StackSeparator,
   Text
 } from '@chakra-ui/react';
-import { LoginForm } from '@/components';
-import { signIn } from '@/api';
+import { LogoutButton } from '@/components';
+import { handleSignOut } from '@/api';
 import type { User, ErrorState } from '@/tipos';
 import { errorStore, userStore } from '@/state';
 import { Form, useNavigate } from 'react-router';
-import mmUrl from '~/mm1.svg';
+import ddUrl from '@/assets/ddevil-pixel.png';
 
 
-
-export default function Login() {
-  const storeSignIn = userStore(
-    (state) => state.handleSignIn,
+export default function Logout() {
+  const storeSignOut = userStore(
+    (state) => state.handleSignOut,
   );
   const formRef = useRef<HTMLFormElement>(null);
   const setError = errorStore((state) => state.setError);
   const navigate = useNavigate();
 
-  const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSignOut = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!formRef.current) {
       return;
     }
 
-    const data = new FormData(formRef.current);
-    const username = data.get("username") as string;
-    const password = data.get("password") as string;
-    const result = await signIn(username, password);
+    const result = await signOut(username, password);
     result.match(
       (user: User) => {
-        storeSignIn(user);
-        console.log(result);
+        storeSignOut(user);
         navigate("/cloud");
       },
       (err: ErrorState) => {
@@ -56,23 +51,22 @@ export default function Login() {
           <Flex gap="8" justify="center">
             <HStack pb="6">
               <Text textStyle="4xl" fontWeight="bold" color="aqua">
-                DareDevil Deployer Login
+                Leaving? Come back soon!
               </Text>
               <Image
-                src={mmUrl}
+                src={ddUrl}
                 alt="MM"
                 boxSize="6rem"
                 fit="contain"
-                className="mmLogo"
+                className="ddLogo"
               />
             </HStack>
           </Flex>
-          <Form method="post" ref={formRef} onSubmit={async (e) => { await handleSignIn(e) }} viewTransition="true">
-            <LoginForm />
+          <Form method="delete" ref={formRef} onSubmit={async (e) => { await handleSignOut(e) }} viewTransition="true">
+            <LogoutForm />
           </Form>
         </Stack>
       </Container>
     </GridItem>
   );
 };
-

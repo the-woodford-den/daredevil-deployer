@@ -1,6 +1,5 @@
 import type { UUID } from './utility';
 
-
 export interface UserCookie {
   key: string;
   value: string;
@@ -10,7 +9,7 @@ export interface UserCookie {
   expires: string;
   secure?: boolean;
   domain?: string;
-}
+ }
 
 export interface User {
   id: UUID;
@@ -30,10 +29,10 @@ export type UserState = {
   loading: boolean;
   handleSignIn: (
     user: User,
+    password: string,
   ) => Promise<void>;
   handleSignOut: (
     username: string,
-    password: string,
   ) => Promise<void>;
   createUser: (
     user: User,

@@ -5,14 +5,13 @@ import type {
   User,
 } from "@/tipos";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const errorHelper = {
   setError: () => { Promise<void> },
   unsetError: () => { Promise<void> },
   isError: true,
 }
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 
 export const signIn = async (username: string, password: string): Promise<ResultAsync<User, ErrorState>> => {
@@ -63,7 +62,8 @@ export const signIn = async (username: string, password: string): Promise<Result
   );
 };
 
-export const signOut = async (): Promise<ResultAsync<void, ErrorState>> => {
+export const signOut = async (cookieHeader?: string): Promise<ResultAsync<void, ErrorState>> => {
+  userRequest["cookie"] = response.headers.get('Cookie');
   return ResultAsync.fromPromise(
     fetch(`${BACKEND_URL}/auth/logout`, {
       credentials: 'include',
@@ -101,3 +101,4 @@ export const signOut = async (): Promise<ResultAsync<void, ErrorState>> => {
     }
   );
 };
+
