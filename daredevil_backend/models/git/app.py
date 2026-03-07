@@ -61,11 +61,10 @@ class GitAppResponse(GitAppBase):
 class GitApp(GitAppBase, IDModel, TSModel, table=True):
     __tablename__ = "git_apps"  # type: ignore[reportAssignmentType]
     model_config = serializer
-    git_id: int = Field(default=..., alias="gitId", index=True)
+    git_id: int = Field(default=...)
 
 
 class GitAppCreate(SQLModel):
-    app_slug: str = Field(default=...)
     client_id: str = Field(default=...)
 
 
@@ -76,7 +75,7 @@ class GitAppRead(SQLModel):
     html_url: str = Field(default=...)
     name: str = Field(default=...)
     slug: str = Field(default=...)
-    git_id: int = Field(default=..., alias="gitId", index=True)
+    git_id: int = Field(default=...)
 
 
 #

@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     domain: str = Field(default="127.0.0.1")
     env: str = Field(default="test")
     gha_secret: str = Field(default="github")
-    gha_private_key: Optional[str] = Field(default=None)
+    gha_private_key: str = Field(default="keys/")
     jwt_alg: str = Field(default="hash")
     logfire_token: Optional[str] = Field(default=None)
     redis_port: int = Field(default=6379)
