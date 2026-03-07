@@ -18,20 +18,19 @@ api = APIRouter(prefix="/git/hub/app")
 )
 async def get(
     *,
-    cookie: CookieTokenDepend,
+    client_id: str,
 ):
     """This GET request searches Github Api for a Github App with a token.
     In addition to returning App, it returns install count with the App"""
 
-    inspect(cookie)
     git_lib = GitLib()
-    jwt = git_lib.create_jwt(client_id=cookie["client_id"])
+    jwt = git_lib.create_jwt(client_id=client_id)
 
     endpoint = "https://api.github.com/app"
     headers = {
         "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
         "Authorization": f"Bearer {jwt}",
+        "X-GitHub-Api-Version": "2022-11-28",
     }
 
     with logfire.span("Sending request for github app data."):
@@ -44,7 +43,7 @@ async def get(
             raise HTTPException(status_code=404, detail="Git app not found")
 
         logfire.info(f"Git app: #{data['id']}")
-        return GitAppResponse.model_validate(**data)
+        return data
 
     # except HTTPStatusError as e:
     #     status_code = int(e.response.status_code)
