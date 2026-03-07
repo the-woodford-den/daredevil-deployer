@@ -21,8 +21,10 @@ async def get(
 @api.post("/create", response_model=GitAppResponse)
 async def create(
     *,
+    client_id: str,
     cookie: CookieTokenDepend,
     service: GitAppServiceDepend,
 ):
-    new_app = await app.get(cookie=cookie)
+
+    new_app = await app.get(client_id=client_id)
     return await service.add(new_app)

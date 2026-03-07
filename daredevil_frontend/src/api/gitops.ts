@@ -60,7 +60,9 @@ export const getInstall = async (cookieHeader?: string): Promise<ResultAsync<Ins
   );
 };
 
-export const getApp = async (cookieHeader?: string): Promise<ResultAsync<App, ErrorState>> => {
+export const getApp = async (
+  cookieHeader?: string
+): Promise<ResultAsync<App, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const headers: Record<string, string> = {
@@ -135,21 +137,17 @@ export const createInstallation = async (): Promise<ResultAsync<Installation, Er
 
 export const createApp = async (
   clientId: string,
-  cookieHeader?: string,
 ): Promise<ResultAsync<App, ErrorState>> => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const params = JSON.stringify({
-    clientId: clientId,
+    client_id: clientId,
   });
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
-  if (cookieHeader) {
-    headers['Cookie'] = cookieHeader;
-  }
 
   return ResultAsync.fromPromise(
-    fetch(`${backendUrl}/git_app/create`, {
+    fetch(`${backendUrl}/git/app/create`, {
       method: 'POST',
       body: params,
       headers: headers,

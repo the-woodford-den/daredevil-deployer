@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     """Provides application settings for each environment"""
 
     model_config = _base_config
-    allowed_origins: str = Field(default="allowed_origins")
+    allowed_origins: str = Field(default="*")
     app_secret: str = Field(default="secret")
     app_title: str = Field(default="daredevil")
     cc_alg: str = Field(default="cc_alg")

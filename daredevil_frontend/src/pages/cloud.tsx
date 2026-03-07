@@ -14,7 +14,13 @@ import {
 import type { App, ErrorState, Installation } from '@/tipos';
 import { appStore, installationStore, userStore, errorStore } from "@/state";
 import { Form } from 'react-router';
-import { createApp, createInstallation, getApp, getInstall, getCurrentUser } from '@/api';
+import {
+  createApp,
+  createInstallation,
+  getApp,
+  getInstall,
+  getCurrentUser
+} from '@/api';
 import underUrl from '~/underline.svg';
 
 
@@ -84,21 +90,15 @@ export default function Cloud() {
 
   const handleGitApp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!formRef.current) {
-      return;
-    }
-    const user = userStore.getState();
-    if (!user.cookie) {
-      console.log(user);
-      throw redirect("/login");
-    }
+    if (!formRef.current) return;
 
-    const clientId = data.get("clientId") as string;
-    const result = await createApp(user.cookie, clientId);
+    const formData = new FormData(formRef.current);
+    console.log(formData);
+    const clientId = formData.get("clientId") as string;
+    console.log(clientId);
+    const result = await createApp(clientId);
     result.match(
-      (app: App) => {
-        appCreate(app);
-      },
+      (app: App) => { appCreate(app); },
       (err: ErrorState) => {
         errorStore.getState().setError(err);
       });
@@ -108,28 +108,18 @@ export default function Cloud() {
 
   const handleGitInstallation = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!formRef.current) {
-      return;
-    }
-    const user = userStore.getState();
-    if (!user.cookie) {
-      console.log(user);
-      throw redirect("/login");
-    }
+    if (!formRef.current) return;
 
-    const username = data.get("username") as string;
+    const formData = new FormData(formRef.current);
+    const username = formData.get("username") as string;
     const result = await createInstallation();
     result.match(
-      (install: Installation) => {
-        installationCreate(install);
-      },
+      (install: Installation) => { installationCreate(install); },
       (err: ErrorState) => {
         errorStore.getState().setError(err);
       });
-    console.log(result);
     formRef.current?.reset();
   };
-
 
   return (
     <>
