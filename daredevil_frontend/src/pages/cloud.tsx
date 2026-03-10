@@ -14,7 +14,13 @@ import {
 import type { App, ErrorState, Installation } from '@/tipos';
 import { appStore, installationStore, userStore, errorStore } from "@/state";
 import { Form } from 'react-router';
-import { createApp, createInstallation, getApp, getInstall, getCurrentUser } from '@/api';
+import {
+  createApp,
+  createInstallation,
+  getApp,
+  getInstall,
+  getCurrentUser
+} from '@/api';
 import underUrl from '~/underline.svg';
 
 
@@ -74,7 +80,8 @@ clientLoader.hydrate = true;
 
 export default function Cloud() {
   let data = useLoaderData();
-  const formRef = useRef<HTMLFormElement>(null);
+  const appFormRef = useRef<HTMLFormElement>(null);
+  const installationFormRef = useRef<HTMLFormElement>(null);
   const appCreate = appStore(
     (state) => state.createApp,
   );
@@ -84,52 +91,33 @@ export default function Cloud() {
 
   const handleGitApp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!formRef.current) {
-      return;
-    }
-    const user = userStore.getState();
-    if (!user.cookie) {
-      console.log(user);
-      throw redirect("/login");
-    }
+    if (!appFormRef.current) return;
 
-    const clientId = data.get("clientId") as string;
-    const result = await createApp(user.cookie, clientId);
+    const formData = new FormData(appFormRef.current);
+    const clientId = formData.get("clientId") as string;
+    const result = await createApp(clientId);
     result.match(
-      (app: App) => {
-        appCreate(app);
-      },
+      (app: App) => { appCreate(app); },
       (err: ErrorState) => {
         errorStore.getState().setError(err);
       });
-    console.log(result);
-    formRef.current?.reset();
+    appFormRef.current?.reset();
   };
 
   const handleGitInstallation = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!formRef.current) {
-      return;
-    }
-    const user = userStore.getState();
-    if (!user.cookie) {
-      console.log(user);
-      throw redirect("/login");
-    }
+    if (!installationFormRef.current) return;
 
-    const username = data.get("username") as string;
+    const formData = new FormData(installationFormRef.current);
+    const username = formData.get("username") as string;
     const result = await createInstallation();
     result.match(
-      (install: Installation) => {
-        installationCreate(install);
-      },
+      (install: Installation) => { installationCreate(install); },
       (err: ErrorState) => {
         errorStore.getState().setError(err);
       });
-    console.log(result);
-    formRef.current?.reset();
+    installationFormRef.current?.reset();
   };
-
 
   return (
     <>
@@ -179,7 +167,7 @@ export default function Cloud() {
                 <Text textStyle="md">{`Client ID: ${data.app.gitId}`}</Text>
               </div>
             ) : (
-              <Form method="post" ref={formRef} onSubmit={async (e) => { await handleGitApp(e) }}>
+              <Form method="post" ref={appFormRef} onSubmit={async (e) => { await handleGitApp(e) }}>
                 <CreateGitAppForm />
               </Form>
             )}
@@ -204,7 +192,7 @@ export default function Cloud() {
                 <Text textStyle="md">{`Git ID: ${data.installation.gitId}`}</Text>
               </div>
             ) : (
-              <Form method="post" ref={formRef} onSubmit={async (e) => { await handleGitInstallation(e) }}>
+              <Form method="post" ref={installationFormRef} onSubmit={async (e) => { await handleGitInstallation(e) }}>
                 <CreateGitInstallationForm />
               </Form>
             )}

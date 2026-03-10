@@ -17,13 +17,14 @@ api = APIRouter(prefix="/git/hub/installation")
 )
 async def get(
     *,
-    cookie: CookieTokenDepend,
+    client_id: str,
+    username: str,
 ):
     """This GET request searches Github Api for Github App Installations.
     Searches by username, token required"""
 
     github_library = GitLib()
-    jwt = github_library.create_jwt(client_id=cookie["client_id"])
+    jwt = github_library.create_jwt(client_id=client_id)
 
     endpoint = "https://api.github.com/app/installations"
     header = {
@@ -40,11 +41,11 @@ async def get(
 
         for i in data:
             if (
-                i["account"]["login"] == cookie["username"]
-                and i["client_id"] == cookie["client_id"]
+                i["account"]["login"] == username
+                and i["client_id"] == client_id
             ):
                 logfire.info(f"Git installation: #{i['id']}")
-                return Git_I_Resp.model_validate(**i)
+                return i
 
         raise HTTPException(status_code=404, detail="Git install not found")
 

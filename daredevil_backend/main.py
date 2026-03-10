@@ -120,8 +120,8 @@ async def validation_exception(req: Request, err: RequestValidationError):
         status=sts,
     )
     return JSONResponse(
-        status_code=sts,
-        content={"message": err.errors},
+        status_code=400,
+        content=err.body,
     )
 
 
@@ -134,5 +134,5 @@ async def http_exception(req: Request, err: HTTPException):
     )
     return JSONResponse(
         status_code=err.status_code,
-        content={"message": err.detail},
+        content=err.detail,
     )
