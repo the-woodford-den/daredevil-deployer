@@ -108,6 +108,8 @@ export default function Cloud() {
     event.preventDefault();
     if (!installationFormRef.current) return;
 
+    const formData = new FormData(installationFormRef.current);
+    const username = formData.get("username") as string;
     const result = await createInstallation();
     result.match(
       (install: Installation) => { installationCreate(install); },
